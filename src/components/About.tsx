@@ -54,8 +54,8 @@ export function About() {
   }, [])
 
   return (
-    <section id="about" className="relative py-20 bg-background overflow-hidden">
-      
+    <section id="about" className="relative py-20 bg-black overflow-hidden">
+
       {/* Cinematic Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background" />
       
@@ -337,6 +337,32 @@ export function About() {
                 "Diverse scenarios, characters, and styles — all generated through our AI pipeline"
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Premium SiliconScale Info */}
+      <div className="mt-20 text-center">
+        <h3 className="text-4xl font-black mb-8 text-white">SiliconScale Premium Services</h3>
+        <p className="text-xl text-gray-300 leading-relaxed max-w-5xl mx-auto mb-12">
+          Experience the future of video production with SiliconScale's cutting-edge AI technology. Our premium services deliver cinematic masterpieces that captivate global audiences and drive unparalleled engagement.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
+            <h4 className="font-bold text-2xl mb-3 text-white">AI-Powered</h4>
+            <p className="text-gray-400">Advanced artificial intelligence for unparalleled creativity</p>
+          </div>
+          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
+            <h4 className="font-bold text-2xl mb-3 text-white">Cinema Quality</h4>
+            <p className="text-gray-400">Hollywood-grade production standards</p>
+          </div>
+          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
+            <h4 className="font-bold text-2xl mb-3 text-white">Global Reach</h4>
+            <p className="text-gray-400">Serving clients worldwide with localized content</p>
+          </div>
+          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
+            <h4 className="font-bold text-2xl mb-3 text-white">24/7 Support</h4>
+            <p className="text-gray-400">Round-the-clock premium customer service</p>
           </div>
         </div>
       </div>
