@@ -97,25 +97,23 @@ export function Footer() {
           z-index: 2;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 0 2.5rem 2rem;
+          padding: 0 2.5rem 3rem;
         }
 
         .footer-brand {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 0.5rem;
-          padding-bottom: 1.5rem;
+          gap: 0.75rem;
+          padding-bottom: 3rem;
           border-bottom: 1px solid rgba(255,255,255,0.08);
-          margin-bottom: 1.5rem;
+          margin-bottom: 3rem;
         }
         .footer-brand-head {
           display: flex;
           align-items: center;
-          gap: 0;
+          gap: 0.35rem;
           flex-wrap: nowrap;
-          min-width: 0;
-          max-width: 100%;
         }
         .footer-watermark {
           font-family: 'Syne', sans-serif;
@@ -126,54 +124,11 @@ export function Footer() {
           line-height: 1;
           user-select: none;
           white-space: nowrap;
-          min-width: 0;
         }
         .footer-logo {
           height: clamp(4rem, 14vw, 10rem);
           width: auto;
-          max-height: 10rem;
           object-fit: contain;
-          flex-shrink: 0;
-        }
-        @media (max-width: 768px) {
-          .footer-watermark {
-            font-size: min(4.5rem, 16vw);
-          }
-          .footer-logo {
-            height: min(4.5rem, 16vw);
-          }
-        }
-        @media (max-width: 640px) {
-          .footer-brand-head {
-            flex-wrap: wrap;
-            gap: 0;
-          }
-          .footer-watermark {
-            font-size: min(4rem, 14vw);
-          }
-          .footer-logo {
-            height: min(4rem, 14vw);
-          }
-        }
-        @media (max-width: 480px) {
-          .footer-body {
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
-          }
-          .footer-watermark {
-            font-size: min(3.5rem, 18vw);
-          }
-          .footer-logo {
-            height: min(3.5rem, 18vw);
-          }
-        }
-        @media (max-width: 360px) {
-          .footer-watermark {
-            font-size: min(3rem, 20vw);
-          }
-          .footer-logo {
-            height: min(3rem, 20vw);
-          }
         }
         .footer-tagline {
           font-family: 'Syne', sans-serif;
@@ -190,41 +145,6 @@ export function Footer() {
           gap: 1.25rem;
           margin-top: 0.25rem;
           flex-wrap: wrap;
-        }
-        .footer-connect .footer-socials {
-          flex-direction: row;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 0rem;
-          margin-top: 0;
-          margin-left: -1.25rem;
-        }
-        .footer-connect .footer-social-link {
-          width: 72px;
-          height: 72px;
-        }
-        .footer-connect .footer-social-link svg {
-          width: 36px;
-          height: 36px;
-        }
-        .footer-connect-contact {
-          margin-top: 1rem;
-        }
-        .footer-connect-contact .footer-col-title {
-          margin-bottom: 0.5rem;
-        }
-        .footer-connect .footer-email-link {
-          height: auto;
-          padding: 0;
-          font-size: 0.88rem;
-          color: rgba(255,255,255,0.45);
-        }
-        .footer-connect .footer-email-link:hover {
-          color: rgba(255,255,255,0.9);
-        }
-        .footer-connect .footer-email-link svg {
-          width: 18px;
-          height: 18px;
         }
         .footer-social-link {
           display: inline-flex;
@@ -269,14 +189,14 @@ export function Footer() {
 
         .footer-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr 1fr;
-          gap: 1.5rem;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 2rem;
         }
         @media (max-width: 900px) {
-          .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+          .footer-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
-          .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+          .footer-grid { grid-template-columns: 1fr; }
         }
 
         .footer-col-title {
@@ -286,13 +206,13 @@ export function Footer() {
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.35);
-          margin: 0 0 0.75rem;
+          margin: 0 0 1.2rem;
         }
 
         .footer-links {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 0.75rem;
         }
         .footer-link {
           font-size: 0.88rem;
@@ -417,45 +337,38 @@ export function Footer() {
           <p className="footer-tagline">
             Scalable digital products for ambitious teams.
           </p>
+          <div className="footer-socials">
+            <a
+              href="https://www.instagram.com/siliconscale"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="footer-social-link"
+              aria-label="Instagram"
+            >
+              <Instagram />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/siliconscale"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="footer-social-link"
+              aria-label="LinkedIn"
+            >
+              <Linkedin />
+            </a>
+            <a
+              href="mailto:contact@siliconscale.dev"
+              className="footer-email-link"
+              aria-label="Email"
+            >
+              <Mail />
+              contact@siliconscale.dev
+            </a>
+          </div>
         </div>
 
         {/* Grid */}
         <div className="footer-grid">
-          <div className="footer-connect">
-            <h4 className="footer-col-title">Connect</h4>
-            <div className="footer-socials">
-              <a
-                href="https://www.instagram.com/siliconscale"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="footer-social-link"
-                aria-label="Instagram"
-              >
-                <Instagram />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/siliconscale"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="footer-social-link"
-                aria-label="LinkedIn"
-              >
-                <Linkedin />
-              </a>
-            </div>
-            <div className="footer-connect-contact">
-              <h4 className="footer-col-title">Contact us</h4>
-              <a
-                href="mailto:contact@siliconscale.dev"
-                className="footer-email-link"
-                aria-label="Email"
-              >
-                <Mail />
-                contact@siliconscale.dev
-              </a>
-            </div>
-          </div>
-
           <div>
             <h4 className="footer-col-title">Quick Links</h4>
             <div className="footer-links">
@@ -485,7 +398,7 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom bar (below the line) */}
+      {/* Bottom bar */}
       <div className="footer-bottom">
         <span className="footer-bottom-text">
           © {new Date().getFullYear()} SiliconScale. All rights reserved.
