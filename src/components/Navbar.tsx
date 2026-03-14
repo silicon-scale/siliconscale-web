@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import logo from '../assets/SiliconScaleLogo.png'
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -16,9 +17,9 @@ export function Navbar() {
   }, [])
 
   const navLinks = [
+    { name: "Team", path: "/team" },
     { name: "Work", path: "/work" },
     { name: "About", path: "/about" },
-    { name: "Team", path: "/team" },
     { name: "Contact", path: "/contact" }
   ]
 
@@ -32,84 +33,140 @@ export function Navbar() {
         className="fixed top-0 left-0 w-full z-[200]"
       >
         <div
-          className={`transition-all duration-300 ${
+          className={`transition-all duration-500 ${
             isScrolled
-              ? "bg-black/85 backdrop-blur-2xl border-b border-white/10"
+              ? "bg-black/40 backdrop-blur-2xl shadow-2xl border-b border-white/10"
               : "bg-transparent"
           }`}
         >
-          <div className="max-w-[1600px] mx-auto flex items-center justify-between px-10 lg:px-16 py-6">
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 md:py-6">
 
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-white tracking-wider">
-                SiliconScale
-              </span>
+              <motion.img
+                src={logo}
+                alt="SiliconScale"
+                className={`w-auto transition-all duration-500 ${
+                  isScrolled ? "h-8 md:h-10" : "h-12 md:h-16"
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              />
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-16">
+            <div className="hidden md:flex items-center space-x-8 lg:space-x-16">
 
-              {navLinks.map((link) => (
-                <Link
+              {navLinks.map((link, index) => (
+                <motion.div
                   key={link.name}
-                  to={link.path}
-                  className="relative text-white text-base uppercase tracking-[0.25em] hover:text-white/80 transition"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index, duration: 0.5 }}
                 >
-                  {link.name}
-
-                  <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-white transition-all duration-300 hover:w-full"></span>
-                </Link>
+                  <Link
+                    to={link.path}
+                    className="relative text-white text-sm md:text-base uppercase tracking-[0.25em] hover:text-white/80 transition-all duration-300 group"
+                  >
+                    {link.name}
+                    <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-[#c9a96e] to-[#c9a96e]/50 transition-all duration-300 group-hover:w-full"></span>
+                  </Link>
+                </motion.div>
               ))}
 
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 md:gap-6">
 
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="hidden md:block border border-white/20 text-white px-8 py-3 rounded-full text-sm uppercase tracking-[0.25em] hover:bg-white hover:text-black transition"
+                className="hidden md:block border border-white/20 text-white px-6 py-2 text-xs md:px-8 md:py-3 md:text-sm rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
               >
                 Book Call
               </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden text-white"
+                className="md:hidden text-white p-2 rounded-full bg-white/10 backdrop-blur-sm"
               >
-                {isMobileMenuOpen ? <X size={28}/> : <Menu size={28}/>}
-              </button>
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </motion.button>
 
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Full Screen Premium Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25 }}
-            className="fixed top-0 right-0 h-full w-80 bg-black z-[190] p-10 flex flex-col space-y-8 text-white"
-          >
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-xl z-[180]"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-xl uppercase tracking-[0.25em] hover:text-white/70"
-              >
-                {link.name}
-              </Link>
-            ))}
+            {/* Menu */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="fixed inset-0 z-[190] flex items-center justify-center"
+            >
+              <div className="bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl p-8 mx-4 max-w-sm w-full">
+                <div className="flex flex-col items-center space-y-8">
+                  <motion.img
+                    src={logo}
+                    alt="SiliconScale"
+                    className="h-12 w-auto"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                  />
 
-          </motion.div>
+                  <div className="flex flex-col items-center space-y-6">
+                    {navLinks.map((link, index) => (
+                      <motion.div
+                        key={link.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index + 0.3, duration: 0.5 }}
+                      >
+                        <Link
+                          to={link.path}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-white text-xl uppercase tracking-[0.25em] hover:text-[#c9a96e] transition-all duration-300 relative group"
+                        >
+                          {link.name}
+                          <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-[#c9a96e] transition-all duration-300 group-hover:w-full"></span>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.5 }}
+                    whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                  >
+                    Book Call
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>

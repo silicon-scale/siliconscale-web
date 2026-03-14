@@ -180,7 +180,7 @@ export function About() {
             {/* Film Perforations Top */}
             <div className="absolute top-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
               <div
-                className={`flex items-center justify-between px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
+                className={`flex items-center justify-between px-6 sm:px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
                 style={{ width: '200%', gap: '24px' }}
               >
                 {[...Array(40)].map((_, i) => (
@@ -200,7 +200,7 @@ export function About() {
             </div>
 
             {/* Frames */}
-            <div className="relative py-8 px-8 overflow-hidden" style={{ height: 260 }}>
+            <div className="relative py-8 px-4 sm:px-8 overflow-hidden" style={{ height: 260 }}>
               <div
                 className={animationStarted ? 'film-scroll-animation' : ''}
                 style={{ display: 'flex', gap: 24, width: 'max-content' }}
@@ -215,11 +215,11 @@ export function About() {
                       className={`ab-frame ${isActive ? 'ab-frame-active' : ''}`}
                       style={{
                         flexShrink: 0,
-                        width: 280,
+                        width: 'clamp(240px, 80vw, 280px)',
                         height: 196,
                         background: '#000',
                         border: `0.5px solid ${isActive ? '#c9a96e' : '#1e1a13'}`,
-                        padding: '1.5rem',
+                        padding: 'clamp(1rem, 4vw, 1.5rem)',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
@@ -253,7 +253,7 @@ export function About() {
                         <h3
                           className="ab-frame-title"
                           style={{
-                            fontSize: '1.15rem',
+                            fontSize: 'clamp(1rem, 3vw, 1.15rem)',
                             fontWeight: 700,
                             color: isActive ? '#ffffff' : '#ffffff',
                             marginBottom: '0.75rem',
@@ -265,7 +265,7 @@ export function About() {
                         </h3>
                         <p
                           style={{
-                            fontSize: '0.9rem',
+                            fontSize: 'clamp(0.8rem, 2.5vw, 0.9rem)',
                             fontWeight: 300,
                             color: isActive ? '#ffffff' : '#ffffff',
                             lineHeight: 1.7,
@@ -285,7 +285,7 @@ export function About() {
             {/* Film Perforations Bottom */}
             <div className="absolute bottom-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
               <div
-                className={`flex items-center justify-between px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
+                className={`flex items-center justify-between px-6 sm:px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
                 style={{ width: '200%', gap: '24px' }}
               >
                 {[...Array(40)].map((_, i) => (
