@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import storyboardImage from '@/assets/storyboard-image.avif'
 
 export function About() {
 
@@ -14,265 +13,403 @@ export function About() {
       title: "Strategy & Discovery",
       description:
         "Deep product research, positioning, and market intelligence to craft the digital blueprint for scalable success.",
-      color: "accent-blue"
     },
     {
       number: "02",
       title: "Experience Design",
       description:
         "Our designers craft cinematic interfaces and elegant systems that transform complex ideas into intuitive digital experiences.",
-      color: "accent-emerald"
     },
     {
       number: "03",
       title: "Engineering Systems",
       description:
         "Modern architectures, high-performance code, and scalable infrastructure built for long-term growth.",
-      color: "accent-purple"
     },
     {
       number: "04",
       title: "Launch & Optimization",
       description:
         "Production-grade deployments followed by continuous optimization for speed, reliability, and engagement.",
-      color: "accent-blue"
     },
     {
       number: "05",
       title: "Scale & Evolution",
       description:
         "We partner with ambitious companies to evolve products, unlock new markets, and scale globally.",
-      color: "accent-purple"
-    }
+    },
+  ]
+
+  const pillars = [
+    {
+      title: "Product Strategy",
+      description: "Transforming complex ideas into clear, scalable product strategies.",
+    },
+    {
+      title: "Experience Design",
+      description: "Beautiful interfaces and immersive user experiences.",
+    },
+    {
+      title: "Engineering Excellence",
+      description: "High-performance architectures designed for scale.",
+    },
+    {
+      title: "Global Impact",
+      description: "Launching platforms used by audiences worldwide.",
+    },
   ]
 
   useEffect(() => {
-
     setTimeout(() => {
-
       setAnimationStarted(true)
-
       processSteps.forEach((_, index) => {
-
         setTimeout(() => {
           setActiveFrame(index)
         }, index * 2000 + 1000)
-
       })
-
     }, 3000)
-
   }, [])
 
   return (
+    <section
+      id="about"
+      className="relative py-28 bg-black overflow-hidden"
+    >
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .ab-anim-0 { opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards; }
+        .ab-anim-1 { opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards; }
+        .ab-anim-2 { opacity: 0; animation: fadeUp 0.9s ease 0.6s forwards; }
+        .ab-anim-3 { opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards; }
+        .ab-anim-4 { opacity: 0; animation: fadeUp 0.8s ease 1.0s forwards; }
+        .ab-divider { opacity: 0; animation: fadeIn 1s ease 0.5s forwards; }
 
-    <section id="about" className="relative py-28 bg-black overflow-hidden">
+        .ab-pillar:hover { border-color: #2a2218 !important; }
+        .ab-pillar:hover .ab-pillar-num { color: #c9a96e !important; }
+        .ab-pillar:hover .ab-pillar-title { color: #ffffff !important; }
+        .ab-pillar:hover::before { transform: translateX(-50%) scaleX(1) !important; }
 
-      {/* Ambient Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
+        .ab-frame-active { border-color: #c9a96e !important; }
+        .ab-frame-active .ab-frame-num { background: #c9a96e !important; color: #000 !important; }
+        .ab-frame-active .ab-frame-title { color: #ffffff !important; }
 
-      {/* Soft Lighting Glow */}
-      <div className="absolute inset-0 opacity-40 pointer-events-none">
-        <div
-          className="absolute w-[900px] h-[900px] rounded-full blur-[160px]"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(59,130,246,0.18), transparent 60%)",
-            top: "-200px",
-            left: "-200px"
-          }}
-        />
-        <div
-          className="absolute w-[900px] h-[900px] rounded-full blur-[160px]"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(124,58,237,0.18), transparent 60%)",
-            bottom: "-200px",
-            right: "-200px"
-          }}
-        />
-      </div>
+        @keyframes filmScroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .film-scroll-animation { animation: filmScroll 18s linear infinite; }
+        .perforations-scroll-animation { animation: filmScroll 18s linear infinite; }
+      `}</style>
 
-      {/* Film Grain */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-        <div
-          className="w-full h-full"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)",
-            backgroundSize: "3px 3px"
-          }}
-        />
-      </div>
+      {/* Particle-like gold dot grid — matches Team's warm atmosphere */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(201,169,110,0.04) 1px, transparent 0)',
+          backgroundSize: '40px 40px',
+        }}
+      />
 
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
 
-        {/* Header */}
-
-        <div className="text-center mb-24">
-
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight my-8 text-white">
-            Building the Future of Digital Products
+        {/* ── HEADER ── */}
+        <div className="text-center mt-12 mb-20">
+          <h2
+            className="ab-anim-1"
+            style={{
+              fontSize: 'clamp(2rem, 4vw, 4rem)',
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: '-0.02em',
+              color: '#ffffff',
+              marginBottom: '1.5rem',
+            }}
+          >
+            Building the Future of<br />
+            <em style={{ color: '#c9a96e' }}>Digital Products</em>
           </h2>
 
-          <p className="text-xl text-neutral-400 leading-relaxed max-w-3xl mx-auto">
+          <p
+            className="ab-anim-2 mx-auto"
+            style={{
+              fontSize: '1rem',
+              fontWeight: 300,
+              color: '#ffffff',
+              lineHeight: 1.8,
+              letterSpacing: '0.02em',
+              maxWidth: '680px',
+              fontStyle: 'italic',
+            }}
+          >
             SiliconScale is a creative technology studio where strategy, design,
             and engineering converge to build world-class digital experiences.
-            From startups to global brands, we create platforms designed to
-            perform, scale, and inspire.
+            From startups to global brands — platforms designed to perform, scale, and inspire.
           </p>
-
         </div>
 
-        {/* Film Strip */}
+        {/* ── FILM STRIP ── */}
+        <div className="ab-anim-3 relative max-w-full mx-auto mb-32">
 
-        <div className="relative max-w-7xl mx-auto">
+          <p
+            style={{
+              fontSize: '10px',
+              letterSpacing: '0.4em',
+              textTransform: 'uppercase',
+              color: '#ffffff',
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+            }}
+          >
+            Process · Five Stages
+          </p>
 
-          <div className="relative bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 rounded-xl overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.7)]">
-
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: '#050402',
+              border: '0.5px solid #1e1a13',
+            }}
+          >
             {/* Film Perforations Top */}
-
             <div className="absolute top-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
-
               <div
-                className={`flex items-center justify-between px-12 h-full ${
-                  animationStarted ? "perforations-scroll-animation" : ""
-                }`}
-                style={{ width: "200%" }}
+                className={`flex items-center justify-between px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
+                style={{ width: '200%', gap: '24px' }}
               >
-
-                {[...Array(20)].map((_, i) => (
+                {[...Array(40)].map((_, i) => (
                   <div
-                    key={`top-${i}`}
-                    className="w-4 h-3 bg-neutral-800 rounded-sm border border-neutral-700 flex-shrink-0"
+                    key={`perf-${i}`}
+                    style={{
+                      width: 14,
+                      height: 10,
+                      background: '#1a1610',
+                      border: '0.5px solid #2a2218',
+                      borderRadius: 2,
+                      flexShrink: 0,
+                    }}
                   />
                 ))}
-
-                {[...Array(20)].map((_, i) => (
-                  <div
-                    key={`top-dup-${i}`}
-                    className="w-4 h-3 bg-neutral-800 rounded-sm border border-neutral-700 flex-shrink-0"
-                  />
-                ))}
-
               </div>
-
             </div>
 
             {/* Frames */}
-
-            <div className="relative py-6 px-8 overflow-hidden h-64 max-w-full">
-
+            <div className="relative py-8 px-8 overflow-hidden" style={{ height: 260 }}>
               <div
-                className={`flex transition-transform duration-1000 ease-in-out ${
-                  animationStarted ? "film-scroll-animation" : ""
-                }`}
-                style={{ width: "max-content", gap: "32px" }}
+                className={animationStarted ? 'film-scroll-animation' : ''}
+                style={{ display: 'flex', gap: 24, width: 'max-content' }}
               >
-
-                {processSteps.map((step, index) => (
-
-                  <div
-                    key={step.number}
-                    className={`flex-shrink-0 w-80 h-52 bg-black/80 backdrop-blur-md rounded-lg border-4 ${
-                      activeFrame >= index
-                        ? `border-${step.color}`
-                        : "border-neutral-700"
-                    }`}
-                  >
-
-                    <div className="relative h-full p-6 flex flex-col justify-between">
-
-                      <div className="absolute -top-4 -left-4 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center font-black border-2 text-lg">
+                {/* Duplicate for seamless loop */}
+                {[...processSteps, ...processSteps].map((step, index) => {
+                  const realIndex = index % processSteps.length
+                  const isActive = activeFrame >= realIndex
+                  return (
+                    <div
+                      key={`${step.number}-${index}`}
+                      className={`ab-frame ${isActive ? 'ab-frame-active' : ''}`}
+                      style={{
+                        flexShrink: 0,
+                        width: 280,
+                        height: 196,
+                        background: '#000',
+                        border: `0.5px solid ${isActive ? '#c9a96e' : '#1e1a13'}`,
+                        padding: '1.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        position: 'relative',
+                        transition: 'border-color 0.6s ease',
+                      }}
+                    >
+                      {/* Step number */}
+                      <div
+                        className="ab-frame-num"
+                        style={{
+                          position: 'absolute',
+                          top: -12,
+                          left: 20,
+                          width: 28,
+                          height: 28,
+                          background: isActive ? '#c9a96e' : '#0a0806',
+                          border: `0.5px solid ${isActive ? '#c9a96e' : '#2a2218'}`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          color: isActive ? '#000' : '#ffffff',
+                          transition: 'background 0.6s, color 0.6s, border-color 0.6s',
+                        }}
+                      >
                         {step.number}
                       </div>
 
                       <div>
-
-                        <h3 className="font-black text-xl mb-4 text-white">
+                        <h3
+                          className="ab-frame-title"
+                          style={{
+                            fontSize: '1.15rem',
+                            fontWeight: 700,
+                            color: isActive ? '#ffffff' : '#ffffff',
+                            marginBottom: '0.75rem',
+                            marginTop: '0.5rem',
+                            transition: 'color 0.6s',
+                          }}
+                        >
                           {step.title}
                         </h3>
-
-                        <p className="text-sm text-neutral-400 leading-relaxed">
+                        <p
+                          style={{
+                            fontSize: '0.9rem',
+                            fontWeight: 300,
+                            color: isActive ? '#ffffff' : '#ffffff',
+                            lineHeight: 1.7,
+                            fontStyle: 'italic',
+                            transition: 'color 0.6s',
+                          }}
+                        >
                           {step.description}
                         </p>
-
                       </div>
-
                     </div>
-
-                  </div>
-
-                ))}
-
+                  )
+                })}
               </div>
-
             </div>
 
+            {/* Film Perforations Bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
+              <div
+                className={`flex items-center justify-between px-12 h-full ${animationStarted ? 'perforations-scroll-animation' : ''}`}
+                style={{ width: '200%', gap: '24px' }}
+              >
+                {[...Array(40)].map((_, i) => (
+                  <div
+                    key={`perf-b-${i}`}
+                    style={{
+                      width: 14,
+                      height: 10,
+                      background: '#1a1610',
+                      border: '0.5px solid #2a2218',
+                      borderRadius: 2,
+                      flexShrink: 0,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-
         </div>
 
-        {/* Premium SiliconScale Section */}
+        {/* ── PILLARS ── */}
+        <div className="ab-anim-4">
 
-        <div className="mt-32 text-center">
-
-          <h3 className="text-4xl font-black mb-8 text-white">
-            Why Companies Choose SiliconScale
-          </h3>
-
-          <p className="text-xl text-neutral-400 leading-relaxed max-w-4xl mx-auto mb-16">
-            We combine strategic thinking, cinematic design, and modern
-            engineering to create digital products that define industries.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 max-w-6xl mx-auto">
-
-            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
-              <h4 className="text-xl font-bold mb-3 text-white">
-                Product Strategy
-              </h4>
-              <p className="text-neutral-400">
-                Transforming complex ideas into clear, scalable product
-                strategies.
-              </p>
-            </div>
-
-            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
-              <h4 className="text-xl font-bold mb-3 text-white">
-                Experience Design
-              </h4>
-              <p className="text-neutral-400">
-                Beautiful interfaces and immersive user experiences.
-              </p>
-            </div>
-
-            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
-              <h4 className="text-xl font-bold mb-3 text-white">
-                Engineering Excellence
-              </h4>
-              <p className="text-neutral-400">
-                High-performance architectures designed for scale.
-              </p>
-            </div>
-
-            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
-              <h4 className="text-xl font-bold mb-3 text-white">
-                Global Impact
-              </h4>
-              <p className="text-neutral-400">
-                Launching platforms used by audiences worldwide.
-              </p>
-            </div>
-
+          <div className="text-center mb-14">
+            <h3
+              style={{
+                fontSize: 'clamp(1.8rem, 3.5vw, 3rem)',
+                fontWeight: 900,
+                color: '#ffffff',
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
+                marginBottom: '1rem',
+              }}
+            >
+              Built for Companies That<br />
+              <em style={{ }}>Refuse to Settle</em>
+            </h3>
+            <p
+              style={{
+                fontSize: '1.1rem',
+                fontWeight: 300,
+                color: '#ffffff',
+                fontStyle: 'italic',
+                maxWidth: '560px',
+                margin: '0 auto',
+                lineHeight: 1.8,
+              }}
+            >
+              We combine strategic thinking, cinematic design, and modern engineering to create digital products that define industries.
+            </p>
           </div>
 
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            style={{ gap: '1.5px', background: '#0e0c0a', border: '0.5px solid #1a1610' }}
+          >
+            {pillars.map((p, i) => (
+              <div
+                key={p.title}
+                className="ab-pillar relative"
+                style={{
+                  background: '#000',
+                  padding: '2.4rem 2rem',
+                  border: '0.5px solid transparent',
+                  transition: 'border-color 0.4s',
+                  cursor: 'default',
+                }}
+              >
+                {/* Gold top sweep on hover */}
+                <div
+                  className="ab-pillar-sweep absolute top-0 left-1/2 h-px"
+                  style={{
+                    width: 40,
+                    background: '#c9a96e',
+                    transform: 'translateX(-50%) scaleX(0)',
+                    transition: 'transform 0.4s ease',
+                  }}
+                />
+
+                <p
+                  className="ab-pillar-num"
+                  style={{
+                    fontSize: '9px',
+                    letterSpacing: '0.3em',
+                    color: '#ffffff',
+                    textTransform: 'uppercase',
+                    marginBottom: '1.2rem',
+                    transition: 'color 0.4s',
+                  }}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </p>
+
+                <h4
+                  className="ab-pillar-title"
+                  style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    marginBottom: '0.75rem',
+                    lineHeight: 1.2,
+                    transition: 'color 0.4s',
+                  }}
+                >
+                  {p.title}
+                </h4>
+
+                <p
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: 300,
+                    color: '#ffffff',
+                    lineHeight: 1.75,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {p.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
-
     </section>
-
   )
-
 }

@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import Logo from "@/assets/SiliconScaleLogo.png"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -43,11 +42,9 @@ export function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <img
-                src={Logo}
-                alt="SiliconScale"
-                className="h-12 w-auto"
-              />
+              <span className="text-2xl font-bold text-white tracking-wider">
+                SiliconScale
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
