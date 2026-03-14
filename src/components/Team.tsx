@@ -1,386 +1,200 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
-import marcusPhoto from '../assets/team-member-1.png'
-import sofiaPhoto from '../assets/team-member-2.png'
-import jakePhoto from '../assets/team-member-3.png'
-import mayaPhoto from '../assets/team-member-4.png'
-import connorPhoto from '../assets/team-member-5.png'
-import zaraPhoto from '../assets/team-member-6.png'
-import leoPhoto from '../assets/team-member-7.png'
+import maniPhoto from '../assets/jhaneswar.png'
+import pavanPhoto from '../assets/Pavan.png'
 
 export function Team() {
-  const wantedCriminals = [
-    {
-      name: "Marcus 'The Pixel Bandit'",
-      crime: "ARMED CREATIVE ROBBERY",
-      bounty: "$8,500",
-      description: "Notorious for stealing ordinary footage and transforming it into extraordinary visual experiences. Approach with caution - carries dangerous levels of creative vision and technical expertise.",
-      image: marcusPhoto,
-      rotation: 'rotate-3',
-      mustacheStyle: "artistic"
-    },
-    {
-      name: "Sofia 'The Frame Thief'",
-      crime: "GRAND THEFT OF IMAGINATION",
-      bounty: "$6,200",
-      description: "Wanted for stealing impossible creative briefs and turning them into award-winning masterpieces. Armed with strategic thinking and dangerous levels of project management skills.",
-      image: sofiaPhoto,
-      rotation: 'rotate-2',
-      mustacheStyle: "handlebar"
-    },
-    {
-      name: "Jake 'The Render Rogue'",
-      crime: "MASTERMINDING TECHNICAL HEISTS",
-      bounty: "$11,800",
-      description: "Ringleader of rendering crimes, orchestrating elaborate computational operations. Wanted for leading sophisticated processing schemes that push hardware beyond its limits.",
-      image: jakePhoto,
-      rotation: 'rotate-2',
-      mustacheStyle: "thick"
-    },
-    {
-      name: "Maya 'The Code Crusher'",
-      crime: "DIGITAL WIZARDRY & ALGORITHM SORCERY",
-      bounty: "$9,300",
-      description: "Wanted for conjuring flawless code from chaotic requirements using forbidden programming magic. Known to transform complex problems into elegant solutions with mysterious technical powers.",
-      image: mayaPhoto,
-      rotation: '-rotate-2',
-      mustacheStyle: "curly"
-    },
-    {
-      name: "Connor 'The Digital Desperado'",
-      crime: "PRODUCTION WITH INTENT TO AMAZE",
-      bounty: "$13,700",
-      description: "Mastermind behind revolutionary content creation operations. Wanted for disrupting traditional production methods and making competitors question their entire approach.",
-      image: connorPhoto,
-      rotation: 'rotate-1',
-      mustacheStyle: "villainous"
-    },
-    {
-      name: "Zara 'The Motion Maverick'",
-      crime: "ANIMATION MANIPULATION & EFFECT FORGERY",
-      bounty: "$7,900",
-      description: "Notorious for crafting motion graphics so smooth they defy the laws of physics. Armed with After Effects mastery and a dangerous eye for kinetic perfection.",
-      image: zaraPhoto,
-      rotation: '-rotate-1',
-      mustacheStyle: "artistic"
-    },
-    {
-      name: "Leo 'The Effect Enforcer'",
-      crime: "WANDERING VFX SYNTHESIS SCHEMES",
-      bounty: "$10,400",
-      description: "A nomadic visual effects outlaw who drifts from project to project, leaving behind a trail of jaw-dropping composites and impossible cinematic magic. Master of the digital realm.",
-      image: leoPhoto,
-      rotation: 'rotate-3',
-      mustacheStyle: "handlebar"
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let animId: number
+    let dots: { x: number; y: number; r: number; vx: number; vy: number; a: number }[] = []
+
+    function resize() {
+      if (!canvas) return
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
     }
+
+    function init() {
+      if (!canvas) return
+      dots = Array.from({ length: 80 }, () => ({
+        x: Math.random() * canvas!.width,
+        y: Math.random() * canvas!.height,
+        r: Math.random() * 0.8 + 0.2,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        a: Math.random() * 0.4 + 0.05,
+      }))
+    }
+
+    function draw() {
+      if (!canvas || !ctx) return
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      dots.forEach(d => {
+        ctx.beginPath()
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(201, 169, 110, ${d.a})`
+        ctx.fill()
+        d.x += d.vx
+        d.y += d.vy
+        if (d.x < 0) d.x = canvas!.width
+        if (d.x > canvas!.width) d.x = 0
+        if (d.y < 0) d.y = canvas!.height
+        if (d.y > canvas!.height) d.y = 0
+      })
+      animId = requestAnimationFrame(draw)
+    }
+
+    resize()
+    init()
+    draw()
+    window.addEventListener('resize', () => { resize(); init() })
+    return () => {
+      cancelAnimationFrame(animId)
+      window.removeEventListener('resize', () => { resize(); init() })
+    }
+  }, [])
+
+  const founders = [
+    {
+      name: 'Mani Jhaneswar',
+      initials: 'MJ',
+      role: 'Founder',
+      description:
+        '"Leads SiliconScale\'s creative vision and digital product design. Crafting cinematic user experiences and scalable brand systems for tomorrow\'s companies."',
+      tags: ['Creative Direction', 'UX Systems', 'Brand', 'Motion'],
+      image: maniPhoto,
+    },
+    {
+      name: 'Pavan Sohith',
+      initials: 'PS',
+      role: 'Founder',
+      description:
+        '"Architect of SiliconScale\'s technical backbone. Specializes in scalable platforms, high-performance systems, and future-ready digital infrastructure."',
+      tags: ['Architecture', 'Systems', 'Platforms', 'AI'],
+      image: pavanPhoto,
+    },
   ]
 
-  const Mustache = ({ style, className }: { style: string, className?: string }) => {
-    const mustaches = {
-      handlebar: "M12 16c-2 0-3-1-4-1s-2 1-4 1c0-1 1-2 4-2s4 1 4 2z M12 16c2 0 3-1 4-1s2 1 4 1c0-1-1-2-4-2s-4 1-4 2z",
-      thick: "M6 16c0-1 2-2 6-2s6 1 6 2c0 1-2 1-6 1s-6 0-6-1z",
-      villainous: "M8 15c-1 0-2 1-2 2s1 1 2 0c1-1 2-1 4-1s3 0 4 1c1 1 2 0 2-1s-1-2-2-2c-2 0-4 1-8 1z",
-      curly: "M6 16c0-2 1-2 2-1s1 1 2 0 1-1 2 0 1-1 2 0 2-1 2 1c0 1-1 1-2 1s-2 0-4 0-4 0-4-1z",
-      artistic: "M7 15c-1 1-1 2 0 2s2-1 3-1h4c1 0 2 1 3 1s1-1 0-2c-1-1-2-1-5-1s-4 0-5 1z"
-    }
-    
-    return (
-      <svg 
-        className={`absolute ${className}`}
-        width="24" 
-        height="24" 
-        viewBox="0 0 24 24" 
-        fill="none"
-      >
-        <path 
-          d={mustaches[style as keyof typeof mustaches]} 
-          fill="#2D1810" 
-          stroke="#1A0F08" 
-          strokeWidth="0.5"
-        />
-      </svg>
-    )
-  }
-
   return (
-    <div className="relative py-32 bg-background w-full" style={{ 
-      overflow: 'visible', 
-      height: 'auto', 
-      minHeight: '0', 
-      maxHeight: 'none' 
-    }}>
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12" style={{ 
-        overflow: 'visible', 
-        height: 'auto', 
-        minHeight: '0', 
-        maxHeight: 'none' 
-      }}>
-        
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-3 h-3 bg-accent-emerald rounded-full animate-pulse" />
-            <span className="text-sm font-semibold text-muted-foreground">
-              Meet the Outlaws
-            </span>
-            <div className="w-3 h-3 bg-accent-blue rounded-full animate-pulse" />
-          </div>
-          
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-8 text-foreground">
-            <span className="block mb-2">These people are</span>
-            <span className="block text-foreground">WANTED</span>
-          </h2>
-          
-          <p className="text-2xl lg:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Highly skilled and creatively dangerous
-          </p>
+    <section className="relative bg-black text-white overflow-hidden min-h-screen">
+
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        style={{ opacity: 0.5 }}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
+
+        <div className="text-center pt-20 md:pt-24">
+          <h1
+            className="ss-anim-1 leading-[1.2] tracking-normal my-8"
+            style={{
+              fontSize: 'clamp(2rem, 2vw, 2.6rem)',
+              fontWeight: 900,
+              color: '#ffffff',
+            }}
+          >
+            The Minds<br />
+            <em>Behind the SiliconScale</em>
+          </h1>
         </div>
 
-        {/* Framed Wanted Board */}
-        <div className="max-w-7xl mx-auto" style={{ 
-          overflow: 'visible', 
-          height: 'auto', 
-          minHeight: '0', 
-          maxHeight: 'none' 
-        }}>
-          <div className="relative" style={{ 
-            overflow: 'visible', 
-            height: 'auto', 
-            minHeight: '0', 
-            maxHeight: 'none' 
-          }}>
-            
-            {/* Black Frame */}
-            <div className="bg-gradient-to-br from-black via-gray-900 to-black p-8 rounded-2xl shadow-2xl relative border border-gray-800/50" style={{ 
-              overflow: 'visible', 
-              height: 'auto', 
-              minHeight: '0', 
-              maxHeight: 'none' 
-            }}>
-              
-              {/* Black frame texture */}
-              <div className="absolute inset-0 opacity-15"
-                   style={{
-                     backgroundImage: `
-                       linear-gradient(135deg, rgba(55, 65, 81, 0.1) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%),
-                       radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-                       radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.15) 0%, transparent 50%)
-                     `,
-                     backgroundSize: '60px 60px, 100px 100px, 80px 80px'
-                   }} />
-              
-              {/* Modern Board Background */}
-              <div className="bg-gradient-to-br from-slate-100 via-gray-50 to-slate-200 rounded-xl p-8 relative border border-slate-300/50" style={{ 
-                overflow: 'visible', 
-                height: 'auto', 
-                minHeight: '0', 
-                maxHeight: 'none' 
-              }}>
-                
-                {/* Modern subtle texture */}
-                <div className="absolute inset-0 opacity-30"
-                     style={{
-                       backgroundImage: `
-                         radial-gradient(circle at 30% 30%, rgba(71, 85, 105, 0.03) 1px, transparent 1px),
-                         radial-gradient(circle at 70% 70%, rgba(148, 163, 184, 0.02) 1px, transparent 1px),
-                         linear-gradient(135deg, rgba(226, 232, 240, 0.1) 0%, transparent 50%, rgba(241, 245, 249, 0.1) 100%)
-                       `,
-                       backgroundSize: '30px 30px, 45px 45px, 100% 100%'
-                     }} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 mt-12 mb-16">
+          {founders.map((f, i) => (
+            <div
+              key={f.name}
+              className={`ss-founder-card transition-all duration-500 hover:-translate-y-2 ${i === 0 ? 'ss-anim-f1' : 'ss-anim-f2'}`}
+            >
 
-                {/* Wanted Posters Grid */}
-                <div className="relative z-10" style={{ 
-                  overflow: 'visible', 
-                  height: 'auto', 
-                  minHeight: '0', 
-                  maxHeight: 'none' 
-                }}>
-                  {/* First row - 4 posters */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-8" style={{ 
-                    overflow: 'visible', 
-                    height: 'auto', 
-                    minHeight: '0', 
-                    maxHeight: 'none' 
-                  }}>
-                    {wantedCriminals.slice(0, 4).map((criminal, index) => (
-                      <div
-                        key={criminal.name}
-                        className={`group transform ${criminal.rotation} hover:rotate-0 transition-all duration-500 hover:scale-105 hover:z-20`}
-                        style={{
-                          filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.3))',
-                          overflow: 'visible',
-                          height: 'auto',
-                          minHeight: '0',
-                          maxHeight: 'none'
-                        }}
-                      >
-                        
-                        {/* Black Framed Wanted Poster */}
-                        <div className="bg-gradient-to-b from-white to-gray-50 border-4 border-black relative shadow-lg" style={{ 
-                          overflow: 'visible', 
-                          height: 'auto', 
-                          minHeight: '0', 
-                          maxHeight: 'none' 
-                        }}>
-                          
-                          {/* Modern push pins */}
-                          <div className="absolute -top-2 left-4 w-4 h-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-lg border border-red-700" />
-                          <div className="absolute -top-2 right-4 w-4 h-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-lg border border-red-700" />
-                          
-                          {/* Subtle modern paper effect */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-slate-50/30 via-transparent to-gray-100/20" />
-                          <div className="absolute top-4 right-4 w-6 h-6 bg-slate-200/40 rounded-full" />
-                          <div className="absolute bottom-6 left-4 w-4 h-4 bg-gray-300/30 rounded-full" />
+              <div
+                className="relative overflow-hidden group"
+                style={{ aspectRatio: '1.5 / 1.3', background: '#0e0c0a', border: '0.5px solid #2a2218' }}
+              >
+                <ImageWithFallback
+                  src={f.image}
+                  alt={f.name}
+                  className="ss-photo-scale w-full h-full object-cover object-[center_20%] transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                />
 
-                          <div className="p-6 text-center relative z-10">
-                            
-                            {/* WANTED Header */}
-                            <div className="mb-4">
-                              <h3 className="text-3xl font-black text-black mb-2"
-                                  style={{ 
-                                    fontFamily: 'serif',
-                                    letterSpacing: '0.1em'
-                                  }}>
-                                WANTED
-                              </h3>
-                              <div className="w-full h-0.5 bg-black mb-2" />
-                            </div>
 
-                            {/* Photo */}
-                            <div className="relative mb-4 mx-auto w-32 h-32 border-2 border-black bg-gray-100 rounded-sm" style={{ 
-                              overflow: 'visible' 
-                            }}>
-                              <ImageWithFallback
-                                src={criminal.image}
-                                alt={criminal.name}
-                                className="w-full h-full object-cover rounded-sm"
-                                style={{
-                                  filter: 'sepia(20%) contrast(105%) brightness(100%) hue-rotate(5deg) saturate(90%)'
-                                }}
-                              />
-                              
-                              {/* Subtle modern overlay */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-100/10 to-transparent rounded-sm" />
-                              
-                              {/* Mustache */}
-                              <Mustache 
-                                style={criminal.mustacheStyle} 
-                                className="bottom-4 left-1/2 -translate-x-1/2 opacity-80" 
-                              />
-                            </div>
-
-                            {/* Details */}
-                            <div className="text-left space-y-2" style={{ fontFamily: 'serif' }}>
-                              <div className="font-black text-lg text-black">{criminal.name}</div>
-                              <div className="font-bold text-red-600 text-base">BOUNTY: {criminal.bounty}</div>
-                              <div className="text-sm text-gray-800 leading-relaxed bg-gray-50/50 p-3 border-l-2 border-black">
-                                {criminal.description}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Second row - 3 posters centered */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 max-w-5xl mx-auto" style={{ 
-                    overflow: 'visible', 
-                    height: 'auto', 
-                    minHeight: '0', 
-                    maxHeight: 'none' 
-                  }}>
-                    {wantedCriminals.slice(4, 7).map((criminal, index) => (
-                      <div
-                        key={criminal.name}
-                        className={`group transform ${criminal.rotation} hover:rotate-0 transition-all duration-500 hover:scale-105 hover:z-20`}
-                        style={{
-                          filter: 'drop-shadow(4px 4px 8px rgba(0,0,0,0.3))',
-                          overflow: 'visible',
-                          height: 'auto',
-                          minHeight: '0',
-                          maxHeight: 'none'
-                        }}
-                      >
-                        
-                        {/* Black Framed Wanted Poster */}
-                        <div className="bg-gradient-to-b from-white to-gray-50 border-4 border-black relative shadow-lg" style={{ 
-                          overflow: 'visible', 
-                          height: 'auto', 
-                          minHeight: '0', 
-                          maxHeight: 'none' 
-                        }}>
-                          
-                          {/* Modern push pins */}
-                          <div className="absolute -top-2 left-4 w-4 h-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-lg border border-red-700" />
-                          <div className="absolute -top-2 right-4 w-4 h-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-lg border border-red-700" />
-                          
-                          {/* Subtle modern paper effect */}
-                          <div className="absolute inset-0 bg-gradient-to-br from-slate-50/30 via-transparent to-gray-100/20" />
-                          <div className="absolute top-4 right-4 w-6 h-6 bg-slate-200/40 rounded-full" />
-                          <div className="absolute bottom-6 left-4 w-4 h-4 bg-gray-300/30 rounded-full" />
-
-                          <div className="p-6 text-center relative z-10">
-                            
-                            {/* WANTED Header */}
-                            <div className="mb-4">
-                              <h3 className="text-3xl font-black text-black mb-2"
-                                  style={{ 
-                                    fontFamily: 'serif',
-                                    letterSpacing: '0.1em'
-                                  }}>
-                                WANTED
-                              </h3>
-                              <div className="w-full h-0.5 bg-black mb-2" />
-                            </div>
-
-                            {/* Photo */}
-                            <div className="relative mb-4 mx-auto w-32 h-32 border-2 border-black bg-gray-100 rounded-sm" style={{ 
-                              overflow: 'visible' 
-                            }}>
-                              <ImageWithFallback
-                                src={criminal.image}
-                                alt={criminal.name}
-                                className="w-full h-full object-cover rounded-sm"
-                                style={{
-                                  filter: 'sepia(20%) contrast(105%) brightness(100%) hue-rotate(5deg) saturate(90%)'
-                                }}
-                              />
-                              
-                              {/* Subtle modern overlay */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-100/10 to-transparent rounded-sm" />
-                              
-                              {/* Mustache */}
-                              <Mustache 
-                                style={criminal.mustacheStyle} 
-                                className="bottom-4 left-1/2 -translate-x-1/2 opacity-80" 
-                              />
-                            </div>
-
-                            {/* Details */}
-                            <div className="text-left space-y-2" style={{ fontFamily: 'serif' }}>
-                              <div className="font-black text-lg text-black">{criminal.name}</div>
-                              <div className="font-bold text-red-600 text-base">BOUNTY: {criminal.bounty}</div>
-                              <div className="text-sm text-gray-800 leading-relaxed bg-gray-50/50 p-3 border-l-2 border-black">
-                                {criminal.description}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                {/* kept but hidden so no line removed */}
+                <div
+                  className="ss-photo-overlay absolute bottom-0 left-0 right-0 p-6 md:p-8"
+                  style={{ transform: 'translateY(10px)', transition: 'transform 0.5s ease', zIndex: 2, opacity: 0 }}
+                >
+                    {f.role}
+                  <div
+                    style={{
+                      fontSize: 'clamp(1.6rem, 2vw, 2rem)',
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {f.name.split(' ')[0]}<br />{f.name.split(' ')[1]}
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Black frame shadow */}
-            <div className="absolute -inset-4 bg-black/30 rounded-2xl -z-10 blur-xl" />
-          </div>
-        </div>
 
+              <div
+                className="ss-bio p-6 md:p-7 text-center transition-all duration-500"
+                style={{ background: '#050402', border: '0.5px solid #1e1a13', borderTop: 'none' }}
+              >
+
+                <span
+                  className="inline-block mb-3"
+                  style={{
+                    fontSize: '1rem',
+                    letterSpacing: '0.1em',
+                    color: 'white',
+                    padding: '5px 12px',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {f.role}
+                </span>
+
+                <div
+                  style={{
+                    fontSize: 'clamp(1.5rem, 2vw, 1.8rem)',
+                    fontWeight: 700,
+                    color: '#ffffff',
+                    lineHeight: 1.1,
+                    marginBottom: '12px'
+                  }}
+                >
+                  {f.name}
+                </div>
+
+                <p
+                  className="leading-relaxed"
+                  style={{
+                    fontSize: 'clamp(0.95rem, 1.1vw, 1.05rem)',
+                    fontWeight: 300,
+                    color: '#a0a0a0',
+                    fontStyle: 'italic',
+                    letterSpacing: '0.01em'
+                  }}
+                >
+                  {f.description}
+                </p>
+
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

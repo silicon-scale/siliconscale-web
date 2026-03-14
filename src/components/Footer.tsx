@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="footer-root">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=OPEN+Sans:wght@300;400;500&display=swap');
 
         .footer-root {
           position: relative;
