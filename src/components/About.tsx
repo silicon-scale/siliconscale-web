@@ -4,369 +4,275 @@ import { useEffect, useState } from 'react'
 import storyboardImage from '@/assets/storyboard-image.avif'
 
 export function About() {
+
   const [activeFrame, setActiveFrame] = useState(-1)
   const [animationStarted, setAnimationStarted] = useState(false)
 
   const processSteps = [
     {
       number: "01",
-      title: "Concept & Script",
-      description: "Scene‑by‑scene draft with dialogues and time‑codes",
+      title: "Strategy & Discovery",
+      description:
+        "Deep product research, positioning, and market intelligence to craft the digital blueprint for scalable success.",
       color: "accent-blue"
     },
     {
-      number: "02", 
-      title: "Look & Storyboard",
-      description: "AI engine selection and visual testing",
+      number: "02",
+      title: "Experience Design",
+      description:
+        "Our designers craft cinematic interfaces and elegant systems that transform complex ideas into intuitive digital experiences.",
       color: "accent-emerald"
     },
     {
       number: "03",
-      title: "AI Production",
-      description: "Motion tests and multi-variant generation",
+      title: "Engineering Systems",
+      description:
+        "Modern architectures, high-performance code, and scalable infrastructure built for long-term growth.",
       color: "accent-purple"
     },
     {
       number: "04",
-      title: "Post‑production",
-      description: "VFX, color grading, and audio mixing",
+      title: "Launch & Optimization",
+      description:
+        "Production-grade deployments followed by continuous optimization for speed, reliability, and engagement.",
       color: "accent-blue"
     },
     {
       number: "05",
-      title: "Master Delivery",
-      description: "Multi-format export and secure transfer",
+      title: "Scale & Evolution",
+      description:
+        "We partner with ambitious companies to evolve products, unlock new markets, and scale globally.",
       color: "accent-purple"
     }
   ]
 
   useEffect(() => {
-    // Start film animation after a 3 second pause
+
     setTimeout(() => {
+
       setAnimationStarted(true)
+
       processSteps.forEach((_, index) => {
+
         setTimeout(() => {
           setActiveFrame(index)
-         
-        }, index * 2000 + 1000) // Ultra slow: Start after 24s, then every 72s
+        }, index * 2000 + 1000)
+
       })
-    }, 3000) // 3 second pause after section loads
+
+    }, 3000)
+
   }, [])
 
   return (
-    <section id="about" className="relative py-20 bg-black overflow-hidden">
 
-      {/* Cinematic Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background" />
-      
-      {/* Film Grain Effect */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-        <div className="w-full h-full" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.8) 1px, transparent 0)`,
-          backgroundSize: '3px 3px',
-          animation: 'filmGrain 8s infinite'
-        }} />
+    <section id="about" className="relative py-28 bg-black overflow-hidden">
+
+      {/* Ambient Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-neutral-950 to-black" />
+
+      {/* Soft Lighting Glow */}
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
+        <div
+          className="absolute w-[900px] h-[900px] rounded-full blur-[160px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(59,130,246,0.18), transparent 60%)",
+            top: "-200px",
+            left: "-200px"
+          }}
+        />
+        <div
+          className="absolute w-[900px] h-[900px] rounded-full blur-[160px]"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(124,58,237,0.18), transparent 60%)",
+            bottom: "-200px",
+            right: "-200px"
+          }}
+        />
+      </div>
+
+      {/* Film Grain */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)",
+            backgroundSize: "3px 3px"
+          }}
+        />
       </div>
 
       <div className="container mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-        
+
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="w-3 h-3 bg-accent-emerald rounded-full animate-pulse" />
-            <span className="text-sm font-semibold text-muted-foreground">
-              Behind the Scenes
-            </span>
-            <div className="w-3 h-3 bg-accent-blue rounded-full animate-pulse" />
-          </div>
-          
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6 text-foreground">
-            How We Create Magic
+
+        <div className="text-center mb-24">
+
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight my-8 text-white">
+            Building the Future of Digital Products
           </h2>
-          
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-            Watch our process unfold frame by frame
+
+          <p className="text-xl text-neutral-400 leading-relaxed max-w-3xl mx-auto">
+            SiliconScale is a creative technology studio where strategy, design,
+            and engineering converge to build world-class digital experiences.
+            From startups to global brands, we create platforms designed to
+            perform, scale, and inspire.
           </p>
+
         </div>
 
-        {/* Film Strip Container */}
+        {/* Film Strip */}
+
         <div className="relative max-w-7xl mx-auto">
-          
-          {/* Film Strip Background */}
-          <div className="relative bg-gradient-to-r from-gray-950 via-gray-900 to-gray-950 rounded-xl overflow-hidden"
-               style={{ boxShadow: '0 25px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05)' }}>
-            
-            {/* Film Perforations - Top - Now animated */}
+
+          <div className="relative bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 rounded-xl overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.7)]">
+
+            {/* Film Perforations Top */}
+
             <div className="absolute top-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
-              <div className={`flex items-center justify-between px-12 h-full ${
-                animationStarted ? 'perforations-scroll-animation' : ''
-              }`} style={{ width: '200%' }}>
-                {/* First set of perforations */}
+
+              <div
+                className={`flex items-center justify-between px-12 h-full ${
+                  animationStarted ? "perforations-scroll-animation" : ""
+                }`}
+                style={{ width: "200%" }}
+              >
+
                 {[...Array(20)].map((_, i) => (
-                  <div key={`top-${i}`} className="w-4 h-3 bg-gray-800 rounded-sm border border-gray-700 flex-shrink-0" 
-                       style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.8)' }} />
+                  <div
+                    key={`top-${i}`}
+                    className="w-4 h-3 bg-neutral-800 rounded-sm border border-neutral-700 flex-shrink-0"
+                  />
                 ))}
-                {/* Duplicate set for seamless loop */}
+
                 {[...Array(20)].map((_, i) => (
-                  <div key={`top-dup-${i}`} className="w-4 h-3 bg-gray-800 rounded-sm border border-gray-700 flex-shrink-0" 
-                       style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.8)' }} />
+                  <div
+                    key={`top-dup-${i}`}
+                    className="w-4 h-3 bg-neutral-800 rounded-sm border border-neutral-700 flex-shrink-0"
+                  />
                 ))}
+
               </div>
-            </div>
-            
-            {/* Film Perforations - Bottom - Now animated */}
-            <div className="absolute bottom-0 left-0 right-0 h-6 bg-black z-20 overflow-hidden">
-              <div className={`flex items-center justify-between px-12 h-full ${
-                animationStarted ? 'perforations-scroll-animation' : ''
-              }`} style={{ width: '200%' }}>
-                {/* First set of perforations */}
-                {[...Array(20)].map((_, i) => (
-                  <div key={`bottom-${i}`} className="w-4 h-3 bg-gray-800 rounded-sm border border-gray-700 flex-shrink-0"
-                       style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.8)' }} />
-                ))}
-                {/* Duplicate set for seamless loop */}
-                {[...Array(20)].map((_, i) => (
-                  <div key={`bottom-dup-${i}`} className="w-4 h-3 bg-gray-800 rounded-sm border border-gray-700 flex-shrink-0"
-                       style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.8)' }} />
-                ))}
-              </div>
+
             </div>
 
-            {/* Film Frames Container - Scrolling Animation */}
+            {/* Frames */}
+
             <div className="relative py-6 px-8 overflow-hidden h-64 max-w-full">
-              <div className={`flex transition-transform duration-1000 ease-in-out ${
-                animationStarted ? 'film-scroll-animation' : ''
-              }`} style={{ width: 'max-content', gap: '32px' }}>
-                
-                {/* Original sequence for seamless loop */}
-                {/* Start frame */}
-                <div className="flex-shrink-0 w-80 h-52 bg-gray-800 rounded-lg border-2 border-gray-700 opacity-60 flex items-center justify-center" 
-                     style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)' }}>
-                  <div className="text-gray-400 font-mono tracking-wider">● START</div>
-                </div>
-                
-                {/* Process Step Frames */}
+
+              <div
+                className={`flex transition-transform duration-1000 ease-in-out ${
+                  animationStarted ? "film-scroll-animation" : ""
+                }`}
+                style={{ width: "max-content", gap: "32px" }}
+              >
+
                 {processSteps.map((step, index) => (
+
                   <div
                     key={step.number}
-                    className={`flex-shrink-0 w-80 h-52 bg-background rounded-lg border-4 ${
-                      activeFrame >= index 
-                        ? `border-${step.color}` 
-                        : 'border-gray-600'
+                    className={`flex-shrink-0 w-80 h-52 bg-black/80 backdrop-blur-md rounded-lg border-4 ${
+                      activeFrame >= index
+                        ? `border-${step.color}`
+                        : "border-neutral-700"
                     }`}
-                    style={{
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)'
-                    }}
                   >
-                    
-                    {/* Frame Content */}
+
                     <div className="relative h-full p-6 flex flex-col justify-between">
-                      
-                      {/* Frame Number Badge */}
-                      <div className="absolute -top-4 -left-4 w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center font-black z-10 border-3 border-white text-lg"
-                           style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.4)' }}>
+
+                      <div className="absolute -top-4 -left-4 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center font-black border-2 text-lg">
                         {step.number}
                       </div>
-                      
-                      {/* Content */}
-                      <div className="opacity-100">
-                        
-                        {/* Step Title */}
-                        <h3 className="font-black text-xl leading-tight mb-4 text-foreground">
+
+                      <div>
+
+                        <h3 className="font-black text-xl mb-4 text-white">
                           {step.title}
                         </h3>
-                        
-                        {/* Step Description */}
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+
+                        <p className="text-sm text-neutral-400 leading-relaxed">
                           {step.description}
                         </p>
+
                       </div>
-                      
-                      {/* Film frame edge lines */}
-                      <div className="absolute left-1 top-1 bottom-1 w-px bg-gray-300/20" />
-                      <div className="absolute right-1 top-1 bottom-1 w-px bg-gray-300/20" />
-                      <div className="absolute top-1 left-1 right-1 h-px bg-gray-300/20" />
-                      <div className="absolute bottom-1 left-1 right-1 h-px bg-gray-300/20" />
+
                     </div>
+
                   </div>
+
                 ))}
-                
-                {/* End frame */}
-                <div className="flex-shrink-0 w-80 h-52 bg-gray-800 rounded-lg border-2 border-gray-700 opacity-60 flex items-center justify-center"
-                     style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)' }}>
-                  <div className="text-gray-400 font-mono tracking-wider">● END</div>
-                </div>
-                
-                {/* Duplicate set for seamless loop */}
-                {/* Start frame duplicate */}
-                <div className="flex-shrink-0 w-80 h-52 bg-gray-800 rounded-lg border-2 border-gray-700 opacity-60 flex items-center justify-center" 
-                     style={{ boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.4)' }}>
-                  <div className="text-gray-400 font-mono tracking-wider">● START</div>
-                </div>
-                
-                {/* Process Step Frames duplicate */}
-                {processSteps.map((step, index) => (
-                  <div
-                    key={`duplicate-${step.number}`}
-                    className={`flex-shrink-0 w-80 h-52 bg-background rounded-lg border-4 ${
-                      activeFrame >= index 
-                        ? `border-${step.color}` 
-                        : 'border-gray-600'
-                    }`}
-                    style={{
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)'
-                    }}
-                  >
-                    
-                    {/* Frame Content */}
-                    <div className="relative h-full p-6 flex flex-col justify-between">
-                      
-                      {/* Frame Number Badge */}
-                      <div className="absolute -top-4 -left-4 w-12 h-12 bg-foreground text-background rounded-full flex items-center justify-center font-black z-10 border-3 border-white text-lg"
-                           style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.4)' }}>
-                        {step.number}
-                      </div>
-                      
-                      {/* Content */}
-                      <div className="opacity-100">
-                        
-                        {/* Step Title */}
-                        <h3 className="font-black text-xl leading-tight mb-4 text-foreground">
-                          {step.title}
-                        </h3>
-                        
-                        {/* Step Description */}
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {step.description}
-                        </p>
-                      </div>
-                      
-                      {/* Film frame edge lines */}
-                      <div className="absolute left-1 top-1 bottom-1 w-px bg-gray-300/20" />
-                      <div className="absolute right-1 top-1 bottom-1 w-px bg-gray-300/20" />
-                      <div className="absolute top-1 left-1 right-1 h-px bg-gray-300/20" />
-                      <div className="absolute bottom-1 left-1 right-1 h-px bg-gray-300/20" />
-                    </div>
-                  </div>
-                ))}
+
               </div>
+
             </div>
+
           </div>
-          
-          {/* Enhanced Projector Light Effect */}
-          {activeFrame >= 0 && (
-            <div className="absolute inset-0 pointer-events-none">
-              <div 
-                className="absolute top-1/2 left-1/2 w-48 h-48 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-10"
-                style={{
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,0,0.2) 40%, transparent 60%)',
-                  animation: 'projectorLight 12s ease-in-out infinite'
-                }}
-              />
-            </div>
-          )}
+
         </div>
 
-        {/* Film Controls */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-6 bg-card/80 backdrop-blur-sm clean-border rounded-2xl px-8 py-4 subtle-shadow">
-            
-            {/* Film Speed Indicator */}
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-accent-emerald rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-foreground">24 FPS</span>
-            </div>
-            
-            <div className="w-px h-6 bg-border" />
-            
-            {/* Duration */}
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-accent-blue rounded-full animate-pulse" style={{animationDelay: '0.5s'}} />
-              <span className="text-sm font-semibold text-foreground">5-7 Days</span>
-            </div>
-            
-            <div className="w-px h-6 bg-border" />
-            
-            {/* Quality */}
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-accent-purple rounded-full animate-pulse" style={{animationDelay: '1s'}} />
-              <span className="text-sm font-semibold text-foreground">Cinema Quality</span>
-            </div>
-          </div>
-        </div>
+        {/* Premium SiliconScale Section */}
 
-        {/* AI Generated Content Gallery */}
-        <div className="mt-20">
-          <div className="text-center mb-8">
-            <p className="text-muted-foreground">
-              A glimpse into our storyboard development process
-            </p>
-          </div>
-          
-          {/* Gallery Image */}
-          <div className="relative max-w-6xl mx-auto">
-            <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-4 overflow-hidden">
-              
-              {/* Film grain overlay for authenticity */}
-              <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                   style={{
-                     backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0)`,
-                     backgroundSize: '4px 4px'
-                   }} />
-              
-              {/* Main gallery image */}
-              <img 
-                src={storyboardImage}
-                alt="Collection of AI-generated video content thumbnails showcasing MOJJU's diverse output"
-                className="w-full h-auto rounded-xl"
-                style={{
-                  filter: 'contrast(1.05) saturate(1.1) brightness(0.95)'
-                }}
-              />
-              
-              {/* Subtle overlay gradient for depth */}
-              <div className="absolute inset-4 rounded-xl pointer-events-none"
-                   style={{
-                     background: 'linear-gradient(135deg, rgba(37,99,235,0.03) 0%, transparent 20%, transparent 80%, rgba(124,58,237,0.03) 100%)'
-                   }} />
-            </div>
-            
-            {/* Caption */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground italic">
-                "Diverse scenarios, characters, and styles — all generated through our AI pipeline"
+        <div className="mt-32 text-center">
+
+          <h3 className="text-4xl font-black mb-8 text-white">
+            Why Companies Choose SiliconScale
+          </h3>
+
+          <p className="text-xl text-neutral-400 leading-relaxed max-w-4xl mx-auto mb-16">
+            We combine strategic thinking, cinematic design, and modern
+            engineering to create digital products that define industries.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 max-w-6xl mx-auto">
+
+            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
+              <h4 className="text-xl font-bold mb-3 text-white">
+                Product Strategy
+              </h4>
+              <p className="text-neutral-400">
+                Transforming complex ideas into clear, scalable product
+                strategies.
               </p>
             </div>
+
+            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
+              <h4 className="text-xl font-bold mb-3 text-white">
+                Experience Design
+              </h4>
+              <p className="text-neutral-400">
+                Beautiful interfaces and immersive user experiences.
+              </p>
+            </div>
+
+            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
+              <h4 className="text-xl font-bold mb-3 text-white">
+                Engineering Excellence
+              </h4>
+              <p className="text-neutral-400">
+                High-performance architectures designed for scale.
+              </p>
+            </div>
+
+            <div className="bg-neutral-900/70 backdrop-blur-md border border-neutral-800 rounded-xl p-8">
+              <h4 className="text-xl font-bold mb-3 text-white">
+                Global Impact
+              </h4>
+              <p className="text-neutral-400">
+                Launching platforms used by audiences worldwide.
+              </p>
+            </div>
+
           </div>
+
         </div>
+
       </div>
-      
-      {/* Premium SiliconScale Info */}
-      <div className="mt-20 text-center">
-        <h3 className="text-4xl font-black mb-8 text-white">SiliconScale Premium Services</h3>
-        <p className="text-xl text-gray-300 leading-relaxed max-w-5xl mx-auto mb-12">
-          Experience the future of video production with SiliconScale's cutting-edge AI technology. Our premium services deliver cinematic masterpieces that captivate global audiences and drive unparalleled engagement.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
-            <h4 className="font-bold text-2xl mb-3 text-white">AI-Powered</h4>
-            <p className="text-gray-400">Advanced artificial intelligence for unparalleled creativity</p>
-          </div>
-          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
-            <h4 className="font-bold text-2xl mb-3 text-white">Cinema Quality</h4>
-            <p className="text-gray-400">Hollywood-grade production standards</p>
-          </div>
-          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
-            <h4 className="font-bold text-2xl mb-3 text-white">Global Reach</h4>
-            <p className="text-gray-400">Serving clients worldwide with localized content</p>
-          </div>
-          <div className="text-center bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700">
-            <h4 className="font-bold text-2xl mb-3 text-white">24/7 Support</h4>
-            <p className="text-gray-400">Round-the-clock premium customer service</p>
-          </div>
-        </div>
-      </div>
-      
+
     </section>
+
   )
+
 }

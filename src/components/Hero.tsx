@@ -52,7 +52,7 @@ export function Hero() {
       </video>
 
       {/* Sound Toggle */}
-      <div className="absolute top-6 right-6 z-40">
+      <div className="absolute bottom-6 right-6 z-40">
         <button
           onClick={() => setIsMuted(!isMuted)}
           className="glass-effect p-3 rounded-full text-white hover:bg-white/20"
