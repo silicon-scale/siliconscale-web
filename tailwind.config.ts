@@ -18,6 +18,7 @@ export default {
     },
     extend: {
       fontFamily: {
+        sans: ['Open Sans', 'sans-serif'],
         bagel: ['Bagel Fat One', 'cursive'],
       },
       colors: {
