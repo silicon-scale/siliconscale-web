@@ -194,8 +194,10 @@ export function Footer() {
         .footer-connect .footer-socials {
           flex-direction: row;
           align-items: center;
-          gap: 1rem;
+          justify-content: flex-start;
+          gap: 0rem;
           margin-top: 0;
+          margin-left: -1.25rem;
         }
         .footer-connect .footer-social-link {
           width: 72px;
