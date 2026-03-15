@@ -360,13 +360,13 @@ export function Footer() {
           <path
             className="wave-layer-1"
             d="M0,55 C200,30 400,80 600,55 C800,30 1000,80 1200,55 L1200,120 L0,120 Z"
-            fill="rgba(255,255,255,0.025)"
+            fill="rgba(0,0,0,0.025)"
           />
           {/* Layer 2: Mid transparency wave */}
           <path
             className="wave-layer-2"
             d="M0,65 C200,90 400,40 600,65 C800,90 1000,40 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(255,255,255,0.04)"
+            fill="rgba(0,0,0,0.04)"
           />
           {/* Layer 3: Solid black edge */}
           <path
@@ -378,31 +378,31 @@ export function Footer() {
           <path
             className="wave-layer-4"
             d="M0,65 C200,110 400,10 600,65 C800,110 1000,10 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(201,169,110,0.02)"
+            fill="rgba(0,0,0,0.02)"
           />
           {/* Layer 5: Deep flowing wave */}
           <path
             className="wave-layer-5"
             d="M0,55 C200,130 400,-10 600,55 C800,130 1000,-10 1200,55 L1200,120 L0,120 Z"
-            fill="rgba(201,169,110,0.015)"
+            fill="rgba(0,0,0,0.015)"
           />
           {/* Layer 6: Extra deep wave */}
           <path
             className="wave-layer-6"
             d="M0,65 C200,150 400,-30 600,65 C800,150 1000,-30 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(201,169,110,0.01)"
+            fill="rgba(0,0,0,0.01)"
           />
           {/* Layer 7: Intense wave */}
           <path
             className="wave-layer-7"
             d="M0,78 C200,165 400,-45 600,78 C800,165 1000,-45 1200,78 L1200,120 L0,120 Z"
-            fill="rgba(201,169,110,0.0075)"
+            fill="rgba(0,0,0,0.0075)"
           />
           {/* Layer 8: Extreme wave */}
           <path
             className="wave-layer-8"
             d="M0,90 C200,180 400,-60 600,90 C800,180 1000,-60 1200,90 L1200,120 L0,120 Z"
-            fill="rgba(201,169,110,0.005)"
+            fill="rgba(0,0,0,0.005)"
           />
         </svg>
       </div>
