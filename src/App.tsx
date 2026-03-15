@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { AnimatePresence, motion } from "framer-motion"
 
 import { Navbar } from "./components/Navbar"
 import { Hero } from "./components/Hero"
@@ -20,36 +21,49 @@ function Home() {
   )
 }
 
+function AppContent() {
+  const location = useLocation()
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+
+      <Navbar />
+
+      <main className="relative" role="main">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{
+              duration: 0.4,
+              ease: "easeInOut",
+            }}
+            className="min-h-screen"
+          >
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/work" element={<Work />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/contact" element={<Contact />} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      <Footer />
+
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground">
-
-        <Navbar />
-
-        <main className="relative" role="main">
-
-          <Routes>
-
-            <Route path="/" element={<Home />} />
-
-            <Route path="/about" element={<About />} />
-
-            <Route path="/work" element={<Work />} />
-
-            <Route path="/portfolio" element={<Portfolio />} />
-
-            <Route path="/team" element={<Team />} />
-
-            <Route path="/contact" element={<Contact />} />
-
-          </Routes>
-
-        </main>
-
-        <Footer />
-
-      </div>
+      <AppContent />
     </Router>
   )
 }
