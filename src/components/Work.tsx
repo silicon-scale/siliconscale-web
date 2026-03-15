@@ -1,5 +1,10 @@
 'use client'
 
+import ddenImage from '../assets/Project-Images/dden.png'
+import mnrdcImage from '../assets/Project-Images/mnrdc.png'
+import rdcImage from '../assets/Project-Images/rdc.png'
+import axelsImage from '../assets/Project-Images/axels.png'
+
 import { useState, useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
 
@@ -16,7 +21,7 @@ export function Work() {
       description: "A comprehensive digital platform for educational excellence and innovation.",
       color: 'accent-emerald',
       rotation: 'rotate-2',
-      image: '/src/assets/Project-Images/dden.png',
+      image: ddenImage,
       link: 'https://www.dden.in/',
       tag: 'Education',
       year: '2024',
@@ -27,7 +32,7 @@ export function Work() {
       description: "Advanced micro and nano technology application platform for research and development.",
       color: 'accent-blue',
       rotation: '-rotate-1',
-      image: '/src/assets/Project-Images/mnrdc.png',
+      image: mnrdcImage,
       link: 'https://app.micronano.paruluniversity.ac.in/',
       tag: 'Research',
       year: '2024',
@@ -38,7 +43,7 @@ export function Work() {
       description: "Research and Development Center fostering innovation and technological advancement.",
       color: 'accent-purple',
       rotation: 'rotate-1',
-      image: '/src/assets/Project-Images/rdc.png',
+      image: rdcImage,
       link: 'https://rdc.paruluniversity.ac.in/',
       tag: 'Innovation',
       year: '2023',
@@ -49,7 +54,7 @@ export function Work() {
       description: "Next-generation platform for accelerated learning and skill enhancement.",
       color: 'accent-red',
       rotation: '-rotate-2',
-      image: '/src/assets/Project-Images/axels.png',
+      image: axelsImage,
       link: 'https://axels-beta.vercel.app/',
       tag: 'EdTech',
       year: '2024',
