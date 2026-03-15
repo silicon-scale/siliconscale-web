@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { Hero } from "./components/Hero"
@@ -25,6 +25,15 @@ function Home() {
 
 function AppContent() {
   const location = useLocation()
+  const [showIntro, setShowIntro] = useState(false)
+
+  useEffect(() => {
+    setShowIntro(true)
+  }, [location.pathname])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
