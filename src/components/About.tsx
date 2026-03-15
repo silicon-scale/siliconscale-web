@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /* ─── Data ───────────────────────────────────────────────── */
 const PRINCIPLES = [
@@ -26,7 +26,7 @@ const PRINCIPLES = [
 		icon: (
 			<svg
 				width="28"
-				height="28"
+			height="28"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
@@ -44,7 +44,7 @@ const PRINCIPLES = [
 		icon: (
 			<svg
 				width="28"
-				height="28"
+			height="28"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
@@ -60,7 +60,7 @@ const PRINCIPLES = [
 ];
 
 /* ─── useInView ──────────────────────────────────────────── */
-function useInView<T extends HTMLElement = HTMLElement>(threshold = 0.12) {
+function useInView<T extends HTMLElement>(threshold = 0.12) {
 	const ref = useRef<T>(null);
 	const [visible, setVisible] = useState(false);
 	useEffect(() => {
@@ -169,10 +169,10 @@ function SectionLabel({ text }: { text: string }) {
 
 /* ─── Page ───────────────────────────────────────────────── */
 export default function AboutPage() {
-	const missionRef = useInView<HTMLElement>(0.05);
-	const statsRef = useInView<HTMLElement>(0.1);
-	const principlesRef = useInView<HTMLElement>(0.1);
-	const ctaRef = useInView<HTMLElement>(0.1);
+	const missionRef = useInView<HTMLSectionElement>(0.05);
+	const statsRef = useInView<HTMLDivElement>(0.1);
+	const principlesRef = useInView<HTMLSectionElement>(0.1);
+	const ctaRef = useInView<HTMLSectionElement>(0.1);
 
 	return (
 		<div
@@ -334,7 +334,7 @@ export default function AboutPage() {
 			</section>
 
 			{/* ════ STATS ════ */}
-			<div ref={statsRef.ref} style={{ padding: "0 56px" }}>
+			<div ref={statsRef.ref as any} style={{ padding: "0 56px" }}>
 				<div className="stat-row">
 					{[
 						{ n: "6+", l: "Projects Delivered" },

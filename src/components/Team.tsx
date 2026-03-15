@@ -5,7 +5,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback'
 import maniPhoto from '../assets/jhaneswar.png'
 import pavanPhoto from '../assets/Pavan.png'
 
-export function Team() {
+export default function Team() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -26,7 +26,7 @@ export function Team() {
 
     function init() {
       if (!canvas) return
-      dots = Array.from({ length: 80 }, () => ({
+      dots = Array.from({ length: 40 }, () => ({
         x: Math.random() * canvas!.width,
         y: Math.random() * canvas!.height,
         r: Math.random() * 0.8 + 0.2,

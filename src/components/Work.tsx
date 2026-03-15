@@ -8,7 +8,7 @@ import axelsImage from '../assets/Project-Images/axels.png'
 import { useState, useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
 
-export function Work() {
+export default function Work() {
   const [isVisible, setIsVisible] = useState(false)
   const [hoveredPhoto, setHoveredPhoto] = useState<string | null>(null)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })

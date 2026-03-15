@@ -1,15 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
+import { lazy, Suspense } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { Hero } from "./components/Hero"
 import { Portfolio } from "./components/Portfolio"
 import { Awards } from "./components/Awards"
-import About from "./components/About"
-import { Work } from "./components/Work.tsx"
-import { Team } from "./components/Team"
-import { Contact } from "./components/Contact"
 import { Footer } from "./components/Footer"
+
+const About = lazy(() => import("./components/About"))
+const Work = lazy(() => import("./components/Work"))
+const Team = lazy(() => import("./components/Team"))
+const Contact = lazy(() => import("./components/Contact"))
 
 function Home() {
   return (
@@ -44,11 +46,27 @@ function AppContent() {
           >
             <Routes location={location}>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/work" element={<Work />} />
+              <Route path="/about" element={
+                <Suspense fallback={null}>
+                  <About />
+                </Suspense>
+              } />
+              <Route path="/work" element={
+                <Suspense fallback={null}>
+                  <Work />
+                </Suspense>
+              } />
               <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="/team" element={
+                <Suspense fallback={null}>
+                  <Team />
+                </Suspense>
+              } />
+              <Route path="/contact" element={
+                <Suspense fallback={null}>
+                  <Contact />
+                </Suspense>
+              } />
             </Routes>
           </motion.div>
         </AnimatePresence>

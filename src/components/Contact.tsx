@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 
-export function Contact() {
+export default function Contact() {
 
   useEffect(() => {
     const script = document.createElement('script')
