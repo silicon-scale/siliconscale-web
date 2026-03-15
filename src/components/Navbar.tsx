@@ -35,7 +35,7 @@ export function Navbar() {
         <div
           className={`transition-all duration-500 ${
             isScrolled
-              ? "bg-black/40 backdrop-blur-2xl shadow-2xl border-b border-white/10"
+              ? "bg-black/60 backdrop-blur-2xl shadow-2xl border-b border-white/10"
               : "bg-transparent"
           }`}
         >

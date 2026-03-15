@@ -68,7 +68,7 @@ export function Team() {
     {
       name: 'Mani Jhaneswar',
       initials: 'MJ',
-      role: 'Founder',
+      role: 'Co-Founder',
       description:
         '"Leads SiliconScale\'s creative vision and digital product design. Crafting cinematic user experiences and scalable brand systems for tomorrow\'s companies."',
       tags: ['Creative Direction', 'UX Systems', 'Brand', 'Motion'],
@@ -77,7 +77,7 @@ export function Team() {
     {
       name: 'Pavan Sohith',
       initials: 'PS',
-      role: 'Founder',
+      role: 'Co-Founder',
       description:
         '"Architect of SiliconScale\'s technical backbone. Specializes in scalable platforms, high-performance systems, and future-ready digital infrastructure."',
       tags: ['Architecture', 'Systems', 'Platforms', 'AI'],
@@ -86,6 +86,7 @@ export function Team() {
   ]
 
   return (
+
     <section className="relative bg-black text-white overflow-hidden min-h-screen">
 
       <canvas
