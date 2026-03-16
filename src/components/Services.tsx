@@ -61,7 +61,7 @@ export function Services() {
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+          100% { transform: translateX(-25%); }
         }
         @keyframes reveal-up {
           from { opacity: 0; transform: translateY(32px); }
@@ -148,12 +148,11 @@ export function Services() {
           margin-bottom: 4px;
         }
         .marquee-track {
-          animation: marquee 18s linear infinite;
-          display: flex;
+          animation: marquee 28s linear infinite;
+          display: inline-flex;
           gap: 0;
           white-space: nowrap;
         }
-        .marquee-track:hover { animation-play-state: paused; }
         .stat-card {
           position: relative;
           padding: 28px 32px;
@@ -224,10 +223,10 @@ export function Services() {
         <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', borderTop: '1px solid rgba(255,255,255,0.07)',
                       padding: '14px 0', overflow: 'hidden', marginBottom: '5rem' }}>
           <div className="marquee-track">
-            {[...Array(2)].map((_, i) => (
-              <span key={i} style={{ display: 'inline-flex', gap: '0', alignItems: 'center' }}>
+            {[...Array(4)].map((_, i) => (
+              <span key={i} style={{ display: 'inline-flex', gap: 0, alignItems: 'center' }}>
                 {['WEB DESIGN', 'BRANDING', 'UI/UX', 'STRATEGY', 'E-COMMERCE', 'AI INTEGRATION'].map((s, j) => (
-                  <span key={j} style={{ display: 'inline-flex', alignItems: 'center', gap: '28px', padding: '0 28px' }}>
+                  <span key={`${i}-${j}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '28px', padding: '0 28px' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)' }}>{s}</span>
                     <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'inline-block', flexShrink: 0 }} />
                   </span>

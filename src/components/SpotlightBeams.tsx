@@ -58,7 +58,7 @@ const DUST_SPECKS: Speck[] = (() => {
   const specks: Speck[] = []
   // Left beam specks - spread throughout the cone shape
   // At y=0, beam is narrow around x=420. At y=650, beam is wide around x=670-930
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 70; i++) {
     const v1 = pseudoVal(i * 7 + 1)
     const v2 = pseudoVal(i * 13 + 3)
     const v3 = pseudoVal(i * 19 + 7)
@@ -78,7 +78,7 @@ const DUST_SPECKS: Speck[] = (() => {
       x: xPos,
       y: yPos,
       // Smaller specks for a fine dust feel
-      r: 0.5 + v3 * 0.5, // 0.5–1.0
+      r: 0.45 + v3 * 0.45, // 0.45–0.9
       dx: (v4 - 0.5) * 24,
       dy: -16 - v5 * 48,
       duration: 7 + v6 * 9,
@@ -89,7 +89,7 @@ const DUST_SPECKS: Speck[] = (() => {
   }
 
   // Right beam specks
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 70; i++) {
     const v1 = pseudoVal(i * 11 + 41)
     const v2 = pseudoVal(i * 17 + 43)
     const v3 = pseudoVal(i * 23 + 47)
@@ -106,7 +106,7 @@ const DUST_SPECKS: Speck[] = (() => {
     specks.push({
       x: xPos,
       y: yPos,
-      r: 0.5 + v3 * 0.5,
+      r: 0.45 + v3 * 0.45,
       dx: (v4 - 0.5) * 24,
       dy: -16 - v5 * 48,
       duration: 7 + v6 * 9,
@@ -178,44 +178,44 @@ function SpotlightBeamsComponent() {
         <stop offset="100%" stopColor="white" stopOpacity="0" />
       </linearGradient>
       {/* Tiny subtle glow — just enough to not be a hard dot */}
-      <filter id="dustTinyGlow" x="-300%" y="-300%" width="700%" height="700%">
+      <filter id="dustTinyGlow" x="-250%" y="-250%" width="600%" height="600%">
         <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="glow" />
         <feMerge>
           <feMergeNode in="glow" />
           <feMergeNode in="SourceGraphic" />
         </feMerge>
       </filter>
-      <clipPath id="beamClip">
-        <polygon points={leftPoints} />
-        <polygon points={rightPoints} />
-      </clipPath>
     </defs>
   )
 
   // Each speck: tiny dot that drifts gently back and forth, fading in/out like
   // real dust catching and losing the light as it tumbles
-  const particles = !prefersReducedMotion && DUST_SPECKS.map((s, i) => (
-    <motion.circle
-      key={i}
-      cx={s.x}
-      cy={s.y}
-      r={s.r}
-      fill="hsl(42, 100%, 75%)"
-      filter="url(#dustTinyGlow)"
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: [0, s.brightness * 0.45, s.brightness, s.brightness * 0.55, 0],
-        cx: [s.x, s.x + s.dx * 0.3, s.x + s.dx * 0.75, s.x + s.dx],
-        cy: [s.y, s.y + s.dy * 0.35, s.y + s.dy * 0.7, s.y + s.dy],
-      }}
-      transition={{
-        duration: s.duration,
-        repeat: Infinity,
-        delay: s.delay,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-    />
-  ))
+  const particles = !prefersReducedMotion && (
+    <>
+      {DUST_SPECKS.map((s, i) => (
+        <motion.circle
+          key={`speck-${i}`}
+          cx={s.x}
+          cy={s.y}
+          // Make these very obvious for now so we can visually confirm
+          r={1.6 + s.r} // roughly 2–2.5px
+          fill="hsl(42, 100%, 80%)"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: [0, 0.7, 1, 0.7, 0],
+            cx: [s.x, s.x + s.dx * 0.3, s.x + s.dx * 0.75, s.x + s.dx],
+            cy: [s.y, s.y + s.dy * 0.35, s.y + s.dy * 0.7, s.y + s.dy],
+          }}
+          transition={{
+            duration: s.duration,
+            repeat: Infinity,
+            delay: s.delay,
+            ease: [0.4, 0, 0.2, 1],
+          }}
+        />
+      ))}
+    </>
+  )
 
   const cls = 'pointer-events-none absolute inset-0 z-[1] w-full h-full overflow-hidden'
 
@@ -231,6 +231,7 @@ function SpotlightBeamsComponent() {
         {defs}
         <polygon points={leftPoints} fill={`url(#${BEAM_GRAD})`} />
         <polygon points={rightPoints} fill={`url(#${BEAM_GRAD})`} />
+        {particles}
       </svg>
     )
   }
@@ -254,7 +255,7 @@ function SpotlightBeamsComponent() {
       {defs}
       <polygon points={leftPoints} fill={`url(#${BEAM_GRAD})`} />
       <polygon points={rightPoints} fill={`url(#${BEAM_GRAD})`} />
-      <g clipPath="url(#beamClip)">{particles}</g>
+      {particles}
     </motion.svg>
   )
 }
