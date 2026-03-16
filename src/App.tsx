@@ -4,7 +4,6 @@ import { lazy, memo, Suspense, useEffect, useState } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
-import { Portfolio } from "./components/Portfolio"
 import { Services } from "./components/Services.tsx"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
@@ -19,7 +18,6 @@ const Home = memo(function Home() {
   return (
     <>
       <HeroSection />
-      <Portfolio />
       <Services />
     </>
   )
@@ -64,7 +62,6 @@ function AppContent() {
                   </Suspense>
                 }
               />
-              <Route path="/portfolio" element={<Portfolio />} />
               <Route
                 path="/team"
                 element={

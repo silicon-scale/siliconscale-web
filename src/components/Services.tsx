@@ -16,35 +16,30 @@ export function Services() {
       title: "Web Design & Development",
       description: "Creating stunning, responsive websites that deliver exceptional user experiences and drive business growth.",
       accent: '#E8FF47',
-      keyword: 'DESIGN',
     },
     {
       number: '02',
       title: "Branding & Identity",
       description: "Crafting unique brand identities that resonate with your audience and build lasting connections.",
       accent: '#47C2FF',
-      keyword: 'BRAND',
     },
     {
       number: '03',
       title: "UI/UX Design",
       description: "Designing intuitive interfaces and user experiences that prioritize usability and engagement.",
       accent: '#FF6B47',
-      keyword: 'INTERFACE',
     },
     {
       number: '05',
       title: "E-commerce Solutions",
       description: "Building robust e-commerce platforms that streamline sales and enhance customer satisfaction.",
       accent: '#47FFB4',
-      keyword: 'COMMERCE',
     },
     {
       number: '06',
       title: "AI Integration",
       description: "Integrating cutting-edge AI technologies to automate processes and unlock new possibilities.",
       accent: '#FF4787',
-      keyword: 'INTELLIGENCE',
     },
   ]
 
@@ -83,7 +78,7 @@ export function Services() {
         .service-row {
           position: relative;
           display: grid;
-          grid-template-columns: 72px 1fr auto;
+          grid-template-columns: 72px 1fr;
           align-items: center;
           gap: 0 32px;
           padding: 28px 0;
@@ -136,7 +131,7 @@ export function Services() {
           transform: translateX(0);
         }
         .row-desc {
-          grid-column: 2 / 4;
+          grid-column: 2 / 3;
           max-height: 0;
           overflow: hidden;
           transition: max-height 0.5s cubic-bezier(0.22,1,0.36,1), opacity 0.4s;
@@ -212,7 +207,7 @@ export function Services() {
         id="awards"
         ref={sectionRef}
         className="relative"
-        style={{ background: '#0e0e0e', overflow: 'hidden', paddingBottom: '6rem' }}
+        style={{ background: 'black', overflow: 'hidden', paddingBottom: '6rem' }}
       >
         {/* Subtle noise overlay */}
         <div className="absolute inset-0 pointer-events-none"
@@ -309,7 +304,6 @@ export function Services() {
                   className="service-row"
                   onMouseEnter={() => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
-                  onClick={() => navigate(`/services/${service.keyword.toLowerCase()}`)}
                 >
                   {/* Accent bar on left */}
                   <div style={{
@@ -328,9 +322,6 @@ export function Services() {
                     <p className="row-desc">{service.description}</p>
                   </div>
 
-                  <span className="row-keyword" style={{ color: service.accent }}>
-                    {service.keyword}
-                  </span>
                 </div>
               ))}
             </div>
