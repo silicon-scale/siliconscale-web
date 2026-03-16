@@ -46,9 +46,9 @@ const CHANNELS = [
   },
   {
     label: 'Phone / Call',
-    desc: '+91 6302908054 +91  63098 33957',
+    desc: '+91 9121199293',
     cta: 'Call Us',
-    href: 'tel:+15550000000',
+    href: 'tel:+919121199293',
     color: '#fff',
   },
 ]
