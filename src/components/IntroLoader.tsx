@@ -57,7 +57,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           alt=""
           width={120}
           height={120}
-          className="intro-pulse h-24 w-24 sm:h-28 sm:w-28 md:h-36 md:w-36"
+          className="intro-pulse h-28 w-28 sm:h-32 sm:w-32 md:h-40 md:w-40"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{
             opacity: 1,

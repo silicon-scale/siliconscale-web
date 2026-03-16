@@ -194,8 +194,33 @@ export function Services() {
           }
         }
         @media (max-width: 640px) {
-          .stat-grid {
+        .stat-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        .services-header {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 24px;
+        }
+        .services-header-cta {
+          text-align: right;
+          max-width: 320px;
+        }
+        @media (max-width: 768px) {
+          .services-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .services-header-cta {
+            align-self: flex-end;
+            text-align: right;
+            max-width: 100%;
+          }
+          .services-header-cta p {
+            text-align: left;
           }
         }
         .cta-btn {
@@ -262,7 +287,7 @@ export function Services() {
 
           {/* ── HEADER ── */}
           <div className={`reveal ${isVisible ? 'visible' : ''}`} style={{ marginBottom: '5rem' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: '24px' }}>
+            <div className="services-header">
               <div>
                 <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.3)',
                              textTransform: 'uppercase', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -278,7 +303,7 @@ export function Services() {
                   </span>
                 </h2>
               </div>
-              <div style={{ textAlign: 'right', maxWidth: '280px' }}>
+              <div className="services-header-cta">
                 <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 20px' }}>
                   Six disciplines. One studio. Infinite possibilities for your digital presence.
                 </p>

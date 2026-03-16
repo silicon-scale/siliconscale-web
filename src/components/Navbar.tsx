@@ -79,13 +79,15 @@ export function Navbar() {
             {/* Right Side */}
             <div className="flex items-center gap-4 md:gap-6">
 
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="hidden md:block border border-white/20 text-white px-6 py-2 text-xs md:px-8 md:py-3 md:text-sm rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
-              >
-                Book Call
-              </motion.button>
+              <Link to="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
+                  whileTap={{ scale: 0.95 }}
+                  className="hidden md:block border border-white/20 text-white px-6 py-2 text-xs md:px-8 md:py-3 md:text-sm rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                >
+                  Book Call
+                </motion.button>
+              </Link>
 
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -153,16 +155,18 @@ export function Navbar() {
                     ))}
                   </div>
 
-                  <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                    whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
-                    whileTap={{ scale: 0.95 }}
-                    className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
-                  >
-                    Book Call
-                  </motion.button>
+                  <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                    <motion.button
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8, duration: 0.5 }}
+                      whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
+                      whileTap={{ scale: 0.95 }}
+                      className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                    >
+                      Book Call
+                    </motion.button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
