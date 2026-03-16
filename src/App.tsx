@@ -5,7 +5,7 @@ import { lazy, Suspense, useEffect, useState } from "react"
 import { Navbar } from "./components/Navbar"
 import { Hero } from "./components/Hero"
 import { Portfolio } from "./components/Portfolio"
-import { Awards } from "./components/Awards"
+import { Services } from "./components/Services.tsx"
 import { Footer } from "./components/Footer"
 
 const About = lazy(() => import("./components/About"))
@@ -18,7 +18,7 @@ function Home() {
     <>
       <Hero />
       <Portfolio />
-      <Awards />
+      <Services />
     </>
   )
 }
