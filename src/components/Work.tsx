@@ -12,7 +12,6 @@ import { ImageWithFallback } from './figma/ImageWithFallback'
 function WorkComponent() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [animating, setAnimating] = useState(false)
   const [direction, setDirection] = useState<'left' | 'right'>('right')
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -77,17 +76,12 @@ function WorkComponent() {
   }, [])
 
   const goTo = (dir: 'left' | 'right') => {
-    if (animating) return
     setDirection(dir)
-    setAnimating(true)
-    setTimeout(() => {
-      setCurrentIndex(prev =>
-        dir === 'right'
-          ? (prev + 1) % projects.length
-          : (prev - 1 + projects.length) % projects.length
-      )
-      setAnimating(false)
-    }, 350)
+    setCurrentIndex(prev =>
+      dir === 'right'
+        ? (prev + 1) % projects.length
+        : (prev - 1 + projects.length) % projects.length
+    )
   }
 
   const project = projects[currentIndex]
@@ -110,7 +104,6 @@ function WorkComponent() {
         .slide-in-right { animation: fadeSlideRight 0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
         .slide-in-left  { animation: fadeSlideLeft  0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
         .slide-in-up    { animation: fadeSlideUp    0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
-        .fade-out       { opacity: 0; transition: opacity 0.25s ease; }
         .arrow-btn {
           width: 52px; height: 52px;
           border-radius: 50%;
@@ -215,8 +208,10 @@ function WorkComponent() {
 
               {/* LEFT: Browser mockup */}
               <div className="w-full lg:w-[75%] flex-shrink-0">
-                <div className={`browser-mockup ${animating ? 'fade-out' : (direction === 'right' ? 'slide-in-right' : 'slide-in-left')}`}
-                     key={`mockup-${currentIndex}`}>
+                <div
+                  className={`browser-mockup ${direction === 'right' ? 'slide-in-right' : 'slide-in-left'}`}
+                  key={`mockup-${currentIndex}`}
+                >
                   {/* Screenshot */}
                   <div className="relative" style={{ aspectRatio: '16/9' }}>
                     <ImageWithFallback
@@ -241,10 +236,7 @@ function WorkComponent() {
 
               {/* RIGHT: Project info */}
               <div className="w-full lg:flex-1 flex flex-col justify-between" style={{ minHeight: '380px' }}>
-                <div
-                  key={`info-${currentIndex}`}
-                  className={animating ? 'fade-out' : 'slide-in-up'}
-                >
+                <div key={`info-${currentIndex}`} className="slide-in-up">
                   {/* Tag */}
                   <span
                     className="inline-block mb-5 text-xs tracking-widest uppercase px-3 py-1 rounded-sm"
