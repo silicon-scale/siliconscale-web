@@ -56,7 +56,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          gap: 1.25rem;
+          gap: 0.8rem;
         }
         .intro-text {
           font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
