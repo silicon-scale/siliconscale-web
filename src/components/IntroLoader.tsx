@@ -40,14 +40,25 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
       aria-label="Loading"
       role="presentation"
     >
+      <style>{`
+        @keyframes introPulse {
+          0% { transform: scale(1); opacity: 0.9; }
+          50% { transform: scale(1.04); opacity: 1; }
+          100% { transform: scale(1); opacity: 0.9; }
+        }
+        .intro-pulse {
+          animation: introPulse 1.4s ease-in-out infinite;
+          transform-origin: center;
+        }
+      `}</style>
       <div className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 px-4 sm:px-6">
         <motion.img
           src="/transparent-logo.svg"
           alt=""
           width={120}
           height={120}
-          className="pulse-glow h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36"
-          initial={{ opacity: 0, scale: 0.92 }}
+          className="intro-pulse h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36"
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{
             opacity: 1,
             scale: 1,
@@ -58,7 +69,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           }}
         />
         <motion.p
-          className="font-bold text-white tracking-tight"
+          className="intro-pulse font-bold text-white tracking-tight"
           style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{
