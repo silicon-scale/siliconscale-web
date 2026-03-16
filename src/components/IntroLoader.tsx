@@ -41,6 +41,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
       role="presentation"
     >
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');
         @keyframes introPulse {
           0% { transform: scale(1); opacity: 0.9; }
           50% { transform: scale(1.04); opacity: 1; }
@@ -50,14 +51,29 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           animation: introPulse 1.4s ease-in-out infinite;
           transform-origin: center;
         }
+        .intro-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: 1.25rem;
+        }
+        .intro-text {
+          font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        @media (max-width: 640px) {
+          .intro-wrapper {
+            gap: 0.5rem;
+          }
+        }
       `}</style>
-      <div className="flex flex-row flex-wrap items-center justify-center gap-5 sm:gap-6 px-4 sm:px-6">
+      <div className="intro-wrapper px-4 sm:px-6">
         <motion.img
           src="/transparent-logo.svg"
           alt=""
           width={120}
           height={120}
-          className="intro-pulse h-28 w-28 sm:h-32 sm:w-32 md:h-40 md:w-40"
+          className="intro-pulse h-32 w-32 sm:h-40 sm:w-40 md:h-44 md:w-44"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{
             opacity: 1,
@@ -69,7 +85,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           }}
         />
         <motion.p
-          className="intro-pulse font-bold text-white tracking-tight"
+          className="intro-pulse intro-text font-bold text-white tracking-tight"
           style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{
