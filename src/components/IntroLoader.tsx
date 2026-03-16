@@ -51,13 +51,13 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           transform-origin: center;
         }
       `}</style>
-      <div className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 px-4 sm:px-6">
+      <div className="flex flex-row flex-wrap items-center justify-center gap-5 sm:gap-6 px-4 sm:px-6">
         <motion.img
           src="/transparent-logo.svg"
           alt=""
           width={120}
           height={120}
-          className="intro-pulse h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36"
+          className="intro-pulse h-24 w-24 sm:h-28 sm:w-28 md:h-36 md:w-36"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{
             opacity: 1,
