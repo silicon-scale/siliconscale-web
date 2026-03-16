@@ -44,7 +44,7 @@ const PRINCIPLES = [
 		icon: (
 			<svg
 				width="28"
-			height="28"
+				height="28"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
@@ -85,6 +85,7 @@ function useInView<T extends HTMLElement>(threshold = 0.12) {
 function LightBeam() {
 	return (
 		<div
+			className="light-beam"
 			style={{
 				position: "absolute",
 				right: 0,
@@ -174,6 +175,10 @@ export default function AboutPage() {
 	const principlesRef = useInView<HTMLSectionElement>(0.1);
 	const ctaRef = useInView<HTMLSectionElement>(0.1);
 
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
+
 	return (
 		<div
 			style={{
@@ -238,6 +243,82 @@ export default function AboutPage() {
         .pc:hover { border-color: rgba(255,255,255,0.35); }
         .pc:first-child { border-left: none; padding-left: 0; }
 
+        .mission-section {
+          position: relative;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 60px 56px 110px;
+          overflow: hidden;
+        }
+
+        .bottom-row {
+          position: absolute;
+          bottom: 36px;
+          left: 56px;
+          right: 56px;
+          z-index: 2;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 24;
+          flex-wrap: wrap;
+        }
+
+        .stats-section {
+          padding: 0 56px;
+        }
+
+        .principles-section {
+          padding: 128px 56px;
+        }
+
+        .cta-section {
+          padding: 80px 56px;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .light-beam {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-55%);
+          width: 62%;
+          height: 80%;
+          pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
+          .mission-section { padding: 50px 40px 90px; }
+          .bottom-row { left: 40px; right: 40px; bottom: 30px; }
+          .stats-section { padding: 0 40px; }
+          .principles-section { padding: 100px 40px; }
+          .cta-section { padding: 60px 40px; }
+          .light-beam { width: 50%; height: 70%; }
+        }
+
+        @media (max-width: 768px) {
+          .mission-section { padding: 10px 20px 80px; }
+          .bottom-row { left: 20px; right: 20px; bottom: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+          .stats-section { padding: 0 20px; }
+          .principles-section { padding: 64px 20px; }
+          .cta-section { padding: 40px 20px; }
+          .light-beam { display: none; }
+        }
+
+        @media (max-width: 480px) {
+          .mission-section { padding: 5px 16px 60px; }
+          .bottom-row { left: 16px; right: 16px; bottom: 16px; }
+          .stats-section { padding: 0 16px; }
+          .principles-section { padding: 48px 16px; }
+          .cta-section { padding: 32px 16px; }
+          .stat-cell { padding: 32px 0 32px 20px; }
+          .pc { padding: 32px 20px; }
+        }
+
         @media (max-width: 860px) {
           .principles-wrap { flex-direction: column !important; }
           .pc { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.1); padding: 36px 0 !important; }
@@ -249,15 +330,7 @@ export default function AboutPage() {
 			{/* ════ HERO / MISSION ════ */}
 			<section
 				ref={missionRef.ref}
-				style={{
-					position: "relative",
-					minHeight: "100vh",
-					display: "flex",
-					flexDirection: "column",
-					justifyContent: "center",
-					padding: "60px 56px 110px",
-					overflow: "hidden",
-				}}
+				className="mission-section"
 			>
 				<LightBeam />
 
@@ -288,20 +361,7 @@ export default function AboutPage() {
 				</h1>
 
 				{/* bottom row */}
-				<div
-					style={{
-						position: "absolute",
-						bottom: 36,
-						left: 56,
-						right: 56,
-						zIndex: 2,
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "flex-end",
-						gap: 24,
-						flexWrap: "wrap",
-					}}
-				>
+				<div className="bottom-row">
 					<div
 						style={{
 							display: "flex",
@@ -334,7 +394,7 @@ export default function AboutPage() {
 			</section>
 
 			{/* ════ STATS ════ */}
-			<div ref={statsRef.ref as any} style={{ padding: "0 56px" }}>
+			<div ref={statsRef.ref as any} className="stats-section">
 				<div className="stat-row">
 					{[
 						{ n: "6+", l: "Projects Delivered" },
@@ -373,7 +433,7 @@ export default function AboutPage() {
 			</div>
 
 			{/* ════ PRINCIPLES ════ */}
-			<section ref={principlesRef.ref} style={{ padding: "128px 56px" }}>
+			<section ref={principlesRef.ref} className="principles-section">
 				<div className={`rv ${principlesRef.visible ? "in" : ""}`}>
 					<SectionLabel text="OUR PRINCIPLES" />
 				</div>
@@ -458,12 +518,7 @@ export default function AboutPage() {
 			{/* ════ CTA ════ */}
 			<section
 				ref={ctaRef.ref}
-				style={{
-					padding: "80px 56px",
-					borderTop: "1px solid rgba(255,255,255,0.08)",
-					position: "relative",
-					overflow: "hidden",
-				}}
+				className="cta-section"
 			>
 				<div
 					style={{
