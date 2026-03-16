@@ -140,6 +140,10 @@ export default function Contact() {
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [step])
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const validate = () => {
     if (step === 1 && !goal)    { setErr('Please tap what you need'); return false }
     if (step === 2 && !budget)  { setErr('Pick a budget option'); return false }
