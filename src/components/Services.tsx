@@ -294,13 +294,17 @@ export function Services() {
                   <span style={{ display: 'inline-block', width: '24px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
                   Our Expertise
                 </p>
-                <h2 style={{ fontSize: 'clamp(2.8rem, 6vw, 5.5rem)', fontWeight: 900, color: '#ffffff',
-                              letterSpacing: '-0.04em', lineHeight: 1.0, margin: 0 }}>
-                  What We
-                  <br />
-                  <span style={{ WebkitTextStroke: '1px rgba(255,255,255,0.35)', color: 'transparent' }}>
-                    Actually Do
-                  </span>
+                <h2
+                  style={{
+                    fontSize: 'clamp(2.8rem, 6vw, 5.5rem)',
+                    fontWeight: 900,
+                    color: '#ffffff',
+                    letterSpacing: '-0.04em',
+                    lineHeight: 1.0,
+                    margin: 0,
+                  }}
+                >
+                  What We Do
                 </h2>
               </div>
               <div className="services-header-cta">
@@ -315,54 +319,6 @@ export function Services() {
                 </button>
               </div>
             </div>
-          </div>
-
-          {/* ── STATS ROW ── */}
-          <div
-            className={`reveal stat-grid ${isVisible ? 'visible' : ''}`}
-            style={{ animationDelay: '0.15s' }}
-          >
-            {[
-              { value: '6+', label: 'Projects Delivered', sub: 'Across industries' },
-              { value: '3+', label: 'Business Brands Served', sub: 'Startups and growing teams' },
-              { value: '99%', label: 'Client Satisfaction', sub: 'Long‑term partnerships' },
-            ].map((stat, i) => (
-              <div
-                key={i}
-                className={`stat-card ${i === 2 ? 'stat-card--full' : ''}`}
-              >
-                <div
-                  style={{
-                    fontSize: 'clamp(1.8rem, 3vw, 2.8rem)',
-                    fontWeight: 900,
-                    color: '#ffffff',
-                    letterSpacing: '-0.04em',
-                    lineHeight: 1,
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.55)',
-                    marginTop: '8px',
-                  }}
-                >
-                  {stat.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.75rem',
-                    color: 'rgba(255,255,255,0.25)',
-                    marginTop: '4px',
-                  }}
-                >
-                  {stat.sub}
-                </div>
-              </div>
-            ))}
           </div>
 
           {/* ── SERVICES LIST ── */}

@@ -464,7 +464,7 @@ function FooterComponent() {
             <h4 className="footer-col-title">Quick Links</h4>
             <div className="footer-links">
               <Link to="/" className="footer-link">Home</Link>
-              <Link to="/#awards" className="footer-link">Services</Link>
+              <Link to="/services" className="footer-link">Services</Link>
             </div>
           </div>
 

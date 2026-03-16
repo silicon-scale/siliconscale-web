@@ -4,6 +4,7 @@ import { lazy, memo, Suspense, useEffect, useState } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
+import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
@@ -15,11 +16,13 @@ const Team = lazy(() => import("./components/Team"))
 const Contact = lazy(() => import("./components/Contact"))
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"))
 const TermsOfService = lazy(() => import("./components/TermsOfService"))
+const ServicesPage = lazy(() => import("./components/ServicesPage"))
 
 const Home = memo(function Home() {
   return (
     <>
       <HeroSection />
+      <Highlights />
       <Services />
     </>
   )
@@ -51,7 +54,7 @@ function AppContent() {
               <Route
                 path="/about"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <About />
                   </Suspense>
                 }
@@ -59,7 +62,7 @@ function AppContent() {
               <Route
                 path="/work"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <Work />
                   </Suspense>
                 }
@@ -67,7 +70,7 @@ function AppContent() {
               <Route
                 path="/team"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <Team />
                   </Suspense>
                 }
@@ -75,7 +78,7 @@ function AppContent() {
               <Route
                 path="/contact"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <Contact />
                   </Suspense>
                 }
@@ -83,7 +86,7 @@ function AppContent() {
               <Route
                 path="/privacy"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <PrivacyPolicy />
                   </Suspense>
                 }
@@ -91,8 +94,16 @@ function AppContent() {
               <Route
                 path="/terms"
                 element={
-                  <Suspense fallback={<PageTransitionFallback />}>
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
                     <TermsOfService />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/services"
+                element={
+                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
+                    <ServicesPage />
                   </Suspense>
                 }
               />

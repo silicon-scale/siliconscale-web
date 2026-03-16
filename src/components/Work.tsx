@@ -154,7 +154,7 @@ function WorkComponent() {
 
           {/* Header row */}
           <div
-            className={`flex flex-wrap items-end justify-between gap-4 mb-14 transform transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`flex flex-wrap items-end gap-4 mb-14 transform transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           >
             <div>
               <h2
@@ -164,20 +164,6 @@ function WorkComponent() {
                 other succeed
               </h2>
             </div>
-            <a
-              href="#"
-              className="group flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200"
-              style={{
-                background: '#ffffff',
-                color: '#111111',
-                boxShadow: '0 4px 24px rgba(255,255,255,0.15)',
-              }}
-            >
-              See all projects
-              <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
           </div>
 
           {/* Main project layout */}
