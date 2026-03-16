@@ -56,7 +56,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           flex-wrap: wrap;
           align-items: center;
           justify-content: center;
-          gap: 0.8rem;
+          gap: 0.1rem;
         }
         .intro-text {
           font-family: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -73,30 +73,12 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
           alt=""
           width={120}
           height={120}
-          className="intro-pulse h-32 w-32 sm:h-40 sm:w-40 md:h-44 md:w-44"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          transition={{
-            duration: FADE_IN_DURATION,
-            ease: EASING,
-          }}
+          className="intro-pulse h-32 w-32 sm:h-48 sm:w-48 md:h-44 md:w-44"
+          loading="eager"
         />
         <motion.p
           className="intro-pulse intro-text font-bold text-white tracking-tight"
           style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-          }}
-          transition={{
-            duration: FADE_IN_DURATION,
-            ease: EASING,
-            delay: 0.1,
-          }}
         >
           Silicon Scale
         </motion.p>
