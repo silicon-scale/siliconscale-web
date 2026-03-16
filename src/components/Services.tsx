@@ -153,6 +153,12 @@ export function Services() {
           gap: 0;
           white-space: nowrap;
         }
+        .stat-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+          margin-bottom: 5rem;
+        }
         .stat-card {
           position: relative;
           padding: 28px 32px;
@@ -176,6 +182,22 @@ export function Services() {
           transition: opacity 0.3s;
         }
         .stat-card:hover::after { opacity: 1; }
+        .stat-card--full {
+          grid-column: auto;
+        }
+        @media (max-width: 1024px) {
+          .stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .stat-card--full {
+            grid-column: 1 / -1;
+          }
+        }
+        @media (max-width: 640px) {
+          .stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
         .cta-btn {
           display: inline-flex;
           align-items: center;
@@ -271,23 +293,47 @@ export function Services() {
           </div>
 
           {/* ── STATS ROW ── */}
-          <div className={`reveal ${isVisible ? 'visible' : ''}`}
-               style={{ animationDelay: '0.15s', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-                         gap: '16px', marginBottom: '5rem' }}>
+          <div
+            className={`reveal stat-grid ${isVisible ? 'visible' : ''}`}
+            style={{ animationDelay: '0.15s' }}
+          >
             {[
-              { value: '15+', label: 'Projects Shipped', sub: 'Across 8 industries' },
-              { value: '2+', label: 'Years of Craft', sub: 'Since 2024' },
-              { value: '98%', label: 'Client Retention', sub: 'They keep coming back' },
+              { value: '6+', label: 'Projects Delivered', sub: 'Across industries' },
+              { value: '3+', label: 'Business Brands Served', sub: 'Startups and growing teams' },
+              { value: '99%', label: 'Client Satisfaction', sub: 'Long‑term partnerships' },
             ].map((stat, i) => (
-              <div key={i} className="stat-card">
-                <div style={{ fontSize: 'clamp(1.8rem, 3vw, 2.8rem)', fontWeight: 900, color: '#ffffff',
-                               letterSpacing: '-0.04em', lineHeight: 1 }}>
+              <div
+                key={i}
+                className={`stat-card ${i === 2 ? 'stat-card--full' : ''}`}
+              >
+                <div
+                  style={{
+                    fontSize: 'clamp(1.8rem, 3vw, 2.8rem)',
+                    fontWeight: 900,
+                    color: '#ffffff',
+                    letterSpacing: '-0.04em',
+                    lineHeight: 1,
+                  }}
+                >
                   {stat.value}
                 </div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.55)', marginTop: '8px' }}>
+                <div
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.55)',
+                    marginTop: '8px',
+                  }}
+                >
                   {stat.label}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', marginTop: '4px' }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'rgba(255,255,255,0.25)',
+                    marginTop: '4px',
+                  }}
+                >
                   {stat.sub}
                 </div>
               </div>
