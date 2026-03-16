@@ -103,7 +103,7 @@ export function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu - Full Screen Premium Overlay */}
+      {/* Mobile Menu - Full Screen Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -112,37 +112,31 @@ export function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.12, ease: 'easeOut' }}
               className="fixed inset-0 bg-black/60 backdrop-blur-xl z-[180]"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
             {/* Menu */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ type: "spring", damping: 25 }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.14, ease: 'easeOut' }}
               className="fixed inset-0 z-[190] flex items-center justify-center"
             >
               <div className="bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl p-8 mx-4 max-w-sm w-full">
                 <div className="flex flex-col items-center space-y-8">
-                  <motion.img
+                  <img
                     src={logo}
                     alt="SiliconScale"
                     className="h-12 w-auto"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring" }}
+                    loading="eager"
                   />
 
                   <div className="flex flex-col items-center space-y-6">
                     {navLinks.map((link, index) => (
-                      <motion.div
-                        key={link.name}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 * index + 0.3, duration: 0.5 }}
-                      >
+                      <div key={link.name}>
                         <Link
                           to={link.path}
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -151,17 +145,14 @@ export function Navbar() {
                           {link.name}
                           <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-[#c9a96e] transition-all duration-300 group-hover:w-full"></span>
                         </Link>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
 
                   <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
                     <motion.button
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.8, duration: 0.5 }}
-                      whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.03, boxShadow: "0 0 16px rgba(201,169,110,0.3)" }}
+                      whileTap={{ scale: 0.97 }}
                       className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
                     >
                       Book Call
