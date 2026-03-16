@@ -119,10 +119,13 @@ export function Navbar() {
 
             {/* Menu */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.14, ease: 'easeOut' }}
+              exit={{ opacity: 0, y: 0 }}
+              transition={{
+                opacity: { duration: 0.12, ease: 'easeOut' },
+                y: { duration: 0.12, ease: 'easeOut' }
+              }}
               className="fixed inset-0 z-[190] flex items-center justify-center"
             >
               <div className="bg-gradient-to-br from-black/90 to-gray-900/90 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl p-8 mx-4 max-w-sm w-full">
