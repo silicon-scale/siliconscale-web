@@ -190,6 +190,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
+      aria-labelledby="contact-heading"
       style={{
         background: '#000',
         color: '#fff',
@@ -198,6 +199,7 @@ export default function Contact() {
         overflowX: 'hidden',
       }}
     >
+      <h1 id="contact-heading" className="sr-only">Contact Silicon Scale</h1>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -338,9 +340,9 @@ export default function Contact() {
               {step === 1 && (
                 <div className="pop">
                   <Progress step={1} total={4} />
-                  <h1 style={{ fontSize: 'clamp(28px,5vw,42px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
+                  <h2 style={{ fontSize: 'clamp(28px,5vw,42px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
                     What do you need?
-                  </h1>
+                  </h2>
                   <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 32 }}>
                     Tap the one that fits best. Don't worry — we'll figure out the details together.
                   </p>
@@ -361,9 +363,9 @@ export default function Contact() {
               {step === 2 && (
                 <div className="pop">
                   <Progress step={2} total={4} />
-                  <h1 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
+                  <h2 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
                     What's your budget?
-                  </h1>
+                  </h2>
                   <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 32 }}>
                     No wrong answer. This just helps us suggest the right plan for you.
                   </p>
@@ -385,9 +387,9 @@ export default function Contact() {
               {step === 3 && (
                 <div className="pop">
                   <Progress step={3} total={4} />
-                  <h1 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
+                  <h2 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
                     How soon do you need it?
-                  </h1>
+                  </h2>
                   <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 32 }}>
                     We'll fit around your schedule.
                   </p>
@@ -422,9 +424,9 @@ export default function Contact() {
               {step === 4 && (
                 <div className="pop">
                   <Progress step={4} total={4} />
-                  <h1 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
+                  <h2 style={{ fontSize: 'clamp(26px,5vw,40px)', fontWeight: 800, letterSpacing: '-0.025em', lineHeight: 1.15, marginBottom: 12 }}>
                     Almost done!
-                  </h1>
+                  </h2>
                   <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 32 }}>
                     Just tell us your name and the best way to reach you. That's it!
                   </p>

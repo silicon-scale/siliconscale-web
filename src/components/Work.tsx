@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import ddenImage from '../assets/Project-Images/dden.png'
 import mnrdcImage from '../assets/Project-Images/mnrdc.png'
 import rdcImage from '../assets/Project-Images/rdc.png'
@@ -8,7 +9,7 @@ import axelsImage from '../assets/Project-Images/axels.png'
 import { useState, useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
 
-export default function Work() {
+function WorkComponent() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [animating, setAnimating] = useState(false)
@@ -142,9 +143,10 @@ export default function Work() {
       `}</style>
 
       <section
-        id="services"
+        id="work"
         ref={sectionRef}
         className="relative py-20"
+        aria-labelledby="work-heading"
         style={{ background: 'black', overflow: 'hidden' }}
       >
         {/* Subtle background glow */}
@@ -156,6 +158,26 @@ export default function Work() {
         </div>
 
         <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-8 md:py-12 relative z-10">
+
+          {/* Header */}
+          <div className="text-center my-16">
+            <h1
+              id="work-heading"
+              style={{ fontSize: 'clamp(1.9rem, 2vw, 2.4rem)', fontWeight: 900, color: '#ffffff' }}
+              className={`leading-tight mb-2 md:mb-3 transform transition-all duration-1000 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+            >
+              What We Developed
+            </h1>
+
+            {/* Decorative line under heading */}
+            <div
+              className={`flex items-center justify-center gap-3 mb-4 transform transition-all duration-700 delay-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/50" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500/60" />
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/50" />
+            </div>
+          </div>
 
           {/* Header row */}
           <div
@@ -305,3 +327,5 @@ export default function Work() {
     </>
   )
 }
+
+export default memo(WorkComponent)
