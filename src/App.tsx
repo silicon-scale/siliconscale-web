@@ -13,6 +13,8 @@ const About = lazy(() => import("./components/About"))
 const Work = lazy(() => import("./components/Work"))
 const Team = lazy(() => import("./components/Team"))
 const Contact = lazy(() => import("./components/Contact"))
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"))
+const TermsOfService = lazy(() => import("./components/TermsOfService"))
 
 const Home = memo(function Home() {
   return (
@@ -75,6 +77,22 @@ function AppContent() {
                 element={
                   <Suspense fallback={<PageTransitionFallback />}>
                     <Contact />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <Suspense fallback={<PageTransitionFallback />}>
+                    <PrivacyPolicy />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/terms"
+                element={
+                  <Suspense fallback={<PageTransitionFallback />}>
+                    <TermsOfService />
                   </Suspense>
                 }
               />

@@ -8,11 +8,11 @@ import { useState, useRef, useEffect } from 'react'
 
 // What they want — plain English, no jargon
 const GOALS = [
-  { id: 'website',  title: 'I need a website',         sub: 'For my business, shop or idea' },
-  { id: 'redesign', title: 'My website needs a fix',  sub: "It looks old or doesn't work well" },
-  { id: 'store',    title: 'I want to sell online',    sub: 'A shop where people can buy things' },
-  { id: 'logo',     title: 'I need a logo / branding', sub: 'My name, colors, and look & feel' },
-  { id: 'notsure',  title: "I'm not sure yet",        sub: "Just talk to us — we'll help figure it out" },
+  { id: 'website',  title: 'I need a website',           sub: 'For my business, shop or idea' },
+  { id: 'redesign', title: 'My website needs a fix',    sub: "It looks old or doesn't work well" },
+  { id: 'store',    title: 'I want to sell online',      sub: 'A shop where people can buy things' },
+  { id: 'reception',title: 'I need an online receptionist', sub: 'Someone to greet, respond and route visitors' },
+  { id: 'notsure',  title: "I'm not sure yet",          sub: "Just talk to us — we'll help figure it out" },
 ]
 
 const BUDGETS = [
@@ -39,9 +39,9 @@ const CHANNELS = [
   },
   {
     label: 'Email',
-    desc: 'contact@siliconscale.com',
+    desc: 'contact@siliconscale.dev',
     cta: 'Send Email',
-    href: 'mailto:hello@siliconscale.com?subject=I want to build something!',
+    href: 'mailto:contact@siliconscale.dev?subject=I want to build something!',
     color: '#fff',
   },
   {
@@ -197,6 +197,7 @@ export default function Contact() {
         minHeight: '100vh',
         fontFamily: "'Sora','Helvetica Neue',sans-serif",
         overflowX: 'hidden',
+        position: 'relative',
       }}
     >
       <h1 id="contact-heading" className="sr-only">Contact Silicon Scale</h1>
@@ -281,14 +282,75 @@ export default function Contact() {
         }
       `}</style>
 
+      {/* Subtle noise + glow background (match Services) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          opacity: 0.03,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '128px',
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: '-200px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '800px',
+          height: '600px',
+          background:
+            'radial-gradient(circle at center, rgba(232,255,71,0.045) 0%, transparent 65%)',
+        }}
+      />
+
       {/* ── Page padding wrapper ── */}
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(80px,10vw,120px) clamp(20px,4vw,56px) 80px' }}>
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          padding: 'clamp(120px,15vw,168px) clamp(20px,4vw,56px) 96px',
+        }}
+      >
         <div ref={topRef} />
 
-        {/* ── Brand mark — full width, above the two columns ── */}
-        <p style={{ fontFamily: "'DM Mono',monospace", fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 48 }}>
-          SiliconScale &nbsp;·&nbsp; Let's Talk
-        </p>
+        {/* ── Page title ── */}
+        <div style={{ marginBottom: 56 }}>
+          <p
+            style={{
+              fontFamily: "'DM Mono',monospace",
+              fontSize: 12,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.35)',
+              marginBottom: 16,
+            }}
+          >
+            Contact
+          </p>
+          <h2
+            style={{
+              fontSize: 'clamp(34px,6.5vw,56px)',
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.05,
+            }}
+          >
+            Let&apos;s Talk
+          </h2>
+          <p
+            style={{
+              marginTop: 16,
+              maxWidth: 520,
+              fontSize: 16,
+              lineHeight: 1.7,
+              color: 'rgba(255,255,255,0.55)',
+            }}
+          >
+            Share a bit about what you&apos;re building, and we&apos;ll come back with a clear next step—no jargon, no pressure.
+          </p>
+        </div>
 
         {submitted ? (
           /* ══════════ SUCCESS — full width centred ══════════ */

@@ -188,34 +188,8 @@ function SpotlightBeamsComponent() {
     </defs>
   )
 
-  // Each speck: tiny dot that drifts gently back and forth, fading in/out like
-  // real dust catching and losing the light as it tumbles
-  const particles = !prefersReducedMotion && (
-    <>
-      {DUST_SPECKS.map((s, i) => (
-        <motion.circle
-          key={`speck-${i}`}
-          cx={s.x}
-          cy={s.y}
-          // Make these very obvious for now so we can visually confirm
-          r={1.6 + s.r} // roughly 2–2.5px
-          fill="hsl(42, 100%, 80%)"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: [0, 0.7, 1, 0.7, 0],
-            cx: [s.x, s.x + s.dx * 0.3, s.x + s.dx * 0.75, s.x + s.dx],
-            cy: [s.y, s.y + s.dy * 0.35, s.y + s.dy * 0.7, s.y + s.dy],
-          }}
-          transition={{
-            duration: s.duration,
-            repeat: Infinity,
-            delay: s.delay,
-            ease: [0.4, 0, 0.2, 1],
-          }}
-        />
-      ))}
-    </>
-  )
+  // Particles removed to keep beams clean and minimal
+  const particles = null
 
   const cls = 'pointer-events-none absolute inset-0 z-[1] w-full h-full overflow-hidden'
 
