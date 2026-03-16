@@ -275,8 +275,8 @@ export function Services() {
                style={{ animationDelay: '0.15s', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
                          gap: '16px', marginBottom: '5rem' }}>
             {[
-              { value: '50+', label: 'Projects Shipped', sub: 'Across 8 industries' },
-              { value: '4+', label: 'Years of Craft', sub: 'Since 2020' },
+              { value: '15+', label: 'Projects Shipped', sub: 'Across 8 industries' },
+              { value: '2+', label: 'Years of Craft', sub: 'Since 2024' },
               { value: '98%', label: 'Client Retention', sub: 'They keep coming back' },
             ].map((stat, i) => (
               <div key={i} className="stat-card">
