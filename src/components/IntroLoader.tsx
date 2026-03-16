@@ -78,7 +78,7 @@ export function IntroLoader({ onComplete }: IntroLoaderProps) {
         />
         <motion.p
           className="intro-pulse intro-text font-bold text-white tracking-tight"
-          style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
+          style={{ fontSize: 'clamp(2.5rem, 6vw, 7rem)' }}
         >
           Silicon Scale
         </motion.p>
