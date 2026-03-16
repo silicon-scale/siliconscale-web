@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom"
-import { Instagram, Linkedin, Mail } from "lucide-react"
+import { memo } from 'react'
+import { Link } from 'react-router-dom'
+import { Instagram, Linkedin, Mail } from 'lucide-react'
 
-export function Footer() {
-
+function FooterComponent() {
   return (
     <footer className="footer-root">
       <style>{`
@@ -343,6 +343,11 @@ export function Footer() {
           justify-content: space-between;
           gap: 1rem;
         }
+        .footer-bottom-text {
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 0.875rem;
+        }
         @media (max-width: 600px) {
           .footer-bottom { flex-direction: column; text-align: center; }
         }
@@ -417,7 +422,7 @@ export function Footer() {
         {/* Brand: watermark + logo, tagline, big icons + email */}
         <div className="footer-brand">
           <div className="footer-brand-head">
-            <img src="/transparent-logo.svg" alt="SiliconScale" className="footer-logo" />
+            <img src="/transparent-logo.svg" alt="Silicon Scale" width="120" height="120" className="footer-logo" loading="lazy" decoding="async" />
             <span className="footer-watermark">Silicon Scale</span>
           </div>
           <p className="footer-tagline">
@@ -496,3 +501,5 @@ export function Footer() {
     </footer>
   )
 }
+
+export const Footer = memo(FooterComponent)

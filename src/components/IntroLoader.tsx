@@ -1,0 +1,79 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+
+export interface IntroLoaderProps {
+  /** Called when the slide-out animation completes. */
+  onComplete: () => void
+}
+
+const FADE_IN_DURATION = 0.6
+const HOLD_DURATION = 1
+const SLIDE_DURATION = 0.9
+const EASING = [0.42, 0, 0.58, 1] as const // easeInOut
+
+export function IntroLoader({ onComplete }: IntroLoaderProps) {
+  const [phase, setPhase] = useState<'enter' | 'exit'>('enter')
+
+  // After fade-in (0.6s) + hold (0.8s), start slide-out
+  useEffect(() => {
+    const delayMs = (FADE_IN_DURATION + HOLD_DURATION) * 1000
+    const t = setTimeout(() => setPhase('exit'), delayMs)
+    return () => clearTimeout(t)
+  }, [])
+
+  return (
+    <motion.section
+      className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-[#050505]"
+      initial={false}
+      animate={{
+        x: phase === 'exit' ? '-100%' : 0,
+      }}
+      transition={{
+        duration: SLIDE_DURATION,
+        ease: EASING,
+      }}
+      onAnimationComplete={() => {
+        if (phase === 'exit') onComplete()
+      }}
+      aria-label="Loading"
+      role="presentation"
+    >
+      <div className="flex flex-row flex-wrap items-center justify-center gap-4 sm:gap-6 px-4 sm:px-6">
+        <motion.img
+          src="/transparent-logo.svg"
+          alt=""
+          width={120}
+          height={120}
+          className="pulse-glow h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            duration: FADE_IN_DURATION,
+            ease: EASING,
+          }}
+        />
+        <motion.p
+          className="font-bold text-white tracking-tight"
+          style={{ fontSize: 'clamp(3.5rem, 10vw, 7rem)' }}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+          }}
+          transition={{
+            duration: FADE_IN_DURATION,
+            ease: EASING,
+            delay: 0.1,
+          }}
+        >
+          Silicon Scale
+        </motion.p>
+      </div>
+    </motion.section>
+  )
+}

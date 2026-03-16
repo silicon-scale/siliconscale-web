@@ -1,12 +1,13 @@
 'use client'
 
-import { Play, ExternalLink } from 'lucide-react'
+import { memo } from 'react'
 import { Button } from './ui/button'
+import { RevealOnScroll } from './ui/RevealOnScroll'
 
-export function Portfolio() {
+function PortfolioComponent() {
   return (
-    <section id="portfolio" className="relative py-32 bg-background">
-      <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+    <section id="portfolio" className="relative py-32 bg-background" aria-labelledby="portfolio-heading">
+      <RevealOnScroll className="container mx-auto px-6 sm:px-8 lg:px-12">
         {/* Section Header */}
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-3 mb-6">
@@ -17,7 +18,7 @@ export function Portfolio() {
             <div className="w-3 h-3 bg-accent-blue rounded-full animate-pulse" />
           </div>
           
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-8">
+          <h2 id="portfolio-heading" className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-8">
             <span className="block mb-2">Creative Productions</span>
           </h2>
           
@@ -28,7 +29,7 @@ export function Portfolio() {
 
         {/* Featured Video */}
         <div className="max-w-6xl mx-auto">
-          <div className="relative bg-card clean-border rounded-3xl overflow-hidden elevated-shadow">
+          <div className="relative bg-card clean-border rounded-3xl overflow-hidden elevated-shadow transform transition-transform duration-200 hover:-translate-y-1.5 hover:shadow-xl">
             {/* Video Embed */}
             <div className="relative">
               <div className="aspect-video">
@@ -39,6 +40,7 @@ export function Portfolio() {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   className="w-full h-full rounded-t-3xl"
+                  loading="lazy"
                 />
               </div>
               
@@ -92,7 +94,9 @@ export function Portfolio() {
             </div>
           </div>
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   )
 }
+
+export const Portfolio = memo(PortfolioComponent)

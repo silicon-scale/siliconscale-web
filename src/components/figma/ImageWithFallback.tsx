@@ -1,38 +1,44 @@
-import { useState } from 'react'
+import { memo, useState, useCallback } from 'react'
 
-interface ImageWithFallbackProps {
+export interface ImageWithFallbackProps {
   src: string
   alt: string
+  width?: number
+  height?: number
   className?: string
   style?: React.CSSProperties
   fallback?: string
+  loading?: 'lazy' | 'eager'
 }
 
-export function ImageWithFallback({ 
-  src, 
-  alt, 
+function ImageWithFallbackComponent({
+  src,
+  alt,
+  width,
+  height,
   className,
   style,
-  fallback = "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop" 
+  fallback = 'https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop',
+  loading = 'lazy',
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src)
-  const [hasError, setHasError] = useState(false)
-
-  const handleError = () => {
-    if (!hasError) {
-      setHasError(true)
-      setImgSrc(fallback)
-    }
-  }
+  const handleError = useCallback(() => {
+    setImgSrc((prev) => (prev === src ? fallback : prev))
+  }, [src, fallback])
 
   return (
     <img
       src={imgSrc}
       alt={alt}
+      width={width}
+      height={height}
       className={className}
-      style={style}
+      style={width && height ? { ...style, aspectRatio: `${width} / ${height}` } : style}
       onError={handleError}
-      loading="lazy"
+      loading={loading}
+      decoding="async"
     />
   )
 }
+
+export const ImageWithFallback = memo(ImageWithFallbackComponent)
