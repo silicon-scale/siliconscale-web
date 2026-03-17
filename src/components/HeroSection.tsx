@@ -138,11 +138,9 @@ function HeroSectionComponent() {
               We build{" "}
               {isMobile ? (
                 <span
-                  className="align-baseline bg-clip-text text-transparent"
+                  className="align-baseline"
                   style={{
-                    backgroundImage:
-                      "linear-gradient(90deg, #FFD700, #F5C542, #E6B800)",
-                    WebkitTextFillColor: "transparent",
+                    color: "#c9a96e",
                   }}
                 >
                   Digital
@@ -170,11 +168,9 @@ function HeroSectionComponent() {
             <span className="block">
               {isMobile ? (
                 <span
-                  className="align-baseline bg-clip-text text-transparent"
+                  className="align-baseline"
                   style={{
-                    backgroundImage:
-                      "linear-gradient(90deg, #FFD700, #F5C542, #E6B800)",
-                    WebkitTextFillColor: "transparent",
+                    color: "#c9a96e",
                   }}
                 >
                   Products

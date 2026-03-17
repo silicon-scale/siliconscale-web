@@ -14,6 +14,8 @@ function FooterComponent() {
           color: #fff;
           font-family: 'DM Sans', sans-serif;
           overflow: visible;
+          /* Prevent any SVG/absolute layers from widening the page on iPad */
+          overflow-x: clip;
         }
 
         /* Ultra-smooth CSS wave animations */
@@ -373,7 +375,7 @@ function FooterComponent() {
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]" style={{ transform: 'translateY(-98%)', pointerEvents: 'none' }}>
         <svg
           className="relative block h-[80px] md:h-[120px]"
-          style={{ width: 'calc(160% + 1.3px)' }}
+          style={{ width: '100%' }}
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
         >
