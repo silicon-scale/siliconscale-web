@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -17,6 +18,9 @@ export default {
       },
     },
     extend: {
+      transitionDuration: {
+        1200: "1200ms",
+      },
       fontFamily: {
         sans: ['Open Sans', 'sans-serif'],
         bagel: ['Bagel Fat One', 'cursive'],
@@ -88,5 +92,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindAnimate],
 } satisfies Config;

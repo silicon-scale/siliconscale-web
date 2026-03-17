@@ -7,8 +7,9 @@ import { MagneticButton } from './ui/MagneticButton'
 import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
 import { CanvasText } from '@/components/ui/canvas-text'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useIsMobile } from '@/hooks/useIsMobile'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
+import { trackEvent } from '@/utils/analytics'
 
 const HERO_EASE = [0.22, 1, 0.36, 1] as const
 const HERO_DURATION = 0.75
@@ -51,8 +52,14 @@ function HeroSectionComponent() {
     if (revealStarted) hasRevealedRef.current = true
   }, [revealStarted])
   const shouldReveal = hasRevealedRef.current || revealStarted || prefersReducedMotion
-  const goToContact = useCallback(() => navigate('/contact'), [navigate])
-  const goToWork = useCallback(() => navigate('/work'), [navigate])
+  const goToContact = useCallback(() => {
+    trackEvent('cta_click', { location: 'hero' })
+    navigate('/contact')
+  }, [navigate])
+  const goToWork = useCallback(() => {
+    trackEvent('cta_click', { location: 'hero_work' })
+    navigate('/work')
+  }, [navigate])
 
   return (
     <section

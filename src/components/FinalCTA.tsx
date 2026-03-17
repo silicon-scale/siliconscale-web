@@ -6,6 +6,7 @@ import emailjs from '@emailjs/browser'
 import SectionShell from '@/components/ui/SectionShell'
 import Reveal from '@/components/ui/Reveal'
 import { BrandButton } from '@/components/ui/BrandButton'
+import { trackEvent } from '@/utils/analytics'
 import {
   CheckCircle2,
   Clock,
@@ -231,6 +232,7 @@ const FinalCTA = () => {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   const set = (key: keyof FinalCTAFormData) => (v: string) =>
     setForm((p) => ({ ...p, [key]: v }))
@@ -256,6 +258,48 @@ const FinalCTA = () => {
     setError(null)
 
     try {
+      // Honeypot (bots will often fill hidden fields)
+      if (honeypotRef.current?.value?.trim()) {
+        setError('Failed to send message. Please try again.')
+        return
+      }
+
+      // Simple client-side rate limit (best-effort)
+      const key = 'ss_finalcta_last_submit'
+      const now = Date.now()
+      const last = Number(localStorage.getItem(key) ?? '0')
+      if (Number.isFinite(last) && now - last < 45_000) {
+        setError('Please wait a moment before submitting again.')
+        return
+      }
+
+      // Input validation (no UI changes; just blocks bad payloads)
+      const name = form.name.trim()
+      const email = form.email.trim()
+      const company = form.company.trim()
+      const description = form.description.trim()
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      if (name.length < 2 || name.length > 80) {
+        setError('Please enter your full name.')
+        return
+      }
+      if (!emailOk || email.length > 120) {
+        setError('Please enter a valid email address.')
+        return
+      }
+      if (company.length < 2 || company.length > 120) {
+        setError('Please enter your company name.')
+        return
+      }
+      if (description.length < 10 || description.length > 4000) {
+        setError('Please add a bit more detail about your project.')
+        return
+      }
+      if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+        setError('Failed to send message. Please try again.')
+        return
+      }
+
       // Send data directly from React state using emailjs.send
       await emailjs.send(
         SERVICE_ID,
@@ -273,10 +317,12 @@ const FinalCTA = () => {
         },
         PUBLIC_KEY
       )
+      localStorage.setItem(key, String(now))
+      trackEvent('contact_form_submit', { form: 'final_cta' })
       setSubmitted(true)
       setForm(INITIAL) // Reset form on success
     } catch (err) {
-      console.error('EmailJS error:', err)
+      if (import.meta.env.DEV) console.error('EmailJS error:', err)
       setError('Failed to send message. Please try again.')
     } finally {
       setSubmitting(false)
@@ -392,6 +438,16 @@ const FinalCTA = () => {
                     </div>
 
                     <form ref={formRef} onSubmit={handleSubmit}>
+                      <input
+                        ref={honeypotRef}
+                        tabIndex={-1}
+                        autoComplete="off"
+                        aria-hidden="true"
+                        className="hidden"
+                        type="text"
+                        name="website"
+                        defaultValue=""
+                      />
                       <div className="relative" style={{ minHeight: 220 }}>
                         <AnimatePresence initial={false} custom={dir} mode="wait">
                           {/* Step 1 */}

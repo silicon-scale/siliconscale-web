@@ -8,6 +8,10 @@ Vite + React + TypeScript frontend for the SiliconScale application.
 
 **Requirements:** Node.js and pnpm — [install Node with nvm](https://github.com/nvm-sh/nvm#installing-and-updating), then `npm install -g pnpm`.
 
+## Environment variables
+
+Create a `.env.local` file in the project root (see `.env.example`).
+
 ```sh
 # Clone the repository
 git clone <YOUR_GIT_URL>

@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { ScalesContainer } from '@/components/ui/scales'
 import { Vortex } from '@/components/ui/vortex'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useIsMobile } from '@/hooks/useIsMobile'
+import { useReducedMotion } from 'framer-motion'
 
 export function AboutSection() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const prefersReducedMotion = useReducedMotion()
 
   return (
     <section
@@ -16,7 +18,7 @@ export function AboutSection() {
       className="relative w-full bg-[#050505] py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
       {/* Vortex background effect */}
-      {!isMobile ? (
+      {!isMobile && !prefersReducedMotion ? (
         <div className="absolute inset-0 pointer-events-none opacity-[0.55]">
           <Vortex
             backgroundColor="rgba(0,0,0,0)"

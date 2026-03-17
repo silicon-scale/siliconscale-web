@@ -1,21 +1,32 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { ImageWithFallback } from './figma/ImageWithFallback'
-import maniPhoto from '../assets/jhaneswar.png'
-import pavanPhoto from '../assets/Tillu.png'
+import { useReducedMotion } from 'framer-motion'
+import { OptimizedImage } from './OptimizedImage'
+import maniPhoto from '../assets/jhaneswar.webp'
+import pavanPhoto from '../assets/tillu.webp'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 export default function Team() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const prefersReducedMotion = useReducedMotion()
+  const isMobile = useIsMobile()
+  const enableCanvas = !isMobile && !prefersReducedMotion
 
   useEffect(() => {
+    if (!enableCanvas) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     let animId: number
+    let running = false
+    let isVisible = document.visibilityState !== 'hidden'
+    let isInView = true
+    let resizeQueued = false
     let dots: {
       x: number
       y: number
@@ -53,6 +64,7 @@ export default function Team() {
 
     function draw() {
       if (!canvas || !ctx) return
+      if (!running) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       const t = performance.now()
       dots.forEach(d => {
@@ -77,15 +89,58 @@ export default function Team() {
       animId = requestAnimationFrame(draw)
     }
 
+    function start() {
+      if (running) return
+      if (!isVisible || !isInView) return
+      running = true
+      animId = requestAnimationFrame(draw)
+    }
+
+    function stop() {
+      if (!running) return
+      running = false
+      cancelAnimationFrame(animId)
+    }
+
+    const onVisibilityChange = () => {
+      isVisible = document.visibilityState !== 'hidden'
+      if (!isVisible) stop()
+      else start()
+    }
+
+    const onResize = () => {
+      if (resizeQueued) return
+      resizeQueued = true
+      requestAnimationFrame(() => {
+        resizeQueued = false
+        resize()
+        init()
+      })
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        isInView = Boolean(entry?.isIntersecting)
+        if (!isInView) stop()
+        else start()
+      },
+      { threshold: 0.08 }
+    )
+
     resize()
     init()
-    draw()
-    window.addEventListener('resize', () => { resize(); init() })
+    observer.observe(sectionRef.current ?? canvas)
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    window.addEventListener('resize', onResize)
+    start()
     return () => {
-      cancelAnimationFrame(animId)
-      window.removeEventListener('resize', () => { resize(); init() })
+      stop()
+      observer.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      window.removeEventListener('resize', onResize)
     }
-  }, [])
+  }, [enableCanvas])
 
   const founders = [
     {
@@ -110,7 +165,10 @@ export default function Team() {
 
   return (
 
-    <section className="relative bg-[#050505] text-white overflow-hidden min-h-screen">
+    <section
+      ref={sectionRef}
+      className="relative bg-[#050505] text-white overflow-hidden min-h-screen"
+    >
 
       {/* Subtle background lift (so it's not pure black) */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -146,11 +204,15 @@ export default function Team() {
         }}
       />
 
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none z-0"
-        style={{ opacity: 0.5 }}
-      />
+      {enableCanvas ? (
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full pointer-events-none z-0"
+          style={{ opacity: 0.5 }}
+        />
+      ) : (
+        <div className="absolute inset-0 pointer-events-none z-0" aria-hidden />
+      )}
 
       <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
 
@@ -179,10 +241,15 @@ export default function Team() {
                 className="relative overflow-hidden group"
                 style={{ aspectRatio: '1.5 / 1.3', background: '#0e0c0a', border: '0.5px solid #2a2218' }}
               >
-                <ImageWithFallback
+                <OptimizedImage
                   src={f.image}
                   alt={f.name}
-                  className="ss-photo-scale w-full h-full object-cover object-[center_20%] transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                  width={1200}
+                  height={1040}
+                  className="ss-photo-scale w-full h-full object-cover object-[center_20%] transition-transform duration-1200 ease-out group-hover:scale-110"
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(max-width: 640px) 100vw, 50vw"
                 />
 
 

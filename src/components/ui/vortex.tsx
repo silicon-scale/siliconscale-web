@@ -48,7 +48,7 @@ export const Vortex = (props: VortexProps) => {
   let tick = 0;
   const noise3D = createNoise3D();
   let particleProps = new Float32Array(particlePropsLength);
-  let center: [number, number] = [0, 0];
+  const center: [number, number] = [0, 0];
 
   const TAU = 2 * Math.PI;
   const rand = (n: number): number => n * Math.random();
@@ -165,7 +165,7 @@ export const Vortex = (props: VortexProps) => {
     particleProps[i4] = vy;
     particleProps[i5] = nextLife;
 
-    (checkBounds(x2, y2, w, h) || nextLife > ttl) && initParticle(i);
+    if (checkBounds(x2, y2, w, h) || nextLife > ttl) initParticle(i);
   };
 
   const drawParticles = (ctx: CanvasRenderingContext2D, w: number, h: number) => {

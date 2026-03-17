@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 /* ─── Data ───────────────────────────────────────────────── */
 const PRINCIPLES = [
@@ -387,14 +388,14 @@ export default function AboutPage() {
 						digital experiences that are visually compelling, technically robust, and
 						built for long-term growth.
 					</p>
-					<a href="/contact" className="join-btn">
+					<Link to="/contact" className="join-btn">
 						Start a project ↗
-					</a>
+					</Link>
 				</div>
 			</section>
 
 			{/* ════ STATS ════ */}
-			<div ref={statsRef.ref as any} className="stats-section">
+			<div ref={statsRef.ref as React.RefCallback<HTMLDivElement>} className="stats-section">
 				<div className="stat-row">
 					{[
 						{ n: "14+", l: "Projects Delivered" },
@@ -556,13 +557,13 @@ export default function AboutPage() {
 					className={`rv d2 ${ctaRef.visible ? "in" : ""}`}
 					style={{ display: "flex", gap: 16, flexWrap: "wrap" }}
 				>
-					<a
-						href="/contact"
+					<Link
+						to="/contact"
 						className="join-btn"
 						style={{ fontSize: 12 }}
 					>
 						Talk to us ↗
-					</a>
+					</Link>
 				</div>
 			</section>
 		</div>

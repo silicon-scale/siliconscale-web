@@ -4,8 +4,8 @@ import React from 'react'
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect'
 import { ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 type ServiceCard = {
   id: string
@@ -184,7 +184,7 @@ function StackingServiceCard({
           y,
           opacity,
           zIndex: index + 1,
-          ['--accent' as any]: card.accent,
+          ['--accent' as string]: card.accent,
           background: card.bg,
         }}
         transition={{ type: 'spring' }}
@@ -241,6 +241,7 @@ export default function ServicesPage() {
   const navigate = useNavigate()
   const cards = SERVICE_CARDS
   const isMobile = useIsMobile()
+  const prefersReducedMotion = useReducedMotion()
   return (
     <section
       className="relative min-h-screen overflow-hidden bg-[#050505] text-white"
@@ -363,7 +364,7 @@ export default function ServicesPage() {
 
       {/* Background ripple layer */}
       <div className="absolute inset-0 pointer-events-none">
-        {!isMobile ? (
+        {!isMobile && !prefersReducedMotion ? (
           <BackgroundRippleEffect rows={9} cols={24} cellSize={58} interactive={false} />
         ) : null}
         {/* soft top glow to match theme */}
@@ -404,7 +405,7 @@ export default function ServicesPage() {
                   className="stack-card"
                   style={{
                     zIndex: idx + 1,
-                    ['--accent' as any]: card.accent,
+                    ['--accent' as string]: card.accent,
                     background: card.bg,
                     transform: `translateY(${idx * 8}px) translateZ(0)`,
                   }}

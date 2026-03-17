@@ -1,14 +1,15 @@
 'use client'
 
 import { memo } from 'react'
-import ddenImage from '../assets/Project-Images/dden.png'
-import mnrdcImage from '../assets/Project-Images/mnrdc.png'
-import rdcImage from '../assets/Project-Images/rdc.png'
-import axelsImage from '../assets/Project-Images/axels.png'
+import ddenImage from '../assets/project-images/dden.webp'
+import mnrdcImage from '../assets/project-images/mnrdc.webp'
+import rdcImage from '../assets/project-images/rdc.webp'
+import axelsImage from '../assets/project-images/axels.webp'
 
 import { useState, useEffect, useRef } from 'react'
-import { ImageWithFallback } from './figma/ImageWithFallback'
 import { Lens } from '@/components/ui/lens'
+import { OptimizedImage } from './OptimizedImage'
+import { trackEvent } from '@/utils/analytics'
 
 function WorkComponent() {
   const [isVisible, setIsVisible] = useState(false)
@@ -182,10 +183,15 @@ function WorkComponent() {
                   {/* Screenshot */}
                   <div className="relative" style={{ aspectRatio: '16/9' }}>
                     <Lens zoomFactor={1.35} lensSize={180}>
-                      <ImageWithFallback
+                      <OptimizedImage
                         src={project.image}
                         alt={project.title}
+                        width={1600}
+                        height={900}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(max-width: 1024px) 100vw, 75vw"
                       />
                     </Lens>
 
@@ -246,6 +252,7 @@ function WorkComponent() {
                     style={{ color: '#ffffff', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', textDecoration: 'none', transition: 'color 0.2s' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#ffffff')}
                     onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
+                    onClick={() => trackEvent('project_click', { project_name: project.id })}
                   >
                     View Project
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

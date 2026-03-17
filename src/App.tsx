@@ -14,6 +14,7 @@ import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
 import { RevealProvider } from "./context/RevealContext"
+import { trackPageView } from "./utils/analytics"
 
 import About from "./components/About"
 import Work from "./components/Work"
@@ -43,6 +44,11 @@ function AppContent() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [location.pathname])
+
+  useEffect(() => {
+    if (!import.meta.env.PROD) return
+    trackPageView(location.pathname + location.search)
+  }, [location])
 
   return (
     <div className="min-h-screen bg-background text-foreground">

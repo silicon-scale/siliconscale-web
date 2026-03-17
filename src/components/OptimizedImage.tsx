@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback, useState } from 'react'
 
 export interface OptimizedImageProps {
   src: string
@@ -16,6 +16,9 @@ export interface OptimizedImageProps {
   fallback?: string
 }
 
+const DEFAULT_FALLBACK =
+  'https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop'
+
 function OptimizedImageComponent({
   src,
   alt,
@@ -28,11 +31,16 @@ function OptimizedImageComponent({
   sizes,
   fetchPriority,
   style,
-  fallback,
+  fallback = DEFAULT_FALLBACK,
 }: OptimizedImageProps) {
+  const [imgSrc, setImgSrc] = useState(src)
+  const handleError = useCallback(() => {
+    setImgSrc((prev) => (prev === src ? fallback : prev))
+  }, [src, fallback])
+
   return (
     <img
-      src={src}
+      src={imgSrc}
       alt={alt}
       width={width}
       height={height}
@@ -43,7 +51,7 @@ function OptimizedImageComponent({
       sizes={sizes}
       className={className}
       style={{ ...style, aspectRatio: `${width} / ${height}` }}
-      onError={fallback ? (e) => { (e.currentTarget as HTMLImageElement).src = fallback } : undefined}
+      onError={handleError}
     />
   )
 }

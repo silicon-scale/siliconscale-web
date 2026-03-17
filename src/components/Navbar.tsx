@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/SiliconScaleLogo.png'
 import { useReveal } from '../context/RevealContext'
+import { trackEvent } from '@/utils/analytics'
 
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const
 const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
@@ -52,7 +53,7 @@ export function Navbar() {
           <div className="max-w-[1600px] mx-auto flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 md:py-6">
 
             {/* Logo */}
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center" onClick={() => trackEvent('nav_click', { destination: 'home' })}>
               <motion.img
                 src={logo}
                 alt="SiliconScale"
@@ -89,7 +90,7 @@ export function Navbar() {
             {/* Right Side */}
             <div className="flex items-center gap-4 md:gap-6">
 
-              <Link to="/contact">
+              <Link to="/contact" onClick={() => trackEvent('nav_click', { destination: 'contact' })}>
                 <motion.button
                   whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
                   whileTap={{ scale: 0.95 }}
@@ -162,7 +163,7 @@ export function Navbar() {
                     ))}
                   </div>
 
-                  <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Link to="/contact" onClick={() => { trackEvent('nav_click', { destination: 'contact' }); setIsMobileMenuOpen(false) }}>
                     <motion.button
                       whileHover={{ scale: 1.03, boxShadow: "0 0 16px rgba(201,169,110,0.3)" }}
                       whileTap={{ scale: 0.97 }}

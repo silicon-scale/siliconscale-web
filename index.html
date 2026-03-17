@@ -13,7 +13,7 @@
     <meta property="og:url" content="https://siliconscale.com/" />
     <meta property="og:title" content="Silicon Scale Technologies" />
     <meta property="og:description" content="Silicon Scale builds scalable websites, SaaS platforms, and digital products for startups and businesses. High-performance web development and modern product design." />
-    <meta property="og:image" content="https://siliconscale.com/og-image.png" />
+    <meta property="og:image" content="https://siliconscale.com/masked-icon.svg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
@@ -22,18 +22,33 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Silicon Scale Technologies" />
     <meta name="twitter:description" content="Silicon Scale builds scalable websites, SaaS platforms, and digital products for startups and businesses." />
-    <meta name="twitter:image" content="https://siliconscale.com/og-image.png" />
+    <meta name="twitter:image" content="https://siliconscale.com/masked-icon.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/masked-icon.svg" />
+    <link rel="mask-icon" href="/masked-icon.svg" color="#c9a96e" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Google tag (gtag.js) -->
+    <script type="module">
+      if (import.meta.env.PROD) {
+        const script = document.createElement("script")
+        script.async = true
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-4HEME52XWZ"
+        document.head.appendChild(script)
+
+        window.dataLayer = window.dataLayer || []
+        function gtag() {
+          window.dataLayer.push(arguments)
+        }
+        gtag("js", new Date())
+        gtag("config", "G-4HEME52XWZ")
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

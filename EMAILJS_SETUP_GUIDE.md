@@ -24,7 +24,7 @@ Updated `FinalCTA.tsx` to use **`emailjs.send()`** instead of `emailjs.sendForm(
 ## 🔧 Steps to Complete the Setup
 
 ### Step 1: Verify Your .env.local File
-File location: `C:\Users\mani jhaneswar\Desktop\Projects\siliconscale-web\.env.local`
+File location: `<project-root>/.env.local`
 
 Should contain:
 ```dotenv
@@ -82,8 +82,6 @@ After updating `.env.local` and EmailJS template, **restart your dev server**:
 # Stop current dev server (Ctrl+C)
 # Then restart:
 pnpm dev
-# or
-npm run dev
 ```
 
 This ensures environment variables load properly.
