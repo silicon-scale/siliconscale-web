@@ -47,8 +47,8 @@ function AppContent() {
 
   useEffect(() => {
     if (!import.meta.env.PROD) return
-    trackPageView(location.pathname + location.search)
-  }, [location])
+    trackPageView(location.pathname)
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
