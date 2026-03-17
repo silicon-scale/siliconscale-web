@@ -10,7 +10,8 @@ function FooterComponent() {
 
         .footer-root {
           position: relative;
-          background: #000;
+          /* Match site section background to avoid seams */
+          background: #050505;
           color: #fff;
           font-family: 'DM Sans', sans-serif;
           overflow: visible;
@@ -135,13 +136,14 @@ function FooterComponent() {
         }
         .footer-orb-1 {
           width: 400px; height: 400px;
-          background: #fff;
+          /* Avoid white bloom lines near section seams */
+          background: #c9a96e;
           top: 80px; left: -100px;
           animation: orbDrift1 14s ease-in-out infinite;
         }
         .footer-orb-2 {
           width: 300px; height: 300px;
-          background: #888;
+          background: #c9a96e;
           top: 40px; right: -60px;
           animation: orbDrift2 18s ease-in-out infinite;
         }
@@ -398,7 +400,7 @@ function FooterComponent() {
           <path
             className="wave-layer-3"
             d="M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z"
-            fill="#000000"
+            fill="#050505"
           />
           {/* Layer 4: Additional flowing wave */}
           <path

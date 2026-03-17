@@ -9,6 +9,7 @@ import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { HowWeDo } from "./components/HowWeDo"
 import { Testimonials } from "./components/Testimonials"
+import FinalCTA from "./components/FinalCTA"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
@@ -31,6 +32,7 @@ const Home = memo(function Home() {
       <Services />
       <HowWeDo />
       <Testimonials />
+      <FinalCTA />
     </>
   )
 })
@@ -84,13 +86,15 @@ export default function App() {
     if (!loaderFinished) return
 
     // Let the loader unmount + layout/paint settle, then start reveal next frame.
+    let raf2: number | null = null
     const raf1 = requestAnimationFrame(() => {
-      const raf2 = requestAnimationFrame(() => setRevealStarted(true))
-      // Clean up nested RAF if component unmounts early
-      ;(raf1 as unknown as number) && (raf2 as unknown as number)
+      raf2 = requestAnimationFrame(() => setRevealStarted(true))
     })
 
-    return () => cancelAnimationFrame(raf1)
+    return () => {
+      cancelAnimationFrame(raf1)
+      if (raf2 != null) cancelAnimationFrame(raf2)
+    }
   }, [loaderFinished])
 
   return (

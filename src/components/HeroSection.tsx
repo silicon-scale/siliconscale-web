@@ -8,6 +8,7 @@ import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
 import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 
 const HERO_EASE = [0.22, 1, 0.36, 1] as const
 const HERO_DURATION = 0.75
@@ -215,12 +216,14 @@ function HeroSectionComponent() {
             layout={false}
           >
             <div className="flex flex-wrap justify-center gap-4">
-              <MagneticButton
+              <HoverBorderGradient
                 onClick={goToContact}
-                className="rounded-full bg-white px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition-colors duration-200 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
+                containerClassName="rounded-full"
+                as="button"
+                className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
                 Start Your Project
-              </MagneticButton>
+              </HoverBorderGradient>
               <MagneticButton
                 onClick={goToWork}
                 className="rounded-full border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
