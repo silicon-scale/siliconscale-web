@@ -6,6 +6,7 @@ import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
 import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
+import { HowWeDo } from "./components/HowWeDo"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
@@ -24,6 +25,7 @@ const Home = memo(function Home() {
       <HeroSection />
       <Highlights />
       <Services />
+      <HowWeDo />
     </>
   )
 })
