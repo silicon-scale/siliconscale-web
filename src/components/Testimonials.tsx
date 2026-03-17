@@ -236,11 +236,11 @@ export function Testimonials() {
           <div>
             <span className="ss-test-pill">TESTIMONIALS</span>
             <h2 id="testimonials-heading" className="ss-test-title">
-              Used by builders around the world
+              What Our Clients Say
             </h2>
           </div>
           <p className="ss-test-sub">
-            Teams come to SiliconScale for craft and stay for the speed, clarity, and reliability.
+            Businesses choose SiliconScale for fast delivery, clear communication, and reliable engineering.
           </p>
         </div>
 

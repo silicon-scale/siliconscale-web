@@ -182,10 +182,13 @@ function FooterComponent() {
           display: flex;
           align-items: center;
           gap: 0.35rem;
-          flex-wrap: wrap;
+          /* Desktop/laptop: keep logo + watermark on one row */
+          flex-wrap: nowrap;
         }
         @media (max-width: 1024px) {
           .footer-brand-head {
+            /* Tablet: allow wrapping so it never overflows */
+            flex-wrap: wrap;
             align-items: flex-end;
             gap: 0.75rem;
           }
