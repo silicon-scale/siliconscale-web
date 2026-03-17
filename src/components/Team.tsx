@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
 import maniPhoto from '../assets/jhaneswar.png'
-import pavanPhoto from '../assets/Pavan.png'
+import pavanPhoto from '../assets/Tillu.png'
 
 export default function Team() {
 
