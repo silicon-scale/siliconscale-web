@@ -8,6 +8,7 @@ import { AboutSection } from "./components/AboutSection"
 import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { HowWeDo } from "./components/HowWeDo"
+import { Testimonials } from "./components/Testimonials"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
@@ -29,6 +30,7 @@ const Home = memo(function Home() {
       <Highlights />
       <Services />
       <HowWeDo />
+      <Testimonials />
     </>
   )
 })

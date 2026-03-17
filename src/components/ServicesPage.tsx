@@ -376,15 +376,15 @@ export default function ServicesPage() {
         />
       </div>
 
-      <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 py-24 lg:px-10 lg:py-28">
+      <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
         {/* Header */}
         <header className="mb-14">
-          <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.24em] text-white/40">
-            What We Do
+          <p className="mb-4 inline-flex w-fit items-center rounded-full border border-white/12 bg-white/5 px-3 py-1 font-mono text-[0.72rem] uppercase tracking-[0.26em] text-white/65">
+            What we do
           </p>
           <h1
             id="services-heading"
-            className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-[3.2rem]"
+            className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
           >
             Services that move the needle
           </h1>
