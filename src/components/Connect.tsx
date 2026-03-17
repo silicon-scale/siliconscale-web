@@ -44,15 +44,15 @@ const CONNECT_CARDS: ConnectCard[] = [
   {
     kind: 'facebook',
     label: 'Facebook',
-    href: 'https://www.facebook.com/',
-    ariaLabel: 'Open SiliconScale on Facebook',
+    href: 'https://www.instagram.com/siliconscale',
+    ariaLabel: 'Open SiliconScale on Instagram',
     glitter: '#22c55e',
     bubbleText: 'Open',
   },
   {
     kind: 'x',
     label: 'X',
-    href: 'https://x.com/',
+    href: 'https://x.com/siliconscale',
     ariaLabel: 'Open SiliconScale on X',
     glitter: '#a78bfa',
     bubbleText: 'Open',

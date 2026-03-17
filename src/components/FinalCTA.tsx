@@ -41,7 +41,7 @@ const INITIAL: FinalCTAFormData = {
   description: '',
 }
 
-const BUDGETS = ['$5k – $10k', '$10k – $25k', '$25k – $50k', '$50k+']
+const BUDGETS = ['35000 INR', '50000 INR', '100000 INR', 'Enterprise']
 const PROJECT_TYPES = ['SaaS', 'Web Platform', 'MVP', 'Redesign']
 const TIMELINES = ['< 1 month', '1 – 3 months', '3 – 6 months', '6+ months']
 
