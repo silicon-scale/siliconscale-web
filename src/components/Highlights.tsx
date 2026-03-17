@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 const STATS = [
   {
-    value: '6+',
+    value: '14+',
     label: 'Projects Completed',
     sub: 'Across SaaS, education, and brands',
     color: '#ff5c5c',
@@ -23,7 +23,7 @@ const STATS = [
     color: '#3dd9a3',
   },
   {
-    value: '3+',
+    value: '8+',
     label: 'Business Brands Served',
     sub: 'From early-stage to growing teams',
     color: '#4da3ff',

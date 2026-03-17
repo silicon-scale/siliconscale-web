@@ -397,9 +397,9 @@ export default function AboutPage() {
 			<div ref={statsRef.ref as any} className="stats-section">
 				<div className="stat-row">
 					{[
-						{ n: "6+", l: "Projects Delivered" },
+						{ n: "14+", l: "Projects Delivered" },
 						{ n: "2 yrs", l: "Crafting Experiences" },
-						{ n: "3+", l: "Business Brands Served" },
+						{ n: "8+", l: "Business Brands Served" },
 						{ n: "99%", l: "Client Retention" },
 					].map((s, i) => (
 						<div
