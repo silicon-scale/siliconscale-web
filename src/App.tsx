@@ -4,6 +4,7 @@ import { lazy, memo, Suspense, useEffect, useState } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
+import { AboutSection } from "./components/AboutSection"
 import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { HowWeDo } from "./components/HowWeDo"
@@ -24,6 +25,7 @@ const Home = memo(function Home() {
   return (
     <>
       <HeroSection />
+      <AboutSection />
       <Highlights />
       <Services />
       <HowWeDo />

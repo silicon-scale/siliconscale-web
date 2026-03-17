@@ -549,8 +549,12 @@ export default function Contact() {
           .contact-body { gap: 20px !important; }
           .or-divider { padding: 10px 0 !important; }
           .channels-col { margin-top: 20px !important; }
-          .connect-grid { grid-template-columns: 1fr; gap: 12px; }
-          .connect-card--big { min-height: 240px; }
+          /* Mobile like reference: big card full-width, then 2x2 socials */
+          .connect-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+          .connect-card--big {
+            grid-column: 1 / -1;
+            min-height: 240px;
+          }
         }
       `}</style>
 
