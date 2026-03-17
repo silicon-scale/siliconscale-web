@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, type FormEvent } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import emailjs from '@emailjs/browser'
 import SectionShell from '@/components/ui/SectionShell'
 import Reveal from '@/components/ui/Reveal'
 import { BrandButton } from '@/components/ui/BrandButton'
@@ -20,6 +21,7 @@ import {
 interface FinalCTAFormData {
   name: string
   email: string
+  phone: string
   company: string
   budget: string
   projectType: string
@@ -30,6 +32,7 @@ interface FinalCTAFormData {
 const INITIAL: FinalCTAFormData = {
   name: '',
   email: '',
+  phone: '',
   company: '',
   budget: '',
   projectType: '',
@@ -42,6 +45,11 @@ const PROJECT_TYPES = ['SaaS', 'Web Platform', 'MVP', 'Redesign']
 const TIMELINES = ['< 1 month', '1 – 3 months', '3 – 6 months', '6+ months']
 
 const EASE = [0.22, 1, 0.36, 1] as const
+
+// EmailJS Configuration from environment variables
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || ''
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
 
 const TRUST = [
   { icon: Clock, text: 'We respond within 24 hours' },
@@ -58,6 +66,7 @@ const FloatingInput = ({
   value,
   onChange,
   required = true,
+  name,
 }: {
   id: string
   label: string
@@ -65,12 +74,14 @@ const FloatingInput = ({
   value: string
   onChange: (v: string) => void
   required?: boolean
+  name?: string
 }) => {
   const hasValue = value.length > 0
   return (
     <div className="group relative">
       <input
         id={id}
+        name={name}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -100,18 +111,21 @@ const FloatingSelect = ({
   value,
   onChange,
   options,
+  name,
 }: {
   id: string
   label: string
   value: string
   onChange: (v: string) => void
   options: string[]
+  name?: string
 }) => {
   const hasValue = value.length > 0
   return (
     <div className="group relative">
       <select
         id={id}
+        name={name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required
@@ -215,6 +229,7 @@ const FinalCTA = () => {
   const [[step, dir], setStep] = useState<[number, number]>([0, 0])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   const set = (key: keyof FinalCTAFormData) => (v: string) =>
@@ -233,15 +248,39 @@ const FinalCTA = () => {
     if (step > 0) setStep([step - 1, -1])
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!canNext()) return
+
     setSubmitting(true)
-    // Simulate submission
-    window.setTimeout(() => {
-      setSubmitting(false)
+    setError(null)
+
+    try {
+      // Send data directly from React state using emailjs.send
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          budget: form.budget,
+          projectType: form.projectType,
+          timeline: form.timeline,
+          description: form.description,
+          time: new Date().toLocaleString(),
+        },
+        PUBLIC_KEY
+      )
       setSubmitted(true)
-    }, 1500)
+      setForm(INITIAL) // Reset form on success
+    } catch (err) {
+      console.error('EmailJS error:', err)
+      setError('Failed to send message. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -372,6 +411,7 @@ const FinalCTA = () => {
                                 label="Full Name"
                                 value={form.name}
                                 onChange={set('name')}
+                                name="name"
                               />
                               <FloatingInput
                                 id="cta-email"
@@ -379,6 +419,16 @@ const FinalCTA = () => {
                                 type="email"
                                 value={form.email}
                                 onChange={set('email')}
+                                name="email"
+                              />
+                              <FloatingInput
+                                id="cta-phone"
+                                label="Phone Number"
+                                type="tel"
+                                value={form.phone}
+                                onChange={set('phone')}
+                                name="phone"
+                                required={false}
                               />
                             </motion.div>
                           )}
@@ -400,6 +450,7 @@ const FinalCTA = () => {
                                 label="Company / Startup Name"
                                 value={form.company}
                                 onChange={set('company')}
+                                name="company"
                               />
                               <FloatingSelect
                                 id="cta-budget"
@@ -407,6 +458,7 @@ const FinalCTA = () => {
                                 value={form.budget}
                                 onChange={set('budget')}
                                 options={BUDGETS}
+                                name="budget"
                               />
                             </motion.div>
                           )}
@@ -430,6 +482,7 @@ const FinalCTA = () => {
                                   value={form.projectType}
                                   onChange={set('projectType')}
                                   options={PROJECT_TYPES}
+                                  name="projectType"
                                 />
                                 <FloatingSelect
                                   id="cta-timeline"
@@ -437,11 +490,13 @@ const FinalCTA = () => {
                                   value={form.timeline}
                                   onChange={set('timeline')}
                                   options={TIMELINES}
+                                  name="timeline"
                                 />
                               </div>
                               <div className="group relative">
                                 <textarea
                                   id="cta-desc"
+                                  name="description"
                                   value={form.description}
                                   onChange={(e) => set('description')(e.target.value)}
                                   required
@@ -465,6 +520,13 @@ const FinalCTA = () => {
                           )}
                         </AnimatePresence>
                       </div>
+
+                      {/* Error Message */}
+                      {error && (
+                        <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center">
+                          <p className="text-sm text-red-400">{error}</p>
+                        </div>
+                      )}
 
                       {/* Navigation */}
                       <div className="mt-8 flex items-center justify-between">
