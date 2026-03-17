@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://siliconscale.com/sitemap.xml
+Sitemap: https://siliconscale.dev/sitemap.xml
