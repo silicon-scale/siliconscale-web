@@ -28,7 +28,17 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['masked-icon.svg', 'site.webmanifest', 'robots.txt', 'sitemap.xml'],
+      includeAssets: [
+        'favicon.ico',
+        'favicon-16x16.png',
+        'favicon-32x32.png',
+        'apple-touch-icon.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png',
+        'site.webmanifest',
+        'robots.txt',
+        'sitemap.xml',
+      ],
       manifest: {
         name: 'SiliconScale',
         short_name: 'SiliconScale',
@@ -38,10 +48,14 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'masked-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            src: 'android-chrome-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
           },
         ],
       }
