@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { ScalesContainer } from '@/components/ui/scales'
 import { Vortex } from '@/components/ui/vortex'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export function AboutSection() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   return (
     <section
@@ -14,18 +16,20 @@ export function AboutSection() {
       className="relative w-full bg-[#050505] py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
       {/* Vortex background effect */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.55]">
-        <Vortex
-          backgroundColor="rgba(0,0,0,0)"
-          particleCount={420}
-          baseHue={42}
-          rangeSpeed={1.2}
-          baseSpeed={0.05}
-          baseRadius={1}
-          rangeRadius={2}
-          containerClassName="absolute inset-0"
-        />
-      </div>
+      {!isMobile ? (
+        <div className="absolute inset-0 pointer-events-none opacity-[0.55]">
+          <Vortex
+            backgroundColor="rgba(0,0,0,0)"
+            particleCount={420}
+            baseHue={42}
+            rangeSpeed={1.2}
+            baseSpeed={0.05}
+            baseRadius={1}
+            rangeRadius={2}
+            containerClassName="absolute inset-0"
+          />
+        </div>
+      ) : null}
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-10">
         <ScalesContainer
           orientation="diagonal"
