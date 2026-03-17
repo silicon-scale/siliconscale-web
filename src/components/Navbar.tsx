@@ -65,7 +65,7 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 lg:space-x-16">
+            <div className="hidden md:flex items-center space-x-5 lg:space-x-12 xl:space-x-16">
 
               {navLinks.map((link, index) => (
                 <motion.div
@@ -76,7 +76,7 @@ export function Navbar() {
                 >
                   <Link
                     to={link.path}
-                    className="relative text-white text-sm md:text-base uppercase tracking-[0.25em] hover:text-white/80 transition-all duration-300 group"
+                    className="relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-all duration-300 group"
                   >
                     {link.name}
                     <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-[#c9a96e] to-[#c9a96e]/50 transition-all duration-300 group-hover:w-full"></span>
@@ -93,7 +93,7 @@ export function Navbar() {
                 <motion.button
                   whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="hidden md:block border border-white/20 text-white px-6 py-2 text-xs md:px-8 md:py-3 md:text-sm rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                  className="hidden md:block border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
                 >
                   Book Call
                 </motion.button>

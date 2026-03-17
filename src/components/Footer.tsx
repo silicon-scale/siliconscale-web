@@ -14,6 +14,8 @@ function FooterComponent() {
           color: #fff;
           font-family: 'DM Sans', sans-serif;
           overflow: visible;
+          /* Prevent any SVG/absolute layers from widening the page on iPad */
+          overflow-x: clip;
         }
 
         /* Ultra-smooth CSS wave animations */
@@ -180,7 +182,13 @@ function FooterComponent() {
           display: flex;
           align-items: center;
           gap: 0.35rem;
-          flex-wrap: nowrap;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 1024px) {
+          .footer-brand-head {
+            align-items: flex-end;
+            gap: 0.75rem;
+          }
         }
         .footer-watermark {
           font-family: 'Syne', sans-serif;
@@ -191,6 +199,11 @@ function FooterComponent() {
           line-height: 1;
           user-select: none;
           white-space: nowrap;
+        }
+        @media (max-width: 1024px) {
+          .footer-watermark {
+            font-size: clamp(3rem, 9vw, 7rem);
+          }
         }
         @media (max-width: 768px) {
           .footer-watermark {
@@ -336,7 +349,7 @@ function FooterComponent() {
           z-index: 2;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 1.5rem 2.5rem;
+          padding: 1.5rem clamp(1rem, 5vw, 2.5rem);
           border-top: 1px solid rgba(255,255,255,0.08);
           display: flex;
           align-items: center;
@@ -348,6 +361,11 @@ function FooterComponent() {
           color: rgba(255, 255, 255, 0.5);
           font-size: 0.875rem;
         }
+        @media (max-width: 900px) {
+          .footer-bottom {
+            flex-wrap: wrap;
+          }
+        }
         @media (max-width: 600px) {
           .footer-bottom { flex-direction: column; text-align: center; }
         }
@@ -357,7 +375,7 @@ function FooterComponent() {
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]" style={{ transform: 'translateY(-98%)', pointerEvents: 'none' }}>
         <svg
           className="relative block h-[80px] md:h-[120px]"
-          style={{ width: 'calc(160% + 1.3px)' }}
+          style={{ width: '100%' }}
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
         >

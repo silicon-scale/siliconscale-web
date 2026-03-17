@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
-import { lazy, memo, Suspense, useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
@@ -13,13 +13,13 @@ import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
 import { RevealProvider } from "./context/RevealContext"
 
-const About = lazy(() => import("./components/About"))
-const Work = lazy(() => import("./components/Work"))
-const Team = lazy(() => import("./components/Team"))
-const Contact = lazy(() => import("./components/Contact"))
-const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"))
-const TermsOfService = lazy(() => import("./components/TermsOfService"))
-const ServicesPage = lazy(() => import("./components/ServicesPage"))
+import About from "./components/About"
+import Work from "./components/Work"
+import Team from "./components/Team"
+import Contact from "./components/Contact"
+import PrivacyPolicy from "./components/PrivacyPolicy"
+import TermsOfService from "./components/TermsOfService"
+import ServicesPage from "./components/ServicesPage"
 
 const Home = memo(function Home() {
   return (
@@ -56,62 +56,13 @@ function AppContent() {
           >
             <Routes location={location}>
               <Route path="/" element={<Home />} />
-              <Route
-                path="/about"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <About />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/work"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <Work />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/team"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <Team />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/contact"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <Contact />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/privacy"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <PrivacyPolicy />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/terms"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <TermsOfService />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="/services"
-                element={
-                  <Suspense fallback={<IntroLoader onComplete={() => {}} />}>
-                    <ServicesPage />
-                  </Suspense>
-                }
-              />
+              <Route path="/about" element={<About />} />
+              <Route path="/work" element={<Work />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/services" element={<ServicesPage />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
