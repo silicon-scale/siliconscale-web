@@ -2,6 +2,8 @@
 
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
 
 const STATS = [
   {
@@ -67,13 +69,16 @@ export function Highlights() {
             </h2>
           </div>
 
-          <button
+          <motion.button
             type="button"
             onClick={() => navigate('/about')}
-            className="rounded-full border border-white/18 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 shadow-sm transition hover:bg-white hover:text-black"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white uppercase tracking-[0.2em] transition-all duration-300 hover:border-[#c9a96e]/60 hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black hover:shadow-[0_0_24px_rgba(201,169,110,0.25)]"
           >
             More about us
-          </button>
+            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+          </motion.button>
         </div>
 
         {/* Stats grid */}

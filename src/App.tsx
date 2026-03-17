@@ -10,6 +10,7 @@ import { HowWeDo } from "./components/HowWeDo"
 import { Footer } from "./components/Footer"
 import { PageTransitionFallback } from "./components/PageTransitionFallback"
 import { IntroLoader } from "./components/IntroLoader"
+import { RevealProvider } from "./context/RevealContext"
 
 const About = lazy(() => import("./components/About"))
 const Work = lazy(() => import("./components/Work"))
@@ -121,13 +122,35 @@ function AppContent() {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true)
+  const [loaderFinished, setLoaderFinished] = useState(false)
+  const [revealStarted, setRevealStarted] = useState(false)
+
+  useEffect(() => {
+    if (!loaderFinished) return
+
+    // Let the loader unmount + layout/paint settle, then start reveal next frame.
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(() => setRevealStarted(true))
+      // Clean up nested RAF if component unmounts early
+      ;(raf1 as unknown as number) && (raf2 as unknown as number)
+    })
+
+    return () => cancelAnimationFrame(raf1)
+  }, [loaderFinished])
 
   return (
     <Router>
       {showIntro && (
-        <IntroLoader onComplete={() => setShowIntro(false)} />
+        <IntroLoader
+          onComplete={() => {
+            setShowIntro(false)
+            setLoaderFinished(true)
+          }}
+        />
       )}
-      <AppContent />
+      <RevealProvider revealStarted={revealStarted}>
+        <AppContent />
+      </RevealProvider>
     </Router>
   )
 }

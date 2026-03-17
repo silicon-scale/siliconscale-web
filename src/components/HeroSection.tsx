@@ -2,41 +2,51 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useRef, useEffect } from 'react'
 import { MagneticButton } from './ui/MagneticButton'
 import { SpotlightBeams } from './SpotlightBeams'
+import { useReveal } from '../context/RevealContext'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    transition: { staggerChildren: 0.16, delayChildren: 1 },
-  }),
-}
+const HERO_EASE = [0.22, 1, 0.36, 1] as const
+const HERO_DURATION = 0.75
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
+const heroContainer = {
+  hidden: {},
   visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5 },
+    transition: { staggerChildren: 0.14 },
   },
-}
+} as const
 
-const headlineVariants = {
-  hidden: { opacity: 0, y: 24, textShadow: '0 0 0 rgba(255,255,255,0)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    textShadow:
-      '0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.10)',
-    transition: { duration: 0.55 },
+const heroItemHidden = {
+  opacity: 0,
+  y: 80,
+  z: 0,
+} as const
+
+const heroItemVisible = {
+  opacity: 1,
+  y: 0,
+  z: 0,
+  transition: {
+    duration: HERO_DURATION,
+    ease: HERO_EASE,
   },
-}
+} as const
+
+const GPU_LAYER_STYLE = {
+  transform: 'translateZ(0)',
+  backfaceVisibility: 'hidden' as const,
+} as const
 
 function HeroSectionComponent() {
   const navigate = useNavigate()
+  const { revealStarted } = useReveal()
   const prefersReducedMotion = useReducedMotion()
+  const hasRevealedRef = useRef(false)
+  useEffect(() => {
+    if (revealStarted) hasRevealedRef.current = true
+  }, [revealStarted])
+  const shouldReveal = hasRevealedRef.current || revealStarted || prefersReducedMotion
   const goToContact = useCallback(() => navigate('/contact'), [navigate])
   const goToWork = useCallback(() => navigate('/work'), [navigate])
 
@@ -99,59 +109,65 @@ function HeroSectionComponent() {
       {/* Spotlight beams (SVG-based, responsive) */}
       <SpotlightBeams />
 
-      {/* Hero content */}
+      {/* Hero content: GPU-only — translate3d(0, 80px, 0) + opacity, 0.75s, stagger 0.14 */}
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
         <motion.div
-          variants={containerVariants}
-          initial={prefersReducedMotion ? 'visible' : 'hidden'}
-          animate="visible"
           className="mx-auto max-w-4xl text-center"
+          variants={heroContainer}
+          initial="hidden"
+          animate={shouldReveal ? 'visible' : 'hidden'}
+          aria-hidden={!shouldReveal}
+          layout={false}
         >
-          {/* Headline — illuminated by spotlight beams via headlineVariants textShadow */}
           <motion.h1
-            variants={headlineVariants}
+            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
+            style={{
+              ...GPU_LAYER_STYLE,
+              fontSize: 'clamp(2.8rem, 5.4vw, 4.8rem)',
+              textWrap: 'balance',
+              textShadow: '0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.10)',
+            }}
             className="mt-6 font-black leading-[1.02] tracking-tight text-white"
-            style={{ fontSize: 'clamp(2.8rem, 5.4vw, 4.8rem)', textWrap: 'balance' }}
+            layout={false}
           >
             <span className="block">We Build Digital</span>
             <span className="block">Products That Scale</span>
           </motion.h1>
 
-          {/* Subtext */}
           <motion.p
-            variants={itemVariants}
+            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
+            style={GPU_LAYER_STYLE}
             className="mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto"
+            layout={false}
           >
             Silicon Scale Technologies helps startups and businesses build high-performance websites,
             SaaS platforms and scalable digital products.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
-            variants={itemVariants}
-            className="mt-10 flex flex-wrap justify-center gap-4"
+            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
+            style={GPU_LAYER_STYLE}
+            className="mt-10 flex flex-col items-center gap-4"
+            layout={false}
           >
-            <MagneticButton
-              onClick={goToContact}
-              className="rounded-full bg-white px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition-transform duration-200 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
-            >
-              Start Your Project
-            </MagneticButton>
-            <MagneticButton
-              onClick={goToWork}
-              className="rounded-full border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-transform duration-200 hover:scale-[1.03] hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
-            >
-              View Our Work
-            </MagneticButton>
+            <div className="flex flex-wrap justify-center gap-4">
+              <MagneticButton
+                onClick={goToContact}
+                className="rounded-full bg-white px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition-colors duration-200 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
+              >
+                Start Your Project
+              </MagneticButton>
+              <MagneticButton
+                onClick={goToWork}
+                className="rounded-full border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
+              >
+                View Our Work
+              </MagneticButton>
+            </div>
+            <p className="mt-6 text-sm text-white/55">
+              Delivering scalable, high-quality digital solutions.
+            </p>
           </motion.div>
-
-          {/* Trust text */}
-          <motion.p
-            variants={itemVariants}
-            className="mt-10 text-sm text-white/55"
-          >
-            Delivering scalable, high-quality digital solutions.
-          </motion.p>
         </motion.div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { Mail, Linkedin, Instagram, Facebook, X as XIcon, ArrowUpRight } from 'lucide-react'
 
 /* ─────────────────────────────────────────────────────────
    DATA
@@ -52,6 +53,116 @@ const CHANNELS = [
     color: '#fff',
   },
 ]
+
+/* ─────────────────────────────────────────────────────────
+   CONNECT SECTION (cards + glitter hover)
+───────────────────────────────────────────────────────── */
+type ConnectCardKind = 'email' | 'linkedin' | 'instagram' | 'facebook' | 'x'
+
+type ConnectCard = {
+  kind: ConnectCardKind
+  label: string
+  href: string
+  ariaLabel: string
+  glitter: string
+  bubbleText: string
+}
+
+const CONNECT_CARDS: ConnectCard[] = [
+  {
+    kind: 'email',
+    label: 'Email',
+    href: 'mailto:contact@siliconscale.dev?subject=Let%27s%20build%20something',
+    ariaLabel: 'Write to SiliconScale via email',
+    glitter: '#e8e8e8',
+    bubbleText: 'Write us',
+  },
+  {
+    kind: 'linkedin',
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/',
+    ariaLabel: 'Open SiliconScale on LinkedIn',
+    glitter: '#60a5fa',
+    bubbleText: 'Open',
+  },
+  {
+    kind: 'instagram',
+    label: 'Instagram',
+    href: 'https://www.instagram.com/',
+    ariaLabel: 'Open SiliconScale on Instagram',
+    glitter: '#fb7185',
+    bubbleText: 'Open',
+  },
+  {
+    kind: 'facebook',
+    label: 'Facebook',
+    href: 'https://www.facebook.com/',
+    ariaLabel: 'Open SiliconScale on Facebook',
+    glitter: '#22c55e',
+    bubbleText: 'Open',
+  },
+  {
+    kind: 'x',
+    label: 'X',
+    href: 'https://x.com/',
+    ariaLabel: 'Open SiliconScale on X',
+    glitter: '#a78bfa',
+    bubbleText: 'Open',
+  },
+]
+
+function ConnectIcon({ kind }: { kind: ConnectCardKind }) {
+  const common = { className: 'connect-icon', 'aria-hidden': true as const }
+  if (kind === 'email') return <Mail {...common} />
+  if (kind === 'linkedin') return <Linkedin {...common} />
+  if (kind === 'instagram') return <Instagram {...common} />
+  if (kind === 'facebook') return <Facebook {...common} />
+  return <XIcon {...common} />
+}
+
+function ConnectCard({
+  card,
+  className,
+}: {
+  card: ConnectCard
+  className?: string
+}) {
+  const [hovered, setHovered] = useState(false)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+
+  return (
+    <a
+      href={card.href}
+      target={card.href.startsWith('mailto:') ? undefined : '_blank'}
+      rel={card.href.startsWith('mailto:') ? undefined : 'noreferrer'}
+      aria-label={card.ariaLabel}
+      className={`connect-card ${className ?? ''}`}
+      style={{ ['--glitter' as any]: card.glitter }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onMouseMove={(e) => {
+        const r = (e.currentTarget as HTMLAnchorElement).getBoundingClientRect()
+        setPos({ x: e.clientX - r.left, y: e.clientY - r.top })
+      }}
+    >
+      {/* Glitter overlay */}
+      <div className={`connect-glitter ${hovered ? 'is-on' : ''}`} aria-hidden />
+
+      {/* Bubble (follows cursor) */}
+      <div
+        className={`connect-bubble ${hovered ? 'is-on' : ''}`}
+        aria-hidden
+        style={{ left: pos.x, top: pos.y }}
+      >
+        {card.bubbleText}
+      </div>
+
+      <div className="connect-inner">
+        <ConnectIcon kind={card.kind} />
+      </div>
+    </a>
+  )
+}
 
 /* ─────────────────────────────────────────────────────────
    STEP PROGRESS
@@ -269,20 +380,177 @@ export default function Contact() {
         }
         .pop { animation: popIn 0.45s cubic-bezier(0.22,1,0.36,1) both; }
 
+        /* ─────────────────────────────
+           CONNECT SECTION
+        ───────────────────────────── */
+        .connect-wrap {
+          margin-top: 84px;
+          margin-bottom: 0px;
+        }
+        .connect-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 6px 12px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.04);
+          font-family: 'DM Mono',monospace;
+          font-size: 10px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.4);
+        }
+        .connect-title {
+          margin-top: 12px;
+          font-size: clamp(32px, 5.4vw, 62px);
+          font-weight: 800;
+          letter-spacing: -0.03em;
+          line-height: 1.1;
+          max-width: 820px;
+        }
+        .connect-grid {
+          margin-top: 30px;
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+          gap: 18px;
+        }
+        .connect-card {
+          position: relative;
+          overflow: hidden;
+          border-radius: 18px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          min-height: 164px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-decoration: none;
+          color: #fff;
+          transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), border-color 0.22s, background 0.22s;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+        }
+        .connect-card:hover {
+          transform: translateY(-2px);
+          border-color: rgba(255,255,255,0.18);
+          background: rgba(255,255,255,0.05);
+        }
+        .connect-card:focus-visible {
+          outline: 2px solid rgba(255,255,255,0.55);
+          outline-offset: 3px;
+        }
+        .connect-card--big {
+          grid-column: 1 / 2;
+          grid-row: 1 / span 2;
+          min-height: 352px;
+          justify-content: center;
+        }
+        .connect-inner {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+        }
+        .connect-icon {
+          width: 56px;
+          height: 56px;
+          opacity: 0.95;
+        }
+        .connect-card--big .connect-icon {
+          width: 78px;
+          height: 78px;
+        }
+
+        /* Glitter overlay: lightweight “sparkle” illusion via dots + gradient */
+        @keyframes glitterDrift {
+          0% { transform: translate3d(-6%, -3%, 0); }
+          100% { transform: translate3d(6%, 3%, 0); }
+        }
+        .connect-glitter {
+          position: absolute;
+          inset: -30%;
+          opacity: 0;
+          transition: opacity 0.18s ease-out;
+          pointer-events: none;
+          z-index: 1;
+          transform: translateZ(0);
+          background:
+            radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--glitter) 75%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 48% 32%, color-mix(in srgb, var(--glitter) 65%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 78% 22%, color-mix(in srgb, var(--glitter) 75%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 26% 64%, color-mix(in srgb, var(--glitter) 70%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 66% 70%, color-mix(in srgb, var(--glitter) 70%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 86% 58%, color-mix(in srgb, var(--glitter) 75%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 40% 86%, color-mix(in srgb, var(--glitter) 65%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 10% 90%, color-mix(in srgb, var(--glitter) 75%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 92% 92%, color-mix(in srgb, var(--glitter) 70%, transparent) 0 1px, transparent 2px),
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0 140px, transparent 220px);
+          background-repeat: repeat;
+          background-size: 140px 140px, 160px 160px, 180px 180px, 150px 150px, 170px 170px, 210px 210px, 190px 190px, 220px 220px, 240px 240px, 100% 100%;
+          mix-blend-mode: screen;
+          animation: glitterDrift 2.2s ease-in-out infinite alternate;
+          filter: contrast(1.1);
+        }
+        .connect-glitter.is-on { opacity: 1; }
+
+        /* Cursor-follow bubble */
+        .connect-bubble {
+          position: absolute;
+          z-index: 3;
+          width: 72px;
+          height: 72px;
+          border-radius: 999px;
+          background: rgba(0,0,0,0.78);
+          border: 1px solid rgba(255,255,255,0.10);
+          display: grid;
+          place-items: center;
+          font-family: 'Sora',sans-serif;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          color: rgba(255,255,255,0.9);
+          transform: translate(-50%, -50%) scale(0.92);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+        .connect-bubble.is-on {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+
         /* ── Responsive: stack on mobile ── */
         @media (max-width: 1024px) {
           .channels-col { flex: 0 0 320px !important; }
+          .connect-grid {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
+          }
+          .connect-card--big {
+            grid-column: 1 / -1;
+            grid-row: auto;
+            min-height: 280px;
+          }
         }
         @media (max-width: 768px) {
           .contact-body { flex-direction: column !important; gap: 40px !important; }
           .or-divider { flex-direction: row !important; width: 100% !important; height: auto !important; padding: 20px 0 !important; }
           .or-divider-line { flex: 1 !important; width: auto !important; height: 1px !important; }
           .channels-col { position: static !important; flex: none !important; width: 100% !important; }
+          .connect-wrap { margin-top: 64px; }
+          .connect-card { min-height: 150px; }
         }
         @media (max-width: 480px) {
           .contact-body { gap: 20px !important; }
           .or-divider { padding: 10px 0 !important; }
           .channels-col { margin-top: 20px !important; }
+          .connect-grid { grid-template-columns: 1fr; gap: 12px; }
+          .connect-card--big { min-height: 240px; }
         }
       `}</style>
 
@@ -604,6 +872,28 @@ export default function Contact() {
 
           </div>
         )}
+
+        {/* ─────────────────────────────
+            CONNECT SECTION (like reference)
+            Placed AFTER the form
+        ───────────────────────────── */}
+        <div className="connect-wrap">
+          <span className="connect-pill">LET&apos;S CONNECT</span>
+          <h3 className="connect-title">
+            We&apos;re here for ideas, feedback, or a friendly hello!
+          </h3>
+
+          <div className="connect-grid" aria-label="Connect options">
+            <ConnectCard
+              card={CONNECT_CARDS[0]}
+              className="connect-card--big"
+            />
+            <ConnectCard card={CONNECT_CARDS[1]} />
+            <ConnectCard card={CONNECT_CARDS[2]} />
+            <ConnectCard card={CONNECT_CARDS[3]} />
+            <ConnectCard card={CONNECT_CARDS[4]} />
+          </div>
+        </div>
       </div>
     </section>
   )

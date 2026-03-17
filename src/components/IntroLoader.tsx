@@ -4,24 +4,27 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 
 export interface IntroLoaderProps {
-  /** Called when the slide-out animation completes. */
+  /** Called when the slide-out animation completes (loader unmount). */
   onComplete: () => void
+  /** Called when the loader finishes its display duration (1s); use to start page reveal. */
+  onRevealStart?: () => void
 }
 
-const FADE_IN_DURATION = 0.6
-const HOLD_DURATION = 1
+const HOLD_DURATION_MS = 1000
 const SLIDE_DURATION = 0.9
 const EASING = [0.42, 0, 0.58, 1] as const // easeInOut
 
-export function IntroLoader({ onComplete }: IntroLoaderProps) {
+export function IntroLoader({ onComplete, onRevealStart }: IntroLoaderProps) {
   const [phase, setPhase] = useState<'enter' | 'exit'>('enter')
 
-  // After fade-in (0.6s) + hold (0.8s), start slide-out
+  // After 1s, start slide-out and trigger page reveal so they run in sync
   useEffect(() => {
-    const delayMs = (FADE_IN_DURATION + HOLD_DURATION) * 1000
-    const t = setTimeout(() => setPhase('exit'), delayMs)
+    const t = setTimeout(() => {
+      setPhase('exit')
+      onRevealStart?.()
+    }, HOLD_DURATION_MS)
     return () => clearTimeout(t)
-  }, [])
+  }, [onRevealStart])
 
   return (
     <motion.section

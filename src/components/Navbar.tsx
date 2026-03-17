@@ -5,8 +5,13 @@ import { Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/SiliconScaleLogo.png'
+import { useReveal } from '../context/RevealContext'
+
+const REVEAL_EASE = [0.22, 1, 0.36, 1] as const
+const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
 
 export function Navbar() {
+  const { revealStarted } = useReveal()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -25,11 +30,16 @@ export function Navbar() {
 
   return (
     <>
-      {/* Navbar */}
+      {/* Navbar: GPU-only — translateY(-70px) + opacity, 0.7s */}
       <motion.nav
-        initial={{ y: -90, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7 }}
+        initial={{ y: -70, opacity: 0 }}
+        animate={revealStarted ? { y: 0, opacity: 1 } : { y: -70, opacity: 0 }}
+        transition={REVEAL_TRANSITION}
+        style={{
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+        }}
+        layout={false}
         className="fixed top-0 left-0 w-full z-[200]"
       >
         <div
@@ -61,8 +71,8 @@ export function Navbar() {
                 <motion.div
                   key={link.name}
                   initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index, duration: 0.5 }}
+                  animate={revealStarted ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+                  transition={{ ...REVEAL_TRANSITION, delay: revealStarted ? 0.05 * index : 0 }}
                 >
                   <Link
                     to={link.path}
