@@ -7,12 +7,12 @@ const PRINCIPLES = [
 	{
 		icon: (
 			<svg
-				width="28"
-				height="28"
+				width="44"
+				height="44"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
-				strokeWidth="1.4"
+				strokeWidth="1.2"
 			>
 				<circle cx="14" cy="14" r="10" />
 				<ellipse cx="14" cy="14" rx="10" ry="5" />
@@ -25,12 +25,12 @@ const PRINCIPLES = [
 	{
 		icon: (
 			<svg
-				width="28"
-			height="28"
+				width="44"
+				height="44"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
-				strokeWidth="1.4"
+				strokeWidth="1.2"
 			>
 				<path d="M7 21 L20 8" />
 				<path d="M20 8 L13 8" />
@@ -43,12 +43,12 @@ const PRINCIPLES = [
 	{
 		icon: (
 			<svg
-				width="28"
-				height="28"
+				width="44"
+				height="44"
 				viewBox="0 0 28 28"
 				fill="none"
 				stroke="currentColor"
-				strokeWidth="1.4"
+				strokeWidth="1.2"
 			>
 				<polyline points="14,5 14,14 19,19" />
 				<circle cx="14" cy="14" r="9" />
@@ -236,7 +236,7 @@ export default function AboutPage() {
         .stat-cell:last-child { border-right: none; }
 
         .pc {
-          flex: 1; padding: 44px 40px;
+          flex: 1; padding: 64px 56px;
           border-left: 1px solid rgba(255,255,255,0.1);
           transition: border-color 0.3s;
         }
@@ -316,12 +316,12 @@ export default function AboutPage() {
           .principles-section { padding: 48px 16px; }
           .cta-section { padding: 32px 16px; }
           .stat-cell { padding: 32px 0 32px 20px; }
-          .pc { padding: 32px 20px; }
+          .pc { padding: 40px 20px; }
         }
 
         @media (max-width: 860px) {
           .principles-wrap { flex-direction: column !important; }
-          .pc { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.1); padding: 36px 0 !important; }
+          .pc { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.1); padding: 44px 0 !important; }
           .stat-row { flex-wrap: wrap; }
           .stat-cell { flex: 1 1 50%; }
         }
@@ -483,17 +483,17 @@ export default function AboutPage() {
 							<div
 								style={{
 									color: "rgba(255,255,255,0.55)",
-									marginBottom: 60,
+									marginBottom: 72,
 								}}
 							>
 								{p.icon}
 							</div>
 							<h3
 								style={{
-									fontSize: 19,
+									fontSize: 26,
 									fontWeight: 600,
 									letterSpacing: "-0.01em",
-									marginBottom: 16,
+									marginBottom: 20,
 									lineHeight: 1.3,
 								}}
 							>
@@ -502,7 +502,7 @@ export default function AboutPage() {
 							<p
 								style={{
 									fontFamily: "'DM Mono',monospace",
-									fontSize: 13,
+									fontSize: 15,
 									lineHeight: 1.85,
 									color: "rgba(255,255,255,0.42)",
 									fontWeight: 300,
@@ -557,11 +557,11 @@ export default function AboutPage() {
 					style={{ display: "flex", gap: 16, flexWrap: "wrap" }}
 				>
 					<a
-						href="/work"
+						href="/contact"
 						className="join-btn"
 						style={{ fontSize: 12 }}
 					>
-						View Our Work ↗
+						Talk to us ↗
 					</a>
 				</div>
 			</section>

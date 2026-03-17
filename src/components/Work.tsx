@@ -8,6 +8,7 @@ import axelsImage from '../assets/Project-Images/axels.png'
 
 import { useState, useEffect, useRef } from 'react'
 import { ImageWithFallback } from './figma/ImageWithFallback'
+import { Lens } from '@/components/ui/lens'
 
 function WorkComponent() {
   const [isVisible, setIsVisible] = useState(false)
@@ -180,11 +181,13 @@ function WorkComponent() {
                 >
                   {/* Screenshot */}
                   <div className="relative" style={{ aspectRatio: '16/9' }}>
-                    <ImageWithFallback
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <Lens zoomFactor={1.35} lensSize={180}>
+                      <ImageWithFallback
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </Lens>
 
                     {/* Stat badge */}
                     <div className="absolute bottom-6 left-6">

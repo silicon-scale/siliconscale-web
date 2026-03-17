@@ -6,6 +6,7 @@ import { memo, useCallback, useRef, useEffect } from 'react'
 import { MagneticButton } from './ui/MagneticButton'
 import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
+import { CanvasText } from '@/components/ui/canvas-text'
 
 const HERO_EASE = [0.22, 1, 0.36, 1] as const
 const HERO_DURATION = 0.75
@@ -130,8 +131,46 @@ function HeroSectionComponent() {
             className="mt-6 font-black leading-[1.02] tracking-tight text-white"
             layout={false}
           >
-            <span className="block">We Build Digital</span>
-            <span className="block">Products That Scale</span>
+            <span className="block">
+              We build{" "}
+              <CanvasText
+                text="Digital"
+                backgroundClassName="bg-[#c9a96e]"
+                colors={[
+                  "rgba(255,255,255,0.75)",
+                  "rgba(255,246,230,0.65)",
+                  "rgba(255,232,190,0.55)",
+                  "rgba(201,169,110,0.75)",
+                  "rgba(201,169,110,0.45)",
+                  "rgba(255,255,255,0.35)",
+                ]}
+                lineGap={5}
+                animationDuration={16}
+                curveIntensity={54}
+                lineWidth={1.6}
+                className="align-baseline"
+              />
+            </span>
+            <span className="block">
+              <CanvasText
+                text="Products"
+                backgroundClassName="bg-[#c9a96e]"
+                colors={[
+                  "rgba(255,255,255,0.75)",
+                  "rgba(255,246,230,0.65)",
+                  "rgba(255,232,190,0.55)",
+                  "rgba(201,169,110,0.75)",
+                  "rgba(201,169,110,0.45)",
+                  "rgba(255,255,255,0.35)",
+                ]}
+                lineGap={5}
+                animationDuration={16}
+                curveIntensity={54}
+                lineWidth={1.6}
+                className="align-baseline"
+              />{" "}
+              that Scale
+            </span>
           </motion.h1>
 
           <motion.p

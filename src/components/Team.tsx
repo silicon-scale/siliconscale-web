@@ -16,7 +16,17 @@ export default function Team() {
     if (!ctx) return
 
     let animId: number
-    let dots: { x: number; y: number; r: number; vx: number; vy: number; a: number }[] = []
+    let dots: {
+      x: number
+      y: number
+      r: number
+      vx: number
+      vy: number
+      baseA: number
+      twAmp: number
+      twSpeed: number
+      twPhase: number
+    }[] = []
 
     function resize() {
       if (!canvas) return
@@ -26,24 +36,37 @@ export default function Team() {
 
     function init() {
       if (!canvas) return
-      dots = Array.from({ length: 40 }, () => ({
+      // More dots + per-dot twinkle params for a random “glow” effect.
+      dots = Array.from({ length: 90 }, () => ({
         x: Math.random() * canvas!.width,
         y: Math.random() * canvas!.height,
-        r: Math.random() * 0.8 + 0.2,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
-        a: Math.random() * 0.4 + 0.05,
+        r: Math.random() * 1.1 + 0.25,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        baseA: Math.random() * 0.14 + 0.05,
+        twAmp: Math.random() * 0.22 + 0.06,
+        // radians per millisecond; each dot twinkles at a different rate
+        twSpeed: Math.random() * 0.006 + 0.002,
+        twPhase: Math.random() * Math.PI * 2,
       }))
     }
 
     function draw() {
       if (!canvas || !ctx) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const t = performance.now()
       dots.forEach(d => {
+        // Random-looking twinkle: each dot has unique speed/phase/amplitude.
+        const tw = (Math.sin(t * d.twSpeed + d.twPhase) + 1) / 2
+        const a = Math.min(0.7, d.baseA + tw * d.twAmp)
+
         ctx.beginPath()
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(201, 169, 110, ${d.a})`
+        ctx.fillStyle = `rgba(201, 169, 110, ${a})`
+        ctx.shadowColor = 'rgba(201, 169, 110, 0.65)'
+        ctx.shadowBlur = 14 * tw
         ctx.fill()
+        ctx.shadowBlur = 0
         d.x += d.vx
         d.y += d.vy
         if (d.x < 0) d.x = canvas!.width
@@ -87,7 +110,41 @@ export default function Team() {
 
   return (
 
-    <section className="relative bg-black text-white overflow-hidden min-h-screen">
+    <section className="relative bg-[#050505] text-white overflow-hidden min-h-screen">
+
+      {/* Subtle background lift (so it's not pure black) */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div
+          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(201,169,110,0.06) 0%, transparent 65%)',
+          }}
+        />
+        <div
+          className="absolute -bottom-52 right-1/4 w-[700px] h-[600px] rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%)',
+          }}
+        />
+      </div>
+
+      {/* Pixel / dot texture overlay (kept visible; sits above canvas) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[1]"
+        aria-hidden
+        style={{
+          opacity: 0.28,
+          backgroundImage:
+            'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.32) 1.2px, transparent 0)',
+          backgroundSize: '16px 16px',
+          maskImage:
+            'radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage:
+            'radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.92) 55%, rgba(0,0,0,0.55) 78%, rgba(0,0,0,0) 100%)',
+        }}
+      />
 
       <canvas
         ref={canvasRef}

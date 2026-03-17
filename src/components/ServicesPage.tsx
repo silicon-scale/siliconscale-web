@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect'
 
 const SERVICES = [
   {
@@ -99,7 +100,7 @@ const SERVICES = [
 export default function ServicesPage() {
   return (
     <section
-      className="min-h-screen bg-[#050505] text-white"
+      className="relative min-h-screen overflow-hidden bg-[#050505] text-white"
       aria-labelledby="services-heading"
     >
       <style>{`
@@ -133,7 +134,20 @@ export default function ServicesPage() {
         }
       `}</style>
 
-      <div className="services-shell mx-auto max-w-5xl px-6 py-24 lg:px-8 lg:py-28">
+      {/* Background ripple layer */}
+      <div className="absolute inset-0 pointer-events-none">
+        <BackgroundRippleEffect rows={9} cols={24} cellSize={58} interactive={false} />
+        {/* soft top glow to match theme */}
+        <div
+          className="absolute -top-40 left-1/2 h-[640px] w-[900px] -translate-x-1/2 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle at center, rgba(201,169,110,0.07) 0%, transparent 65%)',
+          }}
+        />
+      </div>
+
+      <div className="services-shell relative z-10 mx-auto max-w-5xl px-6 py-24 lg:px-8 lg:py-28">
         {/* Header */}
         <header className="mb-12">
           <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.24em] text-white/40">
