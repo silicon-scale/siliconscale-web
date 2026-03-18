@@ -2,25 +2,20 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/SiliconScaleLogo.png'
 import { useReveal } from '../context/RevealContext'
 import { trackEvent } from '@/utils/analytics'
+import { useScrollThreshold } from '@/hooks/useScrollThreshold'
 
 const REVEAL_EASE = [0.22, 1, 0.36, 1] as const
 const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
 
 export function Navbar() {
   const { revealStarted } = useReveal()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const isScrolled = useScrollThreshold(40)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   const navLinks = [
     { name: "Team", path: "/team" },
@@ -62,6 +57,7 @@ export function Navbar() {
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                layout={false}
               />
             </Link>
 
@@ -95,6 +91,7 @@ export function Navbar() {
                   whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
                   whileTap={{ scale: 0.95 }}
                   className="hidden md:block border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                  layout={false}
                 >
                   Book Call
                 </motion.button>
@@ -105,6 +102,7 @@ export function Navbar() {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden text-white p-2 rounded-full bg-white/10 backdrop-blur-sm"
+                layout={false}
               >
                 {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </motion.button>

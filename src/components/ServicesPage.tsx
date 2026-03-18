@@ -1,11 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect'
 import { ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { useReveal } from '@/context/RevealContext'
 
 type ServiceCard = {
   id: string
@@ -155,7 +156,7 @@ const SERVICE_CARDS: ServiceCard[] = [
   },
 ]
 
-function StackingServiceCard({
+const StackingServiceCard = memo(function StackingServiceCard({
   card,
   index,
   onCta,
@@ -170,7 +171,6 @@ function StackingServiceCard({
     offset: ['start 85%', 'end 40%'],
   })
 
-  // Webflow-like smoothness: spring the progress, then derive transforms.
   const p = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.6 })
   const baseStackOffset = index * 10
   const y = useTransform(p, [0, 1], [36 + baseStackOffset, baseStackOffset])
@@ -188,6 +188,7 @@ function StackingServiceCard({
           background: card.bg,
         }}
         transition={{ type: 'spring' }}
+        layout={false}
       >
         <div className="stack-inner">
           <div>
@@ -235,13 +236,27 @@ function StackingServiceCard({
       </motion.article>
     </div>
   )
-}
+})
 
 export default function ServicesPage() {
   const navigate = useNavigate()
   const cards = SERVICE_CARDS
   const isMobile = useIsMobile()
   const prefersReducedMotion = useReducedMotion()
+  const { mountStage } = useReveal()
+  // Stagger background system mount a bit after hero reveal to avoid competing for first paint.
+  const [showBackground, setShowBackground] = useState(false)
+  useEffect(() => {
+    const t1 = requestAnimationFrame(() => {
+      const t2 = requestAnimationFrame(() => {
+        const t = setTimeout(() => setShowBackground(true), 100)
+        return () => clearTimeout(t)
+      })
+      return () => cancelAnimationFrame(t2)
+    })
+    return () => cancelAnimationFrame(t1)
+  }, [])
+  const onCta = useCallback(() => navigate('/contact'), [navigate])
   return (
     <section
       className="relative min-h-screen overflow-hidden bg-[#050505] text-white"
@@ -362,9 +377,9 @@ export default function ServicesPage() {
         }
       `}</style>
 
-      {/* Background ripple layer */}
+      {/* Background ripple layer (deferred) */}
       <div className="absolute inset-0 pointer-events-none">
-        {!isMobile && !prefersReducedMotion ? (
+        {mountStage >= 3 && showBackground && !isMobile && !prefersReducedMotion ? (
           <BackgroundRippleEffect rows={9} cols={24} cellSize={58} interactive={false} />
         ) : null}
         {/* soft top glow to match theme */}
@@ -460,7 +475,7 @@ export default function ServicesPage() {
                 key={card.id}
                 card={card}
                 index={idx}
-                onCta={() => navigate('/contact')}
+                onCta={onCta}
               />
             )
           ))}

@@ -44,7 +44,7 @@ const GPU_LAYER_STYLE = {
 
 function HeroSectionComponent() {
   const navigate = useNavigate()
-  const { revealStarted } = useReveal()
+  const { mountStage, revealStarted } = useReveal()
   const prefersReducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const hasRevealedRef = useRef(false)
@@ -52,6 +52,7 @@ function HeroSectionComponent() {
     if (revealStarted) hasRevealedRef.current = true
   }, [revealStarted])
   const shouldReveal = hasRevealedRef.current || revealStarted || prefersReducedMotion
+  const allowCanvasText = mountStage >= 2
   const goToContact = useCallback(() => {
     trackEvent('cta_click', { location: 'hero' })
     navigate('/contact')
@@ -65,6 +66,7 @@ function HeroSectionComponent() {
     <section
       className="relative min-h-screen w-full overflow-hidden bg-[#050505]"
       aria-label="Hero"
+      style={{ contain: 'layout paint' }}
     >
       {/* Grid background */}
       <div
@@ -154,23 +156,29 @@ function HeroSectionComponent() {
                   Digital
                 </span>
               ) : (
-                <CanvasText
-                  text="Digital"
-                  backgroundClassName="bg-[#c9a96e]"
-                  colors={[
-                    "rgba(255,255,255,0.75)",
-                    "rgba(255,246,230,0.65)",
-                    "rgba(255,232,190,0.55)",
-                    "rgba(201,169,110,0.75)",
-                    "rgba(201,169,110,0.45)",
-                    "rgba(255,255,255,0.35)",
-                  ]}
-                  lineGap={5}
-                  animationDuration={16}
-                  curveIntensity={54}
-                  lineWidth={1.6}
-                  className="align-baseline"
-                />
+                allowCanvasText ? (
+                  <CanvasText
+                    text="Digital"
+                    backgroundClassName="bg-[#c9a96e]"
+                    colors={[
+                      "rgba(255,255,255,0.75)",
+                      "rgba(255,246,230,0.65)",
+                      "rgba(255,232,190,0.55)",
+                      "rgba(201,169,110,0.75)",
+                      "rgba(201,169,110,0.45)",
+                      "rgba(255,255,255,0.35)",
+                    ]}
+                    lineGap={5}
+                    animationDuration={16}
+                    curveIntensity={54}
+                    lineWidth={1.6}
+                    className="align-baseline"
+                  />
+                ) : (
+                  <span className="align-baseline" style={{ color: "#c9a96e" }}>
+                    Digital
+                  </span>
+                )
               )}
             </span>
             <span className="block">
@@ -184,23 +192,29 @@ function HeroSectionComponent() {
                   Products
                 </span>
               ) : (
-                <CanvasText
-                  text="Products"
-                  backgroundClassName="bg-[#c9a96e]"
-                  colors={[
-                    "rgba(255,255,255,0.75)",
-                    "rgba(255,246,230,0.65)",
-                    "rgba(255,232,190,0.55)",
-                    "rgba(201,169,110,0.75)",
-                    "rgba(201,169,110,0.45)",
-                    "rgba(255,255,255,0.35)",
-                  ]}
-                  lineGap={5}
-                  animationDuration={16}
-                  curveIntensity={54}
-                  lineWidth={1.6}
-                  className="align-baseline"
-                />
+                allowCanvasText ? (
+                  <CanvasText
+                    text="Products"
+                    backgroundClassName="bg-[#c9a96e]"
+                    colors={[
+                      "rgba(255,255,255,0.75)",
+                      "rgba(255,246,230,0.65)",
+                      "rgba(255,232,190,0.55)",
+                      "rgba(201,169,110,0.75)",
+                      "rgba(201,169,110,0.45)",
+                      "rgba(255,255,255,0.35)",
+                    ]}
+                    lineGap={5}
+                    animationDuration={16}
+                    curveIntensity={54}
+                    lineWidth={1.6}
+                    className="align-baseline"
+                  />
+                ) : (
+                  <span className="align-baseline" style={{ color: "#c9a96e" }}>
+                    Products
+                  </span>
+                )
               )}{" "}
               that Scale
             </span>

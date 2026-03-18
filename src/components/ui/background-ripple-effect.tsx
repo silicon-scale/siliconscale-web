@@ -50,9 +50,9 @@ export const BackgroundRippleEffect = ({
 
       <style>{`
         @keyframes cellRipple {
-          0%   { transform: translateZ(0) scale(1);   opacity: 0.35; }
-          60%  { transform: translateZ(0) scale(1.08); opacity: 0.85; }
-          100% { transform: translateZ(0) scale(1);   opacity: 0.35; }
+          0%   { transform: scale(1);   opacity: 0.35; }
+          60%  { transform: scale(1.08); opacity: 0.85; }
+          100% { transform: scale(1);   opacity: 0.35; }
         }
         .animate-cell-ripple {
           animation: cellRipple var(--duration, 600ms) cubic-bezier(0.22,1,0.36,1) var(--delay, 0ms);
@@ -130,7 +130,7 @@ const DivGrid = ({
           <div
             key={idx}
             className={cn(
-              "cell relative border-[0.5px] opacity-40 transition-opacity duration-150 will-change-transform hover:opacity-80",
+              "cell relative border-[0.5px] opacity-40 transition-opacity duration-150 hover:opacity-80",
               clickedCell && "animate-cell-ripple [animation-fill-mode:none]",
               !interactive && "pointer-events-none",
             )}

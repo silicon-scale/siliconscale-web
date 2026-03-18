@@ -158,7 +158,6 @@ export function Connect() {
           background: rgba(255,255,255,0.03);
           box-shadow: 0 30px 90px rgba(0,0,0,0.75);
           overflow: hidden;
-          transform: translateZ(0);
           backface-visibility: hidden;
           min-height: 190px;
         }

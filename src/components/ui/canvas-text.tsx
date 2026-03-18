@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { observeVisibility } from "@/utils/sharedVisibilityObserver";
 
 interface CanvasTextProps {
   text: string;
@@ -41,6 +42,13 @@ export function CanvasText({
   const bgRef = useRef<HTMLSpanElement>(null);
   const animationRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
+  const overBudgetStreakRef = useRef<number>(0);
+  const runningRef = useRef(true);
+  const hzSamplesRef = useRef(0);
+  const hzDtSumRef = useRef(0);
+  const throttleTo60Ref = useRef(false);
+  const frameAccumulatorRef = useRef(0);
   const [bgColor, setBgColor] = useState("#0a0a0a");
   const [resolvedColors, setResolvedColors] = useState<string[]>([]);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -108,10 +116,57 @@ export function CanvasText({
     const descent = metrics.actualBoundingBoxDescent;
     const baselineY = (height + ascent - descent) / 2;
 
-    const numLines = Math.floor(height / lineGap) + 10;
+    const densityScale = dpr > 1.5 || width < 1200 ? 0.9 : 1;
+    const extraLines = densityScale < 1 ? 6 : 10;
+    const numLines = Math.floor(height / lineGap) + extraLines;
     startTimeRef.current = performance.now();
+    lastTimeRef.current = startTimeRef.current;
+    hzSamplesRef.current = 0;
+    hzDtSumRef.current = 0;
+    throttleTo60Ref.current = false;
+    frameAccumulatorRef.current = 0;
 
     const animate = (currentTime: number) => {
+      if (!runningRef.current) return;
+      const dt = currentTime - lastTimeRef.current;
+      lastTimeRef.current = currentTime;
+
+      if (!throttleTo60Ref.current && dt > 0 && hzSamplesRef.current < 30) {
+        hzSamplesRef.current += 1;
+        hzDtSumRef.current += dt;
+        if (hzSamplesRef.current === 30) {
+          const avgDt = hzDtSumRef.current / hzSamplesRef.current;
+          const hz = 1000 / avgDt;
+          throttleTo60Ref.current = hz > 90;
+        }
+      }
+
+      if (throttleTo60Ref.current) {
+        frameAccumulatorRef.current += dt;
+        if (frameAccumulatorRef.current < 16.67) {
+          animationRef.current = requestAnimationFrame(animate);
+          return;
+        }
+        frameAccumulatorRef.current = 0;
+      }
+      if (dt > 24) {
+        overBudgetStreakRef.current += 1;
+        if (overBudgetStreakRef.current >= 8) {
+          overBudgetStreakRef.current = 0;
+          runningRef.current = false;
+          setTimeout(() => {
+            if (document.visibilityState !== "hidden") {
+              startTimeRef.current = performance.now();
+              lastTimeRef.current = startTimeRef.current;
+              runningRef.current = true;
+              animationRef.current = requestAnimationFrame(animate);
+            }
+          }, 200);
+          return;
+        }
+      } else {
+        overBudgetStreakRef.current = 0;
+      }
       const elapsed = (currentTime - startTimeRef.current) / 1000;
       const phase = (elapsed / animationDuration) * Math.PI * 2;
 
@@ -146,13 +201,48 @@ export function CanvasText({
         ctx.stroke();
       }
 
+      if (runningRef.current) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    const startLoop = () => {
+      runningRef.current = true;
+      startTimeRef.current = performance.now();
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animationRef.current = requestAnimationFrame(animate);
+    const stopLoop = () => {
+      runningRef.current = false;
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = 0;
+      }
+    };
+
+    // Defer start until after first paint and stagger slightly
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => startLoop(), 100);
+      });
+    });
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") stopLoop();
+      else startLoop();
+    };
+
+    const unobserve = observeVisibility(canvas, (visible) => {
+      if (!visible) stopLoop();
+      else if (document.visibilityState !== "hidden") startLoop();
+    });
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
-      cancelAnimationFrame(animationRef.current);
+      stopLoop();
+      unobserve();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [
     text,

@@ -174,7 +174,6 @@ export function Testimonials() {
           flex-direction: column;
           justify-content: space-between;
           gap: 16px;
-          transform: translateZ(0);
           backface-visibility: hidden;
         }
         .ss-test-quote {

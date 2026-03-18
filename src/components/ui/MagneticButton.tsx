@@ -49,7 +49,7 @@ export function MagneticButton({
     <motion.button
       type="button"
       style={{ x: springX, y: springY }}
-      className={cn('will-change-transform', className)}
+      className={cn(className)}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       {...rest}

@@ -42,12 +42,25 @@ function AppContent() {
   const location = useLocation()
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    const id = requestAnimationFrame(() => window.scrollTo(0, 0))
+    return () => cancelAnimationFrame(id)
   }, [location.pathname])
 
   useEffect(() => {
     if (!import.meta.env.PROD) return
-    trackPageView(location.pathname)
+    const idle = (window as any).requestIdleCallback as
+      | ((cb: () => void, opts?: { timeout: number }) => number)
+      | undefined
+    let id: number | undefined
+    const run = () => trackPageView(location.pathname)
+    if (idle) {
+      id = idle(run, { timeout: 500 })
+    } else {
+      id = window.setTimeout(run, 150)
+    }
+    return () => {
+      if (id) clearTimeout(id)
+    }
   }, [location.pathname])
 
   return (
@@ -63,6 +76,8 @@ function AppContent() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
             className="min-h-screen"
+            style={{ willChange: "transform", transform: "translateZ(0)" }}
+            layout={false}
           >
             <Routes location={location}>
               <Route path="/" element={<Home />} />
@@ -84,36 +99,39 @@ function AppContent() {
 }
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(true)
-  const [loaderFinished, setLoaderFinished] = useState(false)
-  const [revealStarted, setRevealStarted] = useState(false)
+  const [loaderMounted, setLoaderMounted] = useState(true)
+  const [loaderVisible, setLoaderVisible] = useState(true)
+  const [mountStage, setMountStage] = useState<0 | 1 | 2 | 3>(0)
 
   useEffect(() => {
-    if (!loaderFinished) return
-
-    // Let the loader unmount + layout/paint settle, then start reveal next frame.
-    let raf2: number | null = null
-    const raf1 = requestAnimationFrame(() => {
-      raf2 = requestAnimationFrame(() => setRevealStarted(true))
+    if (mountStage !== 1) return
+    const raf1 = requestAnimationFrame(() => setMountStage(2))
+    let t: number | undefined
+    let raf2: number | undefined
+    raf2 = requestAnimationFrame(() => {
+      t = window.setTimeout(() => setMountStage(3), 60)
     })
-
     return () => {
       cancelAnimationFrame(raf1)
-      if (raf2 != null) cancelAnimationFrame(raf2)
+      if (raf2) cancelAnimationFrame(raf2)
+      if (t) clearTimeout(t)
     }
-  }, [loaderFinished])
+  }, [mountStage])
 
   return (
     <Router>
-      {showIntro && (
+      {loaderMounted && (
         <IntroLoader
-          onComplete={() => {
-            setShowIntro(false)
-            setLoaderFinished(true)
+          visible={loaderVisible}
+          onExitComplete={() => {
+            // Keep mounted to avoid a repaint spike; fade it out and unmount shortly after.
+            setMountStage(1)
+            setLoaderVisible(false)
+            window.setTimeout(() => setLoaderMounted(false), 350)
           }}
         />
       )}
-      <RevealProvider revealStarted={revealStarted}>
+      <RevealProvider mountStage={mountStage}>
         <AppContent />
       </RevealProvider>
     </Router>

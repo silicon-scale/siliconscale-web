@@ -1,54 +1,78 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export interface IntroLoaderProps {
-  /** Called when the slide-out animation completes (loader unmount). */
-  onComplete: () => void
-  /** Called when the loader finishes its display duration (1s); use to start page reveal. */
-  onRevealStart?: () => void
+  /** Whether the loader should be visible (opacity/pointer-events). */
+  visible: boolean
+  /** Called when the slide-out animation completes. */
+  onExitComplete: () => void
 }
 
 const HOLD_DURATION_MS = 1000
-const SLIDE_DURATION = 0.9
-const EASING = [0.42, 0, 0.58, 1] as const // easeInOut
+const SLIDE_DURATION_MS = 900
 
-export function IntroLoader({ onComplete, onRevealStart }: IntroLoaderProps) {
-  const [phase, setPhase] = useState<'enter' | 'exit'>('enter')
+export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
+  const [exiting, setExiting] = useState(false)
+  const exitFiredRef = useRef(false)
 
-  // After 1s, start slide-out and trigger page reveal so they run in sync
+  // After 1s, start slide-out.
   useEffect(() => {
     const t = setTimeout(() => {
-      setPhase('exit')
-      onRevealStart?.()
+      setExiting(true)
     }, HOLD_DURATION_MS)
     return () => clearTimeout(t)
-  }, [onRevealStart])
+  }, [])
 
   return (
-    <motion.section
-      className="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-[#050505]"
-      initial={false}
-      animate={{
-        x: phase === 'exit' ? '-100%' : 0,
-      }}
-      transition={{
-        duration: SLIDE_DURATION,
-        ease: EASING,
-      }}
-      onAnimationComplete={() => {
-        if (phase === 'exit') onComplete()
+    <section
+      className={[
+        'intro-loader',
+        exiting ? 'intro-loader--exit' : '',
+        visible ? '' : 'intro-loader--hidden',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      onTransitionEnd={(e) => {
+        if (exitFiredRef.current) return
+        if (!exiting) return
+        // Only fire when the slide transform finishes on the container.
+        if (e.target !== e.currentTarget) return
+        if (e.propertyName !== 'transform') return
+        exitFiredRef.current = true
+        onExitComplete()
       }}
       aria-label="Loading"
       role="presentation"
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');
+        .intro-loader{
+          position: fixed;
+          inset: 0;
+          z-index: 300;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: #050505;
+          transform: translate3d(0,0,0);
+          transition: transform ${SLIDE_DURATION_MS}ms cubic-bezier(.22,1,.36,1), opacity 250ms ease;
+          will-change: transform, opacity;
+          backface-visibility: hidden;
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .intro-loader--exit{
+          transform: translate3d(-100%,0,0);
+        }
+        .intro-loader--hidden{
+          opacity: 0;
+          pointer-events: none;
+        }
         @keyframes introPulse {
-          0% { transform: scale(1); opacity: 0.9; }
-          50% { transform: scale(1.04); opacity: 1; }
-          100% { transform: scale(1); opacity: 0.9; }
+          0% { transform: translate3d(0,0,0) scale(1); opacity: 0.9; }
+          50% { transform: translate3d(0,0,0) scale(1.04); opacity: 1; }
+          100% { transform: translate3d(0,0,0) scale(1); opacity: 0.9; }
         }
         .intro-pulse {
           animation: introPulse 1.4s ease-in-out infinite;
@@ -71,7 +95,7 @@ export function IntroLoader({ onComplete, onRevealStart }: IntroLoaderProps) {
         }
       `}</style>
       <div className="intro-wrapper px-4 sm:px-6">
-        <motion.img
+        <img
           src="/transparent-logo.svg"
           alt=""
           width={120}
@@ -79,13 +103,13 @@ export function IntroLoader({ onComplete, onRevealStart }: IntroLoaderProps) {
           className="intro-pulse h-32 w-32 sm:h-48 sm:w-48 md:h-44 md:w-44"
           loading="eager"
         />
-        <motion.p
+        <p
           className="intro-pulse intro-text font-bold text-white tracking-tight"
           style={{ fontSize: 'clamp(2.5rem, 6vw, 7rem)' }}
         >
           Silicon Scale
-        </motion.p>
+        </p>
       </div>
-    </motion.section>
+    </section>
   )
 }
