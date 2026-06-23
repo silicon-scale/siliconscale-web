@@ -5,6 +5,7 @@ import ddenImage from '../assets/project-images/dden.webp'
 import mnrdcImage from '../assets/project-images/mnrdc.webp'
 import rdcImage from '../assets/project-images/rdc.webp'
 import axelsImage from '../assets/project-images/axels.webp'
+import plaamImage from '../assets/project-images/plaam.webp'
 
 import { useState, useEffect, useRef } from 'react'
 import { Lens } from '@/components/ui/lens'
@@ -69,6 +70,19 @@ function WorkComponent() {
       tagline: 'Accelerating Skills at Scale',
       stat: '+95%',
       statLabel: 'Learning Outcomes',
+    },
+    {
+      id: 'plaam',
+      title: 'PLAAM',
+      description: 'Curated jewellery-making and craft essentials.',
+      image: plaamImage,
+      link: 'https://www.plaam.in/',
+      tag: 'Craft & Jewellery Store',
+      year: '2026',
+      services: 'BRANDING · DESIGN · DEVELOPMENT',
+      tagline: 'Where Creativity Finds Its Supplies',
+      stat: '+100%',
+      statLabel: 'Digital Transformation',
     },
   ]
 
