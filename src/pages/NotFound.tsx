@@ -11,7 +11,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#050505] px-6 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-page px-6 text-white">
       <div className="text-center">
         <p className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">
           Not Found
@@ -22,7 +22,7 @@ const NotFound = () => {
         </p>
         <Link
           to="/"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-gradient-to-r from-[#c9a96e] via-[#fff1d6] to-[#c9a96e] px-6 py-3 text-sm font-extrabold uppercase tracking-[0.18em] text-black transition-transform duration-200 hover:-translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.18em] text-black transition-transform duration-200 hover:-translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
         >
           Return Home
         </Link>

@@ -6,14 +6,13 @@ function FooterComponent() {
   return (
     <footer className="footer-root">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=OPEN+Sans:wght@300;400;500&display=swap');
 
         .footer-root {
           position: relative;
           /* Match site section background to avoid seams */
-          background: #050505;
+          background: var(--brand-black);
           color: #fff;
-          font-family: 'DM Sans', sans-serif;
+          font-family: 'Open Sans', sans-serif;
           overflow: visible;
           /* Prevent any SVG/absolute layers from widening the page on iPad */
           overflow-x: clip;
@@ -137,13 +136,13 @@ function FooterComponent() {
         .footer-orb-1 {
           width: 400px; height: 400px;
           /* Avoid white bloom lines near section seams */
-          background: #c9a96e;
+          background: var(--brand-gold);
           top: 80px; left: -100px;
           animation: orbDrift1 14s ease-in-out infinite;
         }
         .footer-orb-2 {
           width: 300px; height: 300px;
-          background: #c9a96e;
+          background: var(--brand-gold);
           top: 40px; right: -60px;
           animation: orbDrift2 18s ease-in-out infinite;
         }
@@ -400,7 +399,7 @@ function FooterComponent() {
           <path
             className="wave-layer-3"
             d="M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z"
-            fill="#050505"
+            fill="var(--brand-black)"
           />
           {/* Layer 4: Additional flowing wave */}
           <path

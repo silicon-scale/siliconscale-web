@@ -9,6 +9,7 @@ import { useReveal } from '../context/RevealContext'
 import { trackEvent } from '@/utils/analytics'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
 import { REVEAL_EASE } from '@/lib/motion'
+import { brandGoldAlpha } from '@/lib/brand'
 
 const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
 
@@ -76,7 +77,7 @@ export function Navbar() {
                     className="relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-all duration-300 group"
                   >
                     {link.name}
-                    <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-[#c9a96e] to-[#c9a96e]/50 transition-all duration-300 group-hover:w-full"></span>
+                    <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-brand-gold to-brand-gold/50 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 </motion.div>
               ))}
@@ -88,9 +89,9 @@ export function Navbar() {
 
               <Link to="/contact" onClick={() => trackEvent('nav_click', { destination: 'contact' })}>
                 <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(201,169,110,0.3)" }}
+                  whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${brandGoldAlpha(0.3)}` }}
                   whileTap={{ scale: 0.95 }}
-                  className="hidden md:block border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                  className="hidden md:block border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black transition-all duration-300"
                   layout={false}
                 >
                   Book Call
@@ -152,10 +153,10 @@ export function Navbar() {
                         <Link
                           to={link.path}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="text-white text-xl uppercase tracking-[0.25em] hover:text-[#c9a96e] transition-all duration-300 relative group"
+                          className="text-white text-xl uppercase tracking-[0.25em] hover:text-brand-gold transition-all duration-300 relative group"
                         >
                           {link.name}
-                          <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-[#c9a96e] transition-all duration-300 group-hover:w-full"></span>
+                          <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-brand-gold transition-all duration-300 group-hover:w-full"></span>
                         </Link>
                       </div>
                     ))}
@@ -163,9 +164,9 @@ export function Navbar() {
 
                   <Link to="/contact" onClick={() => { trackEvent('nav_click', { destination: 'contact' }); setIsMobileMenuOpen(false) }}>
                     <motion.button
-                      whileHover={{ scale: 1.03, boxShadow: "0 0 16px rgba(201,169,110,0.3)" }}
+                      whileHover={{ scale: 1.03, boxShadow: `0 0 16px ${brandGoldAlpha(0.3)}` }}
                       whileTap={{ scale: 0.97 }}
-                      className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black transition-all duration-300"
+                      className="border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black transition-all duration-300"
                     >
                       Book Call
                     </motion.button>

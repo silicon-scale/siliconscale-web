@@ -25,7 +25,7 @@ export function BrandButton({ size = 'md', className, disabled, ...props }: Bran
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black',
         sizeClass,
         // theme: gold on dark
-        'border border-white/10 bg-gradient-to-r from-[#c9a96e] via-[#fff1d6] to-[#c9a96e] text-black shadow-[0_18px_60px_rgba(0,0,0,0.55)]',
+        'border border-white/10 bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold text-black shadow-[0_18px_60px_rgba(0,0,0,0.55)]',
         className
       )}
       {...props}

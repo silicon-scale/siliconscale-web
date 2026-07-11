@@ -68,7 +68,7 @@ export function Testimonials() {
   return (
     <section
       aria-labelledby="testimonials-heading"
-      className="w-full bg-[#050505] py-16 sm:py-20 lg:py-24"
+      className="w-full bg-page py-16 sm:py-20 lg:py-24"
     >
       <style>{`
         @keyframes marqueeLeft {

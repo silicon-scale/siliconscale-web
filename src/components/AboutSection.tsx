@@ -17,7 +17,7 @@ export function AboutSection() {
   return (
     <section
       aria-labelledby="about-home-heading"
-      className="relative w-full bg-[#050505] py-16 sm:py-20 lg:py-24 overflow-hidden"
+      className="relative w-full bg-page py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
       {/* Vortex background effect */}
       {mountStage >= 3 && !isMobile && !prefersReducedMotion ? (
@@ -38,7 +38,7 @@ export function AboutSection() {
         <ScalesContainer
           orientation="diagonal"
           size={10}
-          containerClassName="w-full overflow-hidden rounded-3xl border border-white/10 bg-[#050505] shadow-[0_30px_90px_rgba(0,0,0,0.7)] ring-1 ring-white/5"
+          containerClassName="w-full overflow-hidden rounded-3xl border border-white/10 bg-page shadow-[0_30px_90px_rgba(0,0,0,0.7)] ring-1 ring-white/5"
           className="[--pattern-scales:rgba(255,255,255,0.10)]"
         >
           <div className="flex flex-col gap-10 p-8 sm:p-10 lg:p-14">

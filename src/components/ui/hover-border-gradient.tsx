@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { brandGoldAlpha } from '@/lib/brand'
 
 type Direction = 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
 
@@ -40,16 +41,16 @@ export function HoverBorderGradient({
 
   // Gold-forward, subtle shimmer that matches the site theme.
   const movingMap: Record<Direction, string> = {
-    TOP: 'radial-gradient(22% 55% at 50% 0%, rgba(201,169,110,0.95) 0%, rgba(201,169,110,0) 100%)',
-    LEFT: 'radial-gradient(18% 48% at 0% 50%, rgba(201,169,110,0.95) 0%, rgba(201,169,110,0) 100%)',
+    TOP: `radial-gradient(22% 55% at 50% 0%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
+    LEFT: `radial-gradient(18% 48% at 0% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
     BOTTOM:
-      'radial-gradient(22% 55% at 50% 100%, rgba(201,169,110,0.95) 0%, rgba(201,169,110,0) 100%)',
+      `radial-gradient(22% 55% at 50% 100%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
     RIGHT:
-      'radial-gradient(18% 48% at 100% 50%, rgba(201,169,110,0.95) 0%, rgba(201,169,110,0) 100%)',
+      `radial-gradient(18% 48% at 100% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
   }
 
   const highlight =
-    'radial-gradient(85% 190% at 50% 50%, rgba(201,169,110,0.85) 0%, rgba(255,255,255,0.22) 28%, rgba(201,169,110,0) 70%)'
+    `radial-gradient(85% 190% at 50% 50%, ${brandGoldAlpha(0.85)} 0%, rgba(255,255,255,0.22) 28%, ${brandGoldAlpha(0)} 70%)`
 
   useEffect(() => {
     if (hovered) return
@@ -101,7 +102,7 @@ export function HoverBorderGradient({
       {/* inner cutout to keep glow outside */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-[2px] z-[1] rounded-[inherit] bg-[#050505]"
+        className="pointer-events-none absolute inset-[2px] z-[1] rounded-[inherit] bg-page"
       />
     </Tag>
   )

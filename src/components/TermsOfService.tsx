@@ -5,11 +5,10 @@ import React from 'react'
 export default function TermsOfService() {
   return (
     <section
-      className="min-h-screen bg-[#050505] text-white"
+      className="min-h-screen bg-page text-white"
       aria-labelledby="tos-heading"
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap');
         .legal-shell {
           font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           color: rgba(255,255,255,0.78);

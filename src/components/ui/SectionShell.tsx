@@ -11,7 +11,7 @@ export default function SectionShell({
   return (
     <section
       id={id}
-      className={cn('w-full bg-[#050505] py-16 sm:py-20 lg:py-24', className)}
+      className={cn('w-full bg-page py-16 sm:py-20 lg:py-24', className)}
     >
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
         {children}

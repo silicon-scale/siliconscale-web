@@ -107,7 +107,7 @@ export function Connect() {
   const socials = CONNECT_CARDS.filter((c) => c.kind !== 'email')
 
   return (
-    <section className="w-full bg-[#050505] py-16 sm:py-20 lg:py-24">
+    <section className="w-full bg-page py-16 sm:py-20 lg:py-24">
       <style>{`
         .connect-shell{
           max-width: 1200px;

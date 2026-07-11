@@ -42,22 +42,22 @@ const SERVICE_CARDS: ServiceCard[] = [
         <circle cx="43" cy="43" r="40" fill="url(#g1)" opacity="0.98" />
         <path
           d="M43 20c8.8 0 16.7 3.6 22.4 9.4L43 43V20Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.88"
         />
         <path
           d="M66.4 29.4c5.8 5.8 9.4 13.7 9.4 22.6H43l23.4-22.6Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.88"
         />
         <path
           d="M75.8 52c0 8.9-3.6 16.8-9.4 22.6L43 52h32.8Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.88"
         />
         <path
           d="M66.4 74.6C60.7 80.4 52.8 84 44 84V52l22.4 22.6Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.88"
         />
       </svg>
@@ -84,7 +84,7 @@ const SERVICE_CARDS: ServiceCard[] = [
         <circle cx="43" cy="43" r="40" fill="url(#g2)" opacity="0.98" />
         <path
           d="M43 24l5.6 13.6L62 43l-13.4 5.4L43 62l-5.6-13.6L24 43l13.4-5.4L43 24Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.9"
         />
       </svg>
@@ -111,7 +111,7 @@ const SERVICE_CARDS: ServiceCard[] = [
         <circle cx="43" cy="43" r="40" fill="url(#g3)" opacity="0.98" />
         <path
           d="M29 34l-9 9 9 9M57 34l9 9-9 9"
-          stroke="#0b0b0b"
+          stroke="var(--brand-ink)"
           strokeWidth="5"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -141,12 +141,12 @@ const SERVICE_CARDS: ServiceCard[] = [
         <circle cx="43" cy="43" r="40" fill="url(#g4)" opacity="0.98" />
         <path
           d="M43 26c6.3 0 11.5 5.2 11.5 11.5S49.3 49 43 49s-11.5-5.2-11.5-11.5S36.7 26 43 26Z"
-          fill="#0b0b0b"
+          fill="var(--brand-ink)"
           opacity="0.9"
         />
         <path
           d="M30 61c3.2-7.2 9-10.8 13-10.8S52.8 53.8 56 61"
-          stroke="#0b0b0b"
+          stroke="var(--brand-ink)"
           strokeWidth="5"
           strokeLinecap="round"
           opacity="0.85"
@@ -259,11 +259,10 @@ export default function ServicesPage() {
   const onCta = useCallback(() => navigate('/contact'), [navigate])
   return (
     <section
-      className="relative min-h-screen overflow-hidden bg-[#050505] text-white"
+      className="relative min-h-screen overflow-hidden bg-page text-white"
       aria-labelledby="services-heading"
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Mono:wght@300;400&display=swap');
         .services-shell {
           font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
@@ -387,7 +386,7 @@ export default function ServicesPage() {
           className="absolute -top-40 left-1/2 h-[640px] w-[900px] -translate-x-1/2 rounded-full"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(201,169,110,0.07) 0%, transparent 65%)',
+              'radial-gradient(circle at center, rgb(var(--brand-gold-rgb) / 0.07) 0%, transparent 65%)',
           }}
         />
       </div>

@@ -11,6 +11,7 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
+import { brandGoldAlpha } from '@/lib/brand'
 
 const HERO_DURATION = 0.75
 
@@ -64,7 +65,7 @@ function HeroSectionComponent() {
 
   return (
     <section
-      className="relative min-h-screen w-full overflow-hidden bg-[#050505]"
+      className="relative min-h-screen w-full overflow-hidden bg-page"
       aria-label="Hero"
       style={{ contain: 'layout paint' }}
     >
@@ -150,7 +151,7 @@ function HeroSectionComponent() {
                 <span
                   className="align-baseline"
                   style={{
-                    color: "#c9a96e",
+                    color: "var(--brand-gold)",
                   }}
                 >
                   Digital
@@ -159,13 +160,13 @@ function HeroSectionComponent() {
                 allowCanvasText ? (
                   <CanvasText
                     text="Digital"
-                    backgroundClassName="bg-[#c9a96e]"
+                    backgroundClassName="bg-brand-gold"
                     colors={[
                       "rgba(255,255,255,0.75)",
                       "rgba(255,246,230,0.65)",
                       "rgba(255,232,190,0.55)",
-                      "rgba(201,169,110,0.75)",
-                      "rgba(201,169,110,0.45)",
+                      brandGoldAlpha(0.75),
+                      brandGoldAlpha(0.45),
                       "rgba(255,255,255,0.35)",
                     ]}
                     lineGap={5}
@@ -175,7 +176,7 @@ function HeroSectionComponent() {
                     className="align-baseline"
                   />
                 ) : (
-                  <span className="align-baseline" style={{ color: "#c9a96e" }}>
+                  <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
                     Digital
                   </span>
                 )
@@ -186,7 +187,7 @@ function HeroSectionComponent() {
                 <span
                   className="align-baseline"
                   style={{
-                    color: "#c9a96e",
+                    color: "var(--brand-gold)",
                   }}
                 >
                   Products
@@ -195,13 +196,13 @@ function HeroSectionComponent() {
                 allowCanvasText ? (
                   <CanvasText
                     text="Products"
-                    backgroundClassName="bg-[#c9a96e]"
+                    backgroundClassName="bg-brand-gold"
                     colors={[
                       "rgba(255,255,255,0.75)",
                       "rgba(255,246,230,0.65)",
                       "rgba(255,232,190,0.55)",
-                      "rgba(201,169,110,0.75)",
-                      "rgba(201,169,110,0.45)",
+                      brandGoldAlpha(0.75),
+                      brandGoldAlpha(0.45),
                       "rgba(255,255,255,0.35)",
                     ]}
                     lineGap={5}
@@ -211,7 +212,7 @@ function HeroSectionComponent() {
                     className="align-baseline"
                   />
                 ) : (
-                  <span className="align-baseline" style={{ color: "#c9a96e" }}>
+                  <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
                     Products
                   </span>
                 )

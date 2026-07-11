@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-weight: 600;
+  font-weight: var(--font-weight-normal);
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -27,6 +26,11 @@ body {
   --brand-black: #050505; /* page canvas used across marketing sections */
   /* Near-black ink: #0b0b0b collapsed into existing #0a0a0a */
   --brand-ink: #0a0a0a;
+  /* Channel form for Tailwind opacity modifiers (bg-brand-gold/60, etc.) */
+  --brand-gold-rgb: 201 169 110;
+  --brand-cream-rgb: 255 241 214;
+  --brand-black-rgb: 5 5 5;
+  --brand-ink-rgb: 10 10 10;
 
   /* Semantic brand aliases */
   --color-page: var(--brand-black);

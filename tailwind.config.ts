@@ -37,6 +37,9 @@ export default {
       fontFamily: {
         sans: ["Open Sans", "sans-serif"],
         bagel: ["Bagel Fat One", "cursive"],
+        sora: ["Sora", "system-ui", "sans-serif"],
+        syne: ["Syne", "system-ui", "sans-serif"],
+        "dm-mono": ["DM Mono", "ui-monospace", "monospace"],
       },
       colors: {
         border: "var(--border)",
@@ -76,15 +79,15 @@ export default {
           foreground: "var(--card-foreground)",
         },
         brand: {
-          gold: "var(--brand-gold)",
-          cream: "var(--brand-cream)",
-          black: "var(--brand-black)",
-          ink: "var(--brand-ink)",
-          DEFAULT: "var(--color-brand)",
-          highlight: "var(--color-brand-highlight)",
+          gold: "rgb(var(--brand-gold-rgb) / <alpha-value>)",
+          cream: "rgb(var(--brand-cream-rgb) / <alpha-value>)",
+          black: "rgb(var(--brand-black-rgb) / <alpha-value>)",
+          ink: "rgb(var(--brand-ink-rgb) / <alpha-value>)",
+          DEFAULT: "rgb(var(--brand-gold-rgb) / <alpha-value>)",
+          highlight: "rgb(var(--brand-cream-rgb) / <alpha-value>)",
         },
-        page: "var(--color-page)",
-        ink: "var(--color-ink)",
+        page: "rgb(var(--brand-black-rgb) / <alpha-value>)",
+        ink: "rgb(var(--brand-ink-rgb) / <alpha-value>)",
       },
       borderRadius: {
         lg: "var(--radius)",

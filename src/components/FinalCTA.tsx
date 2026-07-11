@@ -8,6 +8,7 @@ import Reveal from '@/components/ui/Reveal'
 import { BrandButton } from '@/components/ui/BrandButton'
 import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
+import { brandGoldAlpha } from '@/lib/brand'
 import {
   CheckCircle2,
   Clock,
@@ -88,14 +89,14 @@ const FloatingInput = ({
         required={required}
         placeholder=" "
         aria-label={label}
-        className="peer w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-[#c9a96e]/60 focus:outline-none focus:ring-2 focus:ring-[#c9a96e]/25"
+        className="peer w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
       />
       <label
         htmlFor={id}
         className={`pointer-events-none absolute left-4 transition-all duration-200 ${
           hasValue
-            ? 'top-2 text-[11px] font-medium text-[#c9a96e]'
-            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[#c9a96e]'
+            ? 'top-2 text-[11px] font-medium text-brand-gold'
+            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
         }`}
       >
         {label}
@@ -130,11 +131,11 @@ const FloatingSelect = ({
         onChange={(e) => onChange(e.target.value)}
         required
         aria-label={label}
-        className="peer w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-[#c9a96e]/60 focus:outline-none focus:ring-2 focus:ring-[#c9a96e]/25"
+        className="peer w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
       >
         <option value="" disabled />
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#0b0b0b]">
+          <option key={o} value={o} className="bg-ink">
             {o}
           </option>
         ))}
@@ -143,8 +144,8 @@ const FloatingSelect = ({
         htmlFor={id}
         className={`pointer-events-none absolute left-4 transition-all duration-200 ${
           hasValue
-            ? 'top-2 text-[11px] font-medium text-[#c9a96e]'
-            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[#c9a96e]'
+            ? 'top-2 text-[11px] font-medium text-brand-gold'
+            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
         }`}
       >
         {label}
@@ -213,8 +214,8 @@ const RotatingWord = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.6, ease: REVEAL_EASE }}
-          className="inline-block bg-gradient-to-r from-[#c9a96e] via-[#fff1d6] to-[#c9a96e] bg-clip-text font-extrabold text-transparent"
-          style={{ textShadow: '0 0 40px rgba(201,169,110,0.22)' }}
+          className="inline-block bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold bg-clip-text font-extrabold text-transparent"
+          style={{ textShadow: `0 0 40px ${brandGoldAlpha(0.22)}` }}
         >
           {WORDS[index]}
         </motion.span>
@@ -335,9 +336,9 @@ const FinalCTA = () => {
     >
       {/* Ambient gradient */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#c9a96e]/[0.06] blur-3xl" />
+        <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/[0.06] blur-3xl" />
         <motion.div
-          className="absolute right-1/4 top-1/3 h-[420px] w-[420px] rounded-full bg-[#c9a96e]/[0.04] blur-3xl"
+          className="absolute right-1/4 top-1/3 h-[420px] w-[420px] rounded-full bg-brand-gold/[0.04] blur-3xl"
           animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
         />
@@ -348,7 +349,7 @@ const FinalCTA = () => {
           {/* ─── Left Column — 45% ─── */}
           <div className="flex flex-col justify-center lg:w-[45%]">
             <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-widest text-[#c9a96e]">
+              <p className="text-sm font-semibold uppercase tracking-widest text-brand-gold">
                 Start a Project
               </p>
               <h2
@@ -369,8 +370,8 @@ const FinalCTA = () => {
               <div className="mt-10 flex flex-col gap-4">
                 {TRUST.map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#c9a96e]/10">
-                      <Icon className="h-4 w-4 text-[#c9a96e]" />
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-gold/10">
+                      <Icon className="h-4 w-4 text-brand-gold" />
                     </div>
                     <span className="text-sm text-white/55">{text}</span>
                   </div>
@@ -416,7 +417,7 @@ const FinalCTA = () => {
                           <div
                             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
                               i <= step
-                                ? 'bg-[#c9a96e] text-black'
+                                ? 'bg-brand-gold text-black'
                                 : 'bg-white/[0.06] text-white/55'
                             }`}
                           >
@@ -425,7 +426,7 @@ const FinalCTA = () => {
                           {i < 2 && (
                             <div
                               className={`h-px w-8 transition-colors duration-300 ${
-                                i < step ? 'bg-[#c9a96e]' : 'bg-white/10'
+                                i < step ? 'bg-brand-gold' : 'bg-white/10'
                               }`}
                             />
                           )}
@@ -558,14 +559,14 @@ const FinalCTA = () => {
                                   rows={4}
                                   placeholder=" "
                                   aria-label="Project Description"
-                                  className="peer w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-[#c9a96e]/60 focus:outline-none focus:ring-2 focus:ring-[#c9a96e]/25"
+                                  className="peer w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
                                 />
                                 <label
                                   htmlFor="cta-desc"
                                   className={`pointer-events-none absolute left-4 transition-all duration-200 ${
                                     form.description
-                                      ? 'top-2 text-[11px] font-medium text-[#c9a96e]'
-                                      : 'top-4 text-sm text-white/45 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[#c9a96e]'
+                                      ? 'top-2 text-[11px] font-medium text-brand-gold'
+                                      : 'top-4 text-sm text-white/45 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
                                   }`}
                                 >
                                   Project Description
@@ -624,14 +625,14 @@ const FinalCTA = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: REVEAL_EASE }}
-                    className="flex flex-col items-center gap-5 rounded-[20px] border border-[#c9a96e]/30 bg-white/[0.04] p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                    className="flex flex-col items-center gap-5 rounded-[20px] border border-brand-gold/30 bg-white/[0.04] p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl"
                   >
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
                     >
-                      <CheckCircle2 className="h-14 w-14 text-[#c9a96e]" />
+                      <CheckCircle2 className="h-14 w-14 text-brand-gold" />
                     </motion.div>
                     <h3 className="text-2xl font-bold text-white">Message Sent Successfully</h3>
                     <p className="max-w-sm text-white/55">

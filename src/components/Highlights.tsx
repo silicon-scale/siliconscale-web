@@ -38,7 +38,7 @@ export function Highlights() {
   return (
     <section
       aria-labelledby="highlights-heading"
-      className="w-full bg-[#050505] py-16 sm:py-20 lg:py-24"
+      className="w-full bg-page py-16 sm:py-20 lg:py-24"
     >
       <style>{`
         @keyframes statDotPulse {
@@ -74,7 +74,7 @@ export function Highlights() {
             onClick={() => navigate('/about')}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white uppercase tracking-[0.2em] transition-all duration-300 hover:border-[#c9a96e]/60 hover:bg-gradient-to-r hover:from-[#c9a96e] hover:to-[#c9a96e]/80 hover:text-black hover:shadow-[0_0_24px_rgba(201,169,110,0.25)]"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white uppercase tracking-[0.2em] transition-all duration-300 hover:border-brand-gold/60 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black hover:shadow-[0_0_24px_rgb(var(--brand-gold-rgb)/0.25)]"
           >
             More about us
             <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />

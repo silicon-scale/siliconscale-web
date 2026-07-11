@@ -54,7 +54,7 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background: #050505;
+          background: var(--brand-black);
           transform: translate3d(0,0,0);
           transition: transform ${SLIDE_DURATION_MS}ms cubic-bezier(.22,1,.36,1), opacity 250ms ease;
           will-change: transform, opacity;

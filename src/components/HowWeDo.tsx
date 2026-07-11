@@ -49,7 +49,7 @@ function StepIcon({ type }: { type: (typeof CARDS)[number]['icon'] }) {
         <defs>
           <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#e8c547" />
-            <stop offset="100%" stopColor="#c9a96e" />
+            <stop offset="100%" stopColor="var(--brand-gold)" />
           </linearGradient>
         </defs>
         <rect x="20" y="20" width="120" height="120" rx="24" fill="none" stroke="url(#gold-grad)" strokeWidth="1.5" opacity="0.9" />
@@ -166,7 +166,7 @@ export function HowWeDo() {
         }
         .arrow-btn-how:hover {
           background: rgba(255,255,255,0.12);
-          border-color: rgba(201,169,110,0.5);
+          border-color: rgb(var(--brand-gold-rgb) / 0.5);
           transform: scale(1.05);
         }
         .arrow-btn-how:active { transform: scale(0.98); }
@@ -174,7 +174,7 @@ export function HowWeDo() {
 
       <section
         id="how-we-do"
-        className="relative overflow-hidden py-24 sm:py-28 lg:py-32 xl:py-36 bg-[#050505]"
+        className="relative overflow-hidden py-24 sm:py-28 lg:py-32 xl:py-36 bg-page"
         aria-labelledby="how-we-do-heading"
       >
         {/* Dot grid background */}

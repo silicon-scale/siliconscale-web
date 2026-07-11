@@ -6,6 +6,7 @@ import { OptimizedImage } from './OptimizedImage'
 import maniPhoto from '../assets/jhaneswar.webp'
 import pavanPhoto from '../assets/tillu.webp'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { brandGoldAlpha } from '@/lib/brand'
 
 export default function Team() {
 
@@ -74,8 +75,8 @@ export default function Team() {
 
         ctx.beginPath()
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(201, 169, 110, ${a})`
-        ctx.shadowColor = 'rgba(201, 169, 110, 0.65)'
+        ctx.fillStyle = brandGoldAlpha(a)
+        ctx.shadowColor = brandGoldAlpha(0.65)
         ctx.shadowBlur = 14 * tw
         ctx.fill()
         ctx.shadowBlur = 0
@@ -167,7 +168,7 @@ export default function Team() {
 
     <section
       ref={sectionRef}
-      className="relative bg-[#050505] text-white overflow-hidden min-h-screen"
+      className="relative bg-page text-white overflow-hidden min-h-screen"
     >
 
       {/* Subtle background lift (so it's not pure black) */}
@@ -176,7 +177,7 @@ export default function Team() {
           className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(201,169,110,0.06) 0%, transparent 65%)',
+              'radial-gradient(circle at center, rgb(var(--brand-gold-rgb) / 0.06) 0%, transparent 65%)',
           }}
         />
         <div
