@@ -50,7 +50,7 @@ function OptimizedImageComponent({
       srcSet={srcSet}
       sizes={sizes}
       className={className}
-      style={{ ...style, aspectRatio: `${width} / ${height}` }}
+      style={{ aspectRatio: `${width} / ${height}`, ...style }}
       onError={handleError}
     />
   )

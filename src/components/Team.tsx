@@ -2,14 +2,44 @@
 
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { OptimizedImage } from './OptimizedImage'
+import { FounderCard, type Founder } from './FounderCard'
 import maniPhoto from '../assets/jhaneswar.webp'
 import pavanPhoto from '../assets/tillu.webp'
+import abdulPhoto from '../assets/abdul.webp'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { brandGoldAlpha } from '@/lib/brand'
 
-export default function Team() {
+const FOUNDERS: Founder[] = [
+  {
+    name: 'Pavan Sohith',
+    role: 'Co-Founder',
+    description:
+      '"Architect of SiliconScale\'s technical backbone. Specializes in scalable platforms, high-performance systems, and future-ready digital infrastructure."',
+    image: pavanPhoto,
+    // tillu.webp is ~1.05:1 (near-square); shared object-top crops ~24% width and
+    // sits the face too high. Anchor horizontally center, bias slightly toward the
+    // upper third so head+shoulders stay in the 4/5 frame (not the global object-top).
+    objectPosition: '50% 18%',
+  },
+  {
+    name: 'Mani Jhaneswar',
+    role: 'Co-Founder',
+    description:
+      '"Leads SiliconScale\'s creative vision and digital product design. Crafting cinematic user experiences and scalable brand systems for tomorrow\'s companies."',
+    image: maniPhoto,
+    objectPosition: 'center top',
+  },
+  {
+    name: 'Abdul',
+    role: 'VP of Sales',
+    description:
+      '"Drives SiliconScale\'s growth and client partnerships — turning cold outreach into long-term retainers, and pipeline into predictable revenue."',
+    image: abdulPhoto,
+    objectPosition: 'center top',
+  },
+]
 
+export default function Team() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
@@ -48,7 +78,6 @@ export default function Team() {
 
     function init() {
       if (!canvas) return
-      // More dots + per-dot twinkle params for a random “glow” effect.
       dots = Array.from({ length: 90 }, () => ({
         x: Math.random() * canvas!.width,
         y: Math.random() * canvas!.height,
@@ -57,7 +86,6 @@ export default function Team() {
         vy: (Math.random() - 0.5) * 0.18,
         baseA: Math.random() * 0.14 + 0.05,
         twAmp: Math.random() * 0.22 + 0.06,
-        // radians per millisecond; each dot twinkles at a different rate
         twSpeed: Math.random() * 0.006 + 0.002,
         twPhase: Math.random() * Math.PI * 2,
       }))
@@ -68,8 +96,7 @@ export default function Team() {
       if (!running) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       const t = performance.now()
-      dots.forEach(d => {
-        // Random-looking twinkle: each dot has unique speed/phase/amplitude.
+      dots.forEach((d) => {
         const tw = (Math.sin(t * d.twSpeed + d.twPhase) + 1) / 2
         const a = Math.min(0.7, d.baseA + tw * d.twAmp)
 
@@ -143,35 +170,14 @@ export default function Team() {
     }
   }, [enableCanvas])
 
-  const founders = [
-    {
-      name: 'Mani Jhaneswar',
-      initials: 'MJ',
-      role: 'Co-Founder',
-      description:
-        '"Leads SiliconScale\'s creative vision and digital product design. Crafting cinematic user experiences and scalable brand systems for tomorrow\'s companies."',
-      tags: ['Creative Direction', 'UX Systems', 'Brand', 'Motion'],
-      image: maniPhoto,
-    },
-    {
-      name: 'Pavan Sohith',
-      initials: 'PS',
-      role: 'Co-Founder',
-      description:
-        '"Architect of SiliconScale\'s technical backbone. Specializes in scalable platforms, high-performance systems, and future-ready digital infrastructure."',
-      tags: ['Architecture', 'Systems', 'Platforms', 'AI'],
-      image: pavanPhoto,
-    },
-  ]
-
   return (
-
     <section
+      id="team"
       ref={sectionRef}
       className="relative bg-page text-white overflow-hidden min-h-screen"
+      aria-label="Team section"
+      aria-labelledby="team-heading"
     >
-
-      {/* Subtle background lift (so it's not pure black) */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
           className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full"
@@ -189,7 +195,6 @@ export default function Team() {
         />
       </div>
 
-      {/* Pixel / dot texture overlay (kept visible; sits above canvas) */}
       <div
         className="absolute inset-0 pointer-events-none z-[1]"
         aria-hidden
@@ -210,114 +215,36 @@ export default function Team() {
           ref={canvasRef}
           className="absolute inset-0 w-full h-full pointer-events-none z-0"
           style={{ opacity: 0.5 }}
+          aria-hidden
         />
       ) : (
         <div className="absolute inset-0 pointer-events-none z-0" aria-hidden />
       )}
 
       <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
-
         <div className="text-center pt-20 md:pt-24">
           <h1
-            className="ss-anim-1 leading-[1.2] tracking-normal my-8"
+            id="team-heading"
+            className="leading-[1.2] tracking-normal my-8"
             style={{
               fontSize: 'clamp(2rem, 2vw, 2.6rem)',
               fontWeight: 900,
               color: '#ffffff',
             }}
           >
-            The Minds<br />
+            The Minds
+            <br />
             <em>Behind the SiliconScale</em>
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 mt-12 mb-16">
-          {founders.map((f, i) => (
-            <div
-              key={f.name}
-              className={`ss-founder-card transition-all duration-500 hover:-translate-y-2 ${i === 0 ? 'ss-anim-f1' : 'ss-anim-f2'}`}
-            >
-
-              <div
-                className="relative overflow-hidden group"
-                style={{ aspectRatio: '1.5 / 1.3', background: '#0e0c0a', border: '0.5px solid #2a2218' }}
-              >
-                <OptimizedImage
-                  src={f.image}
-                  alt={f.name}
-                  width={1200}
-                  height={1040}
-                  className="ss-photo-scale w-full h-full object-cover object-[center_20%] transition-transform duration-1200 ease-out group-hover:scale-110"
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                />
-
-
-                {/* kept but hidden so no line removed */}
-                <div
-                  className="ss-photo-overlay absolute bottom-0 left-0 right-0 p-6 md:p-8"
-                  style={{ transform: 'translateY(10px)', transition: 'transform 0.5s ease', zIndex: 2, opacity: 0 }}
-                >
-                    {f.role}
-                  <div
-                    style={{
-                      fontSize: 'clamp(1.6rem, 2vw, 2rem)',
-                      fontWeight: 700,
-                      color: '#ffffff',
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {f.name.split(' ')[0]}<br />{f.name.split(' ')[1]}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="ss-bio p-6 md:p-7 text-center transition-all duration-500"
-                style={{ background: '#050402', border: '0.5px solid #1e1a13', borderTop: 'none' }}
-              >
-
-                <span
-                  className="inline-block mb-3"
-                  style={{
-                    fontSize: '1rem',
-                    letterSpacing: '0.1em',
-                    color: 'white',
-                    padding: '5px 12px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {f.role}
-                </span>
-
-                <div
-                  style={{
-                    fontSize: 'clamp(1.5rem, 2vw, 1.8rem)',
-                    fontWeight: 700,
-                    color: '#ffffff',
-                    lineHeight: 1.1,
-                    marginBottom: '12px'
-                  }}
-                >
-                  {f.name}
-                </div>
-
-                <p
-                  className="leading-relaxed"
-                  style={{
-                    fontSize: 'clamp(0.95rem, 1.1vw, 1.05rem)',
-                    fontWeight: 300,
-                    color: '#a0a0a0',
-                    fontStyle: 'italic',
-                    letterSpacing: '0.01em'
-                  }}
-                >
-                  {f.description}
-                </p>
-
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 mt-12 mb-16">
+          {FOUNDERS.map((founder, i) => (
+            <FounderCard
+              key={founder.name}
+              founder={founder}
+              featuredOnMd={i === 2}
+            />
           ))}
         </div>
       </div>
