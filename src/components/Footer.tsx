@@ -501,10 +501,10 @@ function FooterComponent() {
           <div>
             <h4 className="footer-col-title">Services</h4>
             <nav className="footer-links">
-              <Link to="/services#web-development" className="footer-link">Web Development</Link>
-              <Link to="/services#ai-integration" className="footer-link">AI Integration</Link>
-              <Link to="/services#backend-systems" className="footer-link">Backend Systems</Link>
-              <Link to="/services#product-design" className="footer-link">Product Design</Link>
+              <Link to="/services#branding" className="footer-link">Branding</Link>
+              <Link to="/services#design" className="footer-link">Design</Link>
+              <Link to="/services#development" className="footer-link">Development</Link>
+              <Link to="/services#ai" className="footer-link">AI & Automation</Link>
             </nav>
           </div>
         </div>

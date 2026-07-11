@@ -23,6 +23,7 @@ import Contact from "./components/Contact"
 import PrivacyPolicy from "./components/PrivacyPolicy"
 import TermsOfService from "./components/TermsOfService"
 import ServicesPage from "./components/ServicesPage"
+import NotFound from "./pages/NotFound"
 
 const Home = memo(function Home() {
   return (
@@ -88,6 +89,7 @@ function AppContent() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
