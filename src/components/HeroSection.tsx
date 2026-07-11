@@ -10,8 +10,8 @@ import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 import { trackEvent } from '@/utils/analytics'
+import { REVEAL_EASE } from '@/lib/motion'
 
-const HERO_EASE = [0.22, 1, 0.36, 1] as const
 const HERO_DURATION = 0.75
 
 const heroContainer = {
@@ -33,7 +33,7 @@ const heroItemVisible = {
   z: 0,
   transition: {
     duration: HERO_DURATION,
-    ease: HERO_EASE,
+    ease: REVEAL_EASE,
   },
 } as const
 

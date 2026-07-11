@@ -11,20 +11,73 @@ body {
 
 :root {
   --font-size: 16px;
+
+  /*
+   * Spacing base unit (4px). Referenced by Tailwind container padding:
+   * theme.container.padding = calc(var(--spacing) * 4) → 1rem / 16px.
+   */
+  --spacing: 0.25rem;
+
+  /*
+   * Brand primitives — codify the marketing palette already in use.
+   * Do not invent new hues here; Phase 2 sweeps hardcoded hex to these tokens.
+   */
+  --brand-gold: #c9a96e;
+  --brand-cream: #fff1d6;
+  --brand-black: #050505; /* page canvas used across marketing sections */
+  /* Near-black ink: #0b0b0b collapsed into existing #0a0a0a */
+  --brand-ink: #0a0a0a;
+
+  /* Semantic brand aliases */
+  --color-page: var(--brand-black);
+  --color-brand: var(--brand-gold);
+  --color-brand-highlight: var(--brand-cream);
+  --color-ink: var(--brand-ink);
+
+  /*
+   * Elevation pairs (radius + shadow). Collapses reinvented 16–28px radii
+   * and 4+ shadow recipes into three intentional levels (ui-styling).
+   *   sm — compact cards / list rows
+   *   md — default cards / primary CTAs (BrandButton recipe)
+   *   lg — section panels / hero shells
+   */
+  --elevation-sm-radius: 1rem; /* 16px */
+  --elevation-sm-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --elevation-md-radius: 1.25rem; /* 20px */
+  --elevation-md-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+  --elevation-lg-radius: 1.75rem; /* 28px */
+  --elevation-lg-shadow: 0 30px 90px rgba(0, 0, 0, 0.7);
+
+  /*
+   * Shared breakpoints (mirror of src/lib/breakpoints.ts + Tailwind screens).
+   * Collapsed one-offs:
+   *   600 → sm (640) | 860 → tablet (900) | Footer/Connect 900 → tablet
+   * Canonical set: xs 480 | sm 640 | md 768 | tablet 900 | lg 1024
+   *                | xl 1280 | 2xl 1536 | ultrawide 2560
+   */
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-tablet: 900px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-ultrawide: 2560px;
+
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: var(--brand-ink);
   --card: #fafafa;
-  --card-foreground: #0a0a0a;
+  --card-foreground: var(--brand-ink);
   --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
+  --popover-foreground: var(--brand-ink);
+  --primary: var(--brand-ink);
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
-  --secondary-foreground: #0a0a0a;
+  --secondary-foreground: var(--brand-ink);
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
   --accent: #f4f4f5;
-  --accent-foreground: #0a0a0a;
+  --accent-foreground: var(--brand-ink);
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e4e4e7;
@@ -34,24 +87,24 @@ body {
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --ring: #a1a1aa;
-  
+
   /* Simplified accent colors */
   --accent-blue: #2563eb;
   --accent-emerald: #059669;
   --accent-purple: #7c3aed;
-  
+
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: var(--brand-ink);
   --foreground: #fafafa;
   --card: #1a1a1a;
   --card-foreground: #fafafa;
   --popover: #1a1a1a;
   --popover-foreground: #fafafa;
   --primary: #fafafa;
-  --primary-foreground: #0a0a0a;
+  --primary-foreground: var(--brand-ink);
   --secondary: #1a1a1a;
   --secondary-foreground: #fafafa;
   --muted: #1a1a1a;
@@ -93,11 +146,24 @@ body {
   --color-accent-blue: var(--accent-blue);
   --color-accent-emerald: var(--accent-emerald);
   --color-accent-purple: var(--accent-purple);
-  
+
+  /* Brand palette (Tailwind v4-style bridge) */
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-black: var(--brand-black);
+  --color-brand-ink: var(--brand-ink);
+  --color-page: var(--brand-black);
+  --color-brand: var(--brand-gold);
+  --color-brand-highlight: var(--brand-cream);
+  --color-ink: var(--brand-ink);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-elevation-sm: var(--elevation-sm-radius);
+  --radius-elevation-md: var(--elevation-md-radius);
+  --radius-elevation-lg: var(--elevation-lg-radius);
 }
 
 @layer base {
@@ -580,7 +646,7 @@ html {
   }
 }
 
-/* Ultra-wide screen optimizations */
+/* Ultra-wide screen optimizations (--breakpoint-ultrawide: 2560px) */
 @media (min-width: 2560px) {
   .video-container video {
     object-position: center center;

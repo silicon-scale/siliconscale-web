@@ -7,6 +7,7 @@ import SectionShell from '@/components/ui/SectionShell'
 import Reveal from '@/components/ui/Reveal'
 import { BrandButton } from '@/components/ui/BrandButton'
 import { trackEvent } from '@/utils/analytics'
+import { REVEAL_EASE } from '@/lib/motion'
 import {
   CheckCircle2,
   Clock,
@@ -44,8 +45,6 @@ const INITIAL: FinalCTAFormData = {
 const BUDGETS = ['35000 INR', '50000 INR', '100000 INR', 'Enterprise']
 const PROJECT_TYPES = ['SaaS', 'Web Platform', 'MVP', 'Redesign']
 const TIMELINES = ['< 1 month', '1 – 3 months', '3 – 6 months', '6+ months']
-
-const EASE = [0.22, 1, 0.36, 1] as const
 
 // EmailJS Configuration from environment variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
@@ -175,12 +174,12 @@ const stepVariants = {
   center: {
     x: 0,
     opacity: 1,
-    transition: { duration: 0.4, ease: EASE },
+    transition: { duration: 0.4, ease: REVEAL_EASE },
   },
   exit: (dir: number) => ({
     x: dir > 0 ? -60 : 60,
     opacity: 0,
-    transition: { duration: 0.25, ease: EASE },
+    transition: { duration: 0.25, ease: REVEAL_EASE },
   }),
 }
 
@@ -213,7 +212,7 @@ const RotatingWord = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.6, ease: EASE }}
+          transition={{ duration: 0.6, ease: REVEAL_EASE }}
           className="inline-block bg-gradient-to-r from-[#c9a96e] via-[#fff1d6] to-[#c9a96e] bg-clip-text font-extrabold text-transparent"
           style={{ textShadow: '0 0 40px rgba(201,169,110,0.22)' }}
         >
@@ -624,7 +623,7 @@ const FinalCTA = () => {
                     key="success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, ease: EASE }}
+                    transition={{ duration: 0.6, ease: REVEAL_EASE }}
                     className="flex flex-col items-center gap-5 rounded-[20px] border border-[#c9a96e]/30 bg-white/[0.04] p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl"
                   >
                     <motion.div

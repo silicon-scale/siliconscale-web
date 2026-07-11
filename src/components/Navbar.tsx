@@ -8,8 +8,8 @@ import logo from '../assets/SiliconScaleLogo.png'
 import { useReveal } from '../context/RevealContext'
 import { trackEvent } from '@/utils/analytics'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
+import { REVEAL_EASE } from '@/lib/motion'
 
-const REVEAL_EASE = [0.22, 1, 0.36, 1] as const
 const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
 
 export function Navbar() {
