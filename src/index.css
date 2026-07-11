@@ -6,6 +6,93 @@ body {
   font-weight: var(--font-weight-normal);
 }
 
+/*
+ * Brand utility fallbacks (unlayered so they win over a stale/missing JIT emit).
+ * Phase 2 mapped components to bg-page / text-brand-gold / etc., but Vite's
+ * Tailwind cache could ship :root tokens without generating those class rules —
+ * leaving sections transparent over the white App shell (white text = blank page).
+ */
+.bg-page {
+  background-color: var(--brand-black);
+}
+.bg-ink {
+  background-color: var(--brand-ink);
+}
+.bg-brand-gold {
+  background-color: var(--brand-gold);
+}
+.bg-brand-cream {
+  background-color: var(--brand-cream);
+}
+.bg-brand-black {
+  background-color: var(--brand-black);
+}
+.bg-brand-ink {
+  background-color: var(--brand-ink);
+}
+.text-brand-gold,
+.text-brand {
+  color: var(--brand-gold);
+}
+.text-brand-cream,
+.text-brand-highlight {
+  color: var(--brand-cream);
+}
+.from-brand-gold {
+  --tw-gradient-from: var(--brand-gold) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.via-brand-cream {
+  --tw-gradient-to: rgb(var(--brand-cream-rgb) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from),
+    var(--brand-cream) var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+.to-brand-gold {
+  --tw-gradient-to: var(--brand-gold) var(--tw-gradient-to-position);
+}
+.to-brand-gold\/50 {
+  --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0.5) var(--tw-gradient-to-position);
+}
+.to-brand-gold\/80 {
+  --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0.8) var(--tw-gradient-to-position);
+}
+.hover\:from-brand-gold:hover {
+  --tw-gradient-from: var(--brand-gold) var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+.hover\:to-brand-gold\/80:hover {
+  --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0.8) var(--tw-gradient-to-position);
+}
+.hover\:text-brand-gold:hover {
+  color: var(--brand-gold);
+}
+.hover\:border-brand-gold\/60:hover {
+  border-color: rgb(var(--brand-gold-rgb) / 0.6);
+}
+.border-brand-gold\/30 {
+  border-color: rgb(var(--brand-gold-rgb) / 0.3);
+}
+.bg-brand-gold\/10 {
+  background-color: rgb(var(--brand-gold-rgb) / 0.1);
+}
+.bg-brand-gold\/\[0\.06\] {
+  background-color: rgb(var(--brand-gold-rgb) / 0.06);
+}
+.bg-brand-gold\/\[0\.04\] {
+  background-color: rgb(var(--brand-gold-rgb) / 0.04);
+}
+.focus\:border-brand-gold\/60:focus {
+  border-color: rgb(var(--brand-gold-rgb) / 0.6);
+}
+.focus\:ring-brand-gold\/25:focus {
+  --tw-ring-color: rgb(var(--brand-gold-rgb) / 0.25);
+}
+.peer:focus ~ .peer-focus\:text-brand-gold {
+  color: var(--brand-gold);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {

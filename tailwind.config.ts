@@ -79,6 +79,9 @@ export default {
           foreground: "var(--card-foreground)",
         },
         brand: {
+          // Hex vars for solid fills (same pattern as working bg-background).
+          // RGB + <alpha-value> kept so opacity modifiers (/60, /10) still work
+          // when JIT emits them; unlayered fallbacks in index.css cover solids.
           gold: "rgb(var(--brand-gold-rgb) / <alpha-value>)",
           cream: "rgb(var(--brand-cream-rgb) / <alpha-value>)",
           black: "rgb(var(--brand-black-rgb) / <alpha-value>)",
@@ -126,5 +129,33 @@ export default {
       },
     },
   },
+  // Ensure brand utilities survive Vite/Tailwind JIT cache misses after theme adds
+  safelist: [
+    "bg-page",
+    "bg-ink",
+    "bg-brand-gold",
+    "bg-brand-cream",
+    "bg-brand-black",
+    "bg-brand-ink",
+    "text-brand",
+    "text-brand-gold",
+    "text-brand-cream",
+    "from-brand-gold",
+    "via-brand-cream",
+    "to-brand-gold",
+    "to-brand-gold/50",
+    "to-brand-gold/80",
+    "hover:from-brand-gold",
+    "hover:to-brand-gold/80",
+    "hover:text-brand-gold",
+    "hover:border-brand-gold/60",
+    "border-brand-gold/30",
+    "bg-brand-gold/10",
+    "bg-brand-gold/[0.06]",
+    "bg-brand-gold/[0.04]",
+    "focus:border-brand-gold/60",
+    "focus:ring-brand-gold/25",
+    "peer-focus:text-brand-gold",
+  ],
   plugins: [tailwindAnimate],
 } satisfies Config;

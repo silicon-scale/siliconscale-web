@@ -64,7 +64,7 @@ function AppContent() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-page text-white">
       <Navbar />
 
       <main className="relative" role="main" id="main-content">

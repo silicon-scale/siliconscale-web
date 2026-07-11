@@ -24,6 +24,21 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
     return () => clearTimeout(t)
   }, [])
 
+  // Failsafe: if transitionend never fires (headless / reduced-motion edge cases),
+  // still release the app so reveal animations can start.
+  useEffect(() => {
+    if (!exiting) return
+    const t = window.setTimeout(() => {
+      if (exitFiredRef.current) return
+      exitFiredRef.current = true
+      onExitComplete()
+    }, SLIDE_DURATION_MS + 150)
+    return () => clearTimeout(t)
+    // onExitComplete is stable enough for this one-shot failsafe; including it
+    // would retrigger when parents pass an inline callback.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exiting])
+
   return (
     <section
       className={[
