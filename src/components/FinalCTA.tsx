@@ -55,9 +55,9 @@ const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
 
 const TRUST = [
   { icon: Clock, text: 'We respond within 24 hours' },
-  { icon: Layers, text: 'Architecture-first approach' },
-  { icon: Sparkles, text: 'No commitment consultation' },
-  { icon: ShieldCheck, text: 'Your data is secure' },
+  { icon: Layers, text: "We'll tell you if we're not the right fit" },
+  { icon: Sparkles, text: 'No pressure, no hard sell — just a real conversation' },
+  { icon: ShieldCheck, text: 'Your information stays private' },
 ] as const
 
 /* ─── Floating Label Input ─── */
@@ -186,7 +186,7 @@ const stepVariants = {
 }
 
 /* ─── Rotating Word ─── */
-const WORDS = ['Scales.', 'Performs.', 'Converts.', 'Lasts.'] as const
+const WORDS = ['Actually Works.', 'Saves You Hours.', 'Makes You Money.', 'Lasts.'] as const
 
 const RotatingWord = () => {
   const [index, setIndex] = useState(0)
@@ -204,7 +204,7 @@ const RotatingWord = () => {
   return (
     <span
       className="relative inline-block"
-      style={{ minWidth: '9ch' }}
+      style={{ minWidth: '16ch' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -362,8 +362,8 @@ const FinalCTA = () => {
                 That&nbsp;<RotatingWord />
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-white/55">
-                Tell us about your vision. We&apos;ll architect the system, plan the
-                roadmap, and deliver production-grade software.
+                Tell us what you&apos;re building. We&apos;ll tell you honestly whether it&apos;s a
+                fit — and if it is, how we&apos;d approach it.
               </p>
             </Reveal>
 
@@ -383,8 +383,8 @@ const FinalCTA = () => {
             <Reveal delay={0.15}>
               <div className="mt-10 flex items-center gap-6">
                 <div>
-                  <p className="text-2xl font-bold text-white">50+</p>
-                  <p className="text-xs text-white/55">Projects Delivered</p>
+                  <p className="text-2xl font-bold text-white">12+</p>
+                  <p className="text-xs text-white/55">Real Projects Delivered</p>
                 </div>
                 <div className="h-10 w-px bg-white/10" />
                 <div>

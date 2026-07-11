@@ -11,14 +11,14 @@ export default function TermsOfService() {
     >
           <p>
             These Terms of Service (“Terms”) govern your use of the website and services
-            provided by <strong>Silicon Scale</strong> (“Silicon Scale”, “we”, “us”, or
+            provided by <strong>SiliconScale Tech.</strong> (“SiliconScale Tech.”, “we”, “us”, or
             “our”). By accessing our website or engaging us for services, you (“Client”,
             “you”) agree to be bound by these Terms. If you do not agree with these Terms,
             please do not use our website or services.
           </p>
 
-          <h2>1. About Silicon Scale</h2>
-          <p>Silicon Scale is a digital agency that designs and develops:</p>
+          <h2>1. About SiliconScale Tech.</h2>
+          <p>SiliconScale Tech. is a digital agency that designs and develops:</p>
           <ul>
             <li>Websites and web applications</li>
             <li>AI-powered solutions and automation tools</li>
@@ -76,7 +76,7 @@ export default function TermsOfService() {
           <h3>4.1 Pricing and estimates</h3>
           <p>
             Project fees will be outlined in the Project Agreement or proposal. Unless
-            otherwise specified, prices are in [currency] and exclude applicable taxes.
+            otherwise specified, prices are in Indian Rupees (INR) and exclude applicable taxes.
           </p>
 
           <h3>4.2 Payment schedule</h3>
@@ -152,7 +152,7 @@ export default function TermsOfService() {
               website, and marketing materials.
             </li>
             <li>
-              Reference your company name and logo as a client of Silicon Scale.
+              Reference your company name and logo as a client of SiliconScale Tech.
             </li>
           </ul>
 
@@ -216,7 +216,7 @@ export default function TermsOfService() {
           <p>To the maximum extent permitted by law:</p>
           <ul>
             <li>
-              Silicon Scale shall not be liable for any indirect, incidental,
+              SiliconScale Tech. shall not be liable for any indirect, incidental,
               consequential, special, or exemplary damages (including loss of profits,
               revenue, data, or business opportunities) arising out of or related to the
               services or these Terms.
@@ -224,7 +224,7 @@ export default function TermsOfService() {
             <li>
               Our total aggregate liability for any claim arising out of or relating to
               the services or these Terms shall not exceed the total fees actually paid by
-              you to Silicon Scale for the specific project or service giving rise to the
+              you to SiliconScale Tech. for the specific project or service giving rise to the
               claim in the 12 months preceding the event.
             </li>
           </ul>
@@ -235,7 +235,7 @@ export default function TermsOfService() {
 
           <h2>9. Indemnification</h2>
           <p>
-            You agree to indemnify and hold harmless Silicon Scale, its directors,
+            You agree to indemnify and hold harmless SiliconScale Tech., its directors,
             employees, and contractors from any claims, damages, liabilities, or expenses
             arising out of:
           </p>
@@ -305,7 +305,7 @@ export default function TermsOfService() {
           <h2>14. Governing Law and Dispute Resolution</h2>
           <p>
             These Terms and any disputes arising out of or relating to them or the
-            services shall be governed by the laws of [Jurisdiction / Country], without
+            services shall be governed by the laws of India, without
             regard to its conflict of law principles. Any disputes shall preferably be
             resolved amicably. If that is not possible, disputes may be submitted to the
             competent courts of [City, Country], unless otherwise required by applicable
@@ -328,7 +328,7 @@ export default function TermsOfService() {
           <p>For any questions about these Terms, please contact:</p>
           <ul>
             <li>
-              <strong>Silicon Scale</strong>
+              <strong>SiliconScale Tech.</strong>
             </li>
             <li>
               <strong>Address</strong>: Hyderabad, India

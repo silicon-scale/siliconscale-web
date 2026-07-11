@@ -46,19 +46,19 @@ export function AboutSection() {
           <div className="flex flex-col gap-10 p-8 sm:p-10 lg:p-14">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="space-y-5">
-                <SectionEyebrow>About us</SectionEyebrow>
+                <SectionEyebrow>About Us</SectionEyebrow>
                 <h2
                   id="about-home-heading"
                   className="font-semibold tracking-tight text-white"
                   style={{ fontSize: 'clamp(2.2rem, 5vw, 3.8rem)', lineHeight: 1.05 }}
                 >
-                  A small team, obsessed with
-                  <span className="block text-white/70">craft and performance.</span>
+                  A small team that builds like it&apos;s our own business.
                 </h2>
                 <p className="max-w-2xl text-sm leading-relaxed text-white/60 sm:text-base">
-                  We partner closely with founders and teams to clarify the roadmap, design the
-                  experience, and ship reliable releases—without the typical agency chaos. Expect
-                  sharp UX, thoughtful engineering, and communication that’s clear from day one.
+                  We partner directly with founders — not account managers, not a rotating cast of
+                  juniors. You&apos;ll talk to the person building your system, from the first call to
+                  the day it ships. Sharp engineering, clear communication, and nothing that
+                  &quot;we&apos;ll circle back on.&quot;
                 </p>
               </div>
 
@@ -67,17 +67,17 @@ export function AboutSection() {
                 className="group"
                 onClick={() => navigate('/about')}
               >
-                Learn more
+                See how we work
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </SecondaryCta>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { k: 'Outcome-First', v: 'Built for results, not noise.' },
-                { k: 'Design + Dev', v: 'One team. No friction.' },
-                { k: 'Fast Shipping', v: 'Tight iteration loops.' },
-                { k: 'Production-Ready', v: 'Clean code. Scalable systems.' },
+                { k: 'Built to Last', v: 'Not a prototype that breaks in month two.' },
+                { k: 'You Talk to the Builder', v: 'No middleman between you and the work.' },
+                { k: 'Fast, Not Rushed', v: 'Tight timelines, without cut corners.' },
+                { k: 'Production-Ready', v: "Code we'd be comfortable running ourselves." },
               ].map((item) => (
                 <div
                   key={item.k}

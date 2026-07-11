@@ -20,8 +20,8 @@ const PRINCIPLES = [
 				<line x1="14" y1="4" x2="14" y2="24" />
 			</svg>
 		),
-		title: "Websites built to scale",
-		desc: "At SiliconScale, we build websites that grow with your business. From performance to architecture, every decision ensures your site remains fast, reliable, and ready for future growth.",
+		title: "Built to grow with you",
+		desc: "A system that works today and still works when you're 10x the size. We build for where you're going, not just where you are.",
 	},
 	{
 		icon: (
@@ -38,8 +38,8 @@ const PRINCIPLES = [
 				<path d="M20 8 L20 15" />
 			</svg>
 		),
-		title: "Design meets performance",
-		desc: "We believe great websites combine beautiful design with strong performance. Every interface we build is crafted to look exceptional and load instantly across all devices.",
+		title: "Function first, polish always",
+		desc: "A tool nobody wants to use is a failed tool. We build things that work correctly AND feel good to use — not one at the expense of the other.",
 	},
 	{
 		icon: (
@@ -55,8 +55,8 @@ const PRINCIPLES = [
 				<circle cx="14" cy="14" r="9" />
 			</svg>
 		),
-		title: "Crafted with precision",
-		desc: "Every website we create is carefully crafted—from clean code and smooth interactions to thoughtful user experiences—ensuring your digital presence feels polished and professional.",
+		title: "We ship, not just plan",
+		desc: "Clean code, tested before it's handed off, explained in plain language — not a black box you're afraid to touch after we leave.",
 	},
 ];
 
@@ -365,7 +365,7 @@ export default function AboutPage() {
 				>
 					Design.{" "}
 					<span style={{ color: "rgba(255,255,255,0.55)" }}>Build.</span>{" "}
-					<span style={{ color: "rgba(255,255,255,0.82)" }}>Scale.</span>
+					<span style={{ color: "rgba(255,255,255,0.82)" }}>Grow.</span>
 				</h1>
 
 				{/* bottom row */}
@@ -391,12 +391,12 @@ export default function AboutPage() {
 							maxWidth: 540,
 						}}
 					>
-						SiliconScale blends creativity with scalable technology — delivering
-						digital experiences that are visually compelling, technically robust, and
-						built for long-term growth.
+						SiliconScale builds the systems, stores, and automation that let a business
+						run with less friction and more revenue. We&apos;re not chasing awards —
+						we&apos;re building things that work, and hold up under real use.
 					</p>
 					<Link to="/contact" className="join-btn">
-						Start a project ↗
+						Start a project
 					</Link>
 				</div>
 			</section>
@@ -405,7 +405,7 @@ export default function AboutPage() {
 			<div ref={statsRef.ref as React.RefCallback<HTMLDivElement>} className="stats-section">
 				<div className="stat-row">
 					{[
-						{ n: "14+", l: "Projects Delivered" },
+						{ n: "12+", l: "Real Projects Delivered" },
 						{ n: "2 yrs", l: "Crafting Experiences" },
 						{ n: "8+", l: "Business Brands Served" },
 						{ n: "99%", l: "Client Retention" },
@@ -465,7 +465,7 @@ export default function AboutPage() {
 							lineHeight: 1.05,
 						}}
 					>
-						At our core
+						What we actually believe
 					</h2>
 					<p
 						className={`rv d2 ${principlesRef.visible ? "in" : ""}`}
@@ -478,7 +478,9 @@ export default function AboutPage() {
 							fontWeight: 300,
 						}}
 					>
-						We two founders united by curiosity and craft are building meaningful digital experiences.
+						A remote team spread across India, working like we&apos;re in the next
+						room — you deal directly with the people building your system, not a
+						layer of account management.
 					</p>
 				</div>
 
@@ -555,10 +557,10 @@ export default function AboutPage() {
 						marginBottom: 56,
 					}}
 				>
-					Ready to build
+					Have something
 					<br />
-					something{" "}
-					<span style={{ color: "rgba(255,255,255,0.25)" }}>great?</span>
+					worth{" "}
+					<span style={{ color: "rgba(255,255,255,0.25)" }}>building?</span>
 				</h2>
 				<div
 					className={`rv d2 ${ctaRef.visible ? "in" : ""}`}
@@ -569,7 +571,7 @@ export default function AboutPage() {
 						className="join-btn"
 						style={{ fontSize: 12 }}
 					>
-						Talk to us ↗
+						Talk to us
 					</Link>
 				</div>
 			</section>

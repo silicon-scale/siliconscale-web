@@ -458,11 +458,11 @@ function FooterComponent() {
         {/* Brand: watermark + logo, tagline, big icons + email */}
         <div className="footer-brand">
           <div className="footer-brand-head">
-            <img src="/transparent-logo.svg" alt="Silicon Scale" width="120" height="120" className="footer-logo" loading="lazy" decoding="async" />
-            <span className="footer-watermark">Silicon Scale</span>
+            <img src="/transparent-logo.svg" alt="SiliconScale" width="120" height="120" className="footer-logo" loading="lazy" decoding="async" />
+            <span className="footer-watermark">SiliconScale</span>
           </div>
           <p className="footer-tagline">
-            Scalable digital products for ambitious teams.
+            Custom systems, Shopify stores, and AI agents for businesses that need it to work.
           </p>
           <div className="footer-socials">
             <a
@@ -501,6 +501,10 @@ function FooterComponent() {
             <div className="footer-links">
               <Link to="/" className="footer-link">Home</Link>
               <Link to="/services" className="footer-link">Services</Link>
+              <Link to="/contact" className="footer-link">Contact</Link>
+              <Link to="/about" className="footer-link">About</Link>
+              <Link to="/work" className="footer-link">Work</Link>
+              <Link to="/team" className="footer-link">Team</Link>
             </div>
           </div>
 
@@ -515,10 +519,10 @@ function FooterComponent() {
           <div>
             <h4 className="footer-col-title">Services</h4>
             <nav className="footer-links">
-              <Link to="/services#branding" className="footer-link">Branding</Link>
-              <Link to="/services#design" className="footer-link">Design</Link>
-              <Link to="/services#development" className="footer-link">Development</Link>
-              <Link to="/services#ai" className="footer-link">AI & Automation</Link>
+              <Link to="/services#development" className="footer-link">Custom Systems</Link>
+              <Link to="/services#shopify-headless" className="footer-link">Shopify Development</Link>
+              <Link to="/services#ai-agents" className="footer-link">AI & Automation</Link>
+              <Link to="/services#integrations" className="footer-link">Integrations</Link>
             </nav>
           </div>
         </div>

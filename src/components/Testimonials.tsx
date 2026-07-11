@@ -239,7 +239,7 @@ export function Testimonials() {
             </h2>
           </div>
           <p className="ss-test-sub">
-            Businesses choose SiliconScale for fast delivery, clear communication, and reliable engineering.
+            Real clients. Real projects. Here&apos;s what they said after we shipped.
           </p>
         </div>
 

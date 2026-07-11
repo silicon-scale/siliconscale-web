@@ -20,28 +20,241 @@ type ServiceCard = {
   accent: string
   bg: string
   icon: React.ReactNode
+  locked?: boolean
 }
 
 const SERVICE_CARDS: ServiceCard[] = [
   {
-    id: 'branding',
+    id: 'development',
     eyebrow: 'OUR SERVICES',
-    title: 'Branding',
-    chips: ['Branding', 'Pitch Deck', 'Rebranding', 'Design System', 'Graphic Design'],
+    title: 'Custom Systems Development',
+    chips: ['Internal Tools', 'Dashboards', 'Customer Platforms', 'APIs', 'Automation'],
     description:
-      'Exceptional brands deserve memorable identities. We craft strategic systems that captivate users, earn trust, and scale across every touchpoint.',
-    cta: 'Branding services',
+      "The software that runs your day-to-day — built to replace the spreadsheets and manual steps eating your team's time.",
+    cta: 'Talk about your system',
     accent: '#b6f56a',
     bg: 'linear-gradient(135deg, rgba(38,60,22,0.92), rgba(10,10,10,0.98))',
     icon: (
       <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
         <defs>
-          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="svc-dev" x1="0" y1="0" x2="1" y2="1">
             <stop stopColor="#b6f56a" />
             <stop offset="1" stopColor="#35f2c2" />
           </linearGradient>
         </defs>
-        <circle cx="43" cy="43" r="40" fill="url(#g1)" opacity="0.98" />
+        <circle cx="43" cy="43" r="40" fill="url(#svc-dev)" opacity="0.98" />
+        <path
+          d="M29 34l-9 9 9 9M57 34l9 9-9 9"
+          stroke="var(--brand-ink)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.9"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'shopify-headless',
+    eyebrow: 'OUR SERVICES',
+    title: 'Headless Shopify Development',
+    chips: ['Storefront API', 'Custom Frontend', 'Performance', 'Checkout', 'Migrations'],
+    description:
+      "A store that's actually yours — not a theme everyone else is also using. Built fast, built to convert.",
+    cta: 'Talk about your store',
+    accent: '#7dd3fc',
+    bg: 'linear-gradient(135deg, rgba(12,42,78,0.95), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-shop" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#6ee7ff" />
+            <stop offset="1" stopColor="#60a5fa" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-shop)" opacity="0.98" />
+        <path
+          d="M28 36h30l-2 22H30l-2-22Z"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          strokeLinejoin="round"
+          fill="none"
+          opacity="0.9"
+        />
+        <path
+          d="M34 36V30a9 9 0 0 1 18 0v6"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          fill="none"
+          opacity="0.9"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'ai-agents',
+    eyebrow: 'OUR SERVICES',
+    title: 'AI Agents & Automation',
+    chips: ['Lead Qualification', 'Customer Support', 'Workflows', 'Internal Tools', 'Chat'],
+    description:
+      'AI that does the job, not a demo. Built around a real workflow in your business, not a generic chatbot.',
+    cta: 'Talk about your AI needs',
+    accent: '#fbbf24',
+    bg: 'linear-gradient(135deg, rgba(74,52,12,0.92), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-ai" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#fde68a" />
+            <stop offset="1" stopColor="#f59e0b" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-ai)" opacity="0.98" />
+        <path
+          d="M43 26c6.3 0 11.5 5.2 11.5 11.5S49.3 49 43 49s-11.5-5.2-11.5-11.5S36.7 26 43 26Z"
+          fill="var(--brand-ink)"
+          opacity="0.9"
+        />
+        <path
+          d="M30 61c3.2-7.2 9-10.8 13-10.8S52.8 53.8 56 61"
+          stroke="var(--brand-ink)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          opacity="0.85"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'integrations',
+    eyebrow: 'OUR SERVICES',
+    title: 'Integrations',
+    chips: ['CRM', 'Payments', 'AI Services', 'Third-Party APIs', 'Data Sync'],
+    description:
+      'Your tools, talking to each other. No more copy-pasting between systems that should already be connected.',
+    cta: 'Talk about your stack',
+    accent: '#d6a6ff',
+    bg: 'linear-gradient(135deg, rgba(52,28,72,0.95), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-int" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#ff9bd6" />
+            <stop offset="1" stopColor="#c6a0ff" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-int)" opacity="0.98" />
+        <circle cx="30" cy="36" r="7" fill="var(--brand-ink)" opacity="0.9" />
+        <circle cx="56" cy="36" r="7" fill="var(--brand-ink)" opacity="0.9" />
+        <circle cx="43" cy="56" r="7" fill="var(--brand-ink)" opacity="0.9" />
+        <path
+          d="M36 40l4 10M50 40l-4 10M37 36h12"
+          stroke="var(--brand-ink)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          opacity="0.85"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'maintenance',
+    eyebrow: 'OUR SERVICES',
+    title: 'Website Maintenance',
+    chips: ['Updates', 'Monitoring', 'Bug Fixes', 'Uptime', 'Security'],
+    description:
+      'A live site needs upkeep. We handle it so you find out about a problem from us, not from a customer.',
+    cta: 'Talk about ongoing support',
+    accent: '#fb7185',
+    bg: 'linear-gradient(135deg, rgba(72,24,36,0.95), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-maint" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#fda4af" />
+            <stop offset="1" stopColor="#fb7185" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-maint)" opacity="0.98" />
+        <path
+          d="M43 24l18 8v14c0 12-8 22-18 26-10-4-18-14-18-26V32l18-8Z"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          strokeLinejoin="round"
+          fill="none"
+          opacity="0.9"
+        />
+        <path
+          d="M35 44l6 6 12-12"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.9"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'ops-setup',
+    eyebrow: 'OUR SERVICES',
+    title: 'Digital Business Setup',
+    chips: ['Domain & Hosting', 'ClickUp', 'Google Workspace', 'Email', 'Ops Setup'],
+    description:
+      "Standing up the operational side of a digital business — so you're running things, not researching how to set them up.",
+    cta: 'Talk about getting set up',
+    accent: '#67e8f9',
+    bg: 'linear-gradient(135deg, rgba(14,56,64,0.95), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-ops" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#a5f3fc" />
+            <stop offset="1" stopColor="#22d3ee" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-ops)" opacity="0.98" />
+        <rect
+          x="26"
+          y="30"
+          width="34"
+          height="26"
+          rx="4"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          fill="none"
+          opacity="0.9"
+        />
+        <path
+          d="M34 56h18M43 56v6"
+          stroke="var(--brand-ink)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+          opacity="0.9"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 'branding',
+    eyebrow: 'COMING SOON',
+    title: 'Branding & Identity',
+    chips: [],
+    description: 'Coming soon.',
+    cta: '',
+    locked: true,
+    accent: '#a3a3a3',
+    bg: 'linear-gradient(135deg, rgba(40,40,40,0.92), rgba(10,10,10,0.98))',
+    icon: (
+      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="svc-brand" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#d4d4d4" />
+            <stop offset="1" stopColor="#737373" />
+          </linearGradient>
+        </defs>
+        <circle cx="43" cy="43" r="40" fill="url(#svc-brand)" opacity="0.98" />
         <path
           d="M43 20c8.8 0 16.7 3.6 22.4 9.4L43 43V20Z"
           fill="var(--brand-ink)"
@@ -65,98 +278,61 @@ const SERVICE_CARDS: ServiceCard[] = [
       </svg>
     ),
   },
-  {
-    id: 'design',
-    eyebrow: 'OUR SERVICES',
-    title: 'Design',
-    chips: ['UI/UX Design', 'Web Design', 'Mobile App Design', 'Website Redesign', 'UX/UI Audit'],
-    description:
-      'We design intuitive, engaging products built for user satisfaction. Research-backed UX and polished UI that feels effortless to use—and hard to ignore.',
-    cta: 'Design services',
-    accent: '#d6a6ff',
-    bg: 'linear-gradient(135deg, rgba(52,28,72,0.95), rgba(10,10,10,0.98))',
-    icon: (
-      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#ff9bd6" />
-            <stop offset="1" stopColor="#c6a0ff" />
-          </linearGradient>
-        </defs>
-        <circle cx="43" cy="43" r="40" fill="url(#g2)" opacity="0.98" />
-        <path
-          d="M43 24l5.6 13.6L62 43l-13.4 5.4L43 62l-5.6-13.6L24 43l13.4-5.4L43 24Z"
-          fill="var(--brand-ink)"
-          opacity="0.9"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'development',
-    eyebrow: 'OUR SERVICES',
-    title: 'Development',
-    chips: ['Web Apps', 'Landing Systems', 'Performance', 'SEO', 'Integrations'],
-    description:
-      'Production-grade builds with clean architecture, fast loads, and scalable foundations. Built to ship quickly—and keep working reliably.',
-    cta: 'Development services',
-    accent: '#7dd3fc',
-    bg: 'linear-gradient(135deg, rgba(12,42,78,0.95), rgba(10,10,10,0.98))',
-    icon: (
-      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#6ee7ff" />
-            <stop offset="1" stopColor="#60a5fa" />
-          </linearGradient>
-        </defs>
-        <circle cx="43" cy="43" r="40" fill="url(#g3)" opacity="0.98" />
-        <path
-          d="M29 34l-9 9 9 9M57 34l9 9-9 9"
-          stroke="var(--brand-ink)"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.9"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'ai',
-    eyebrow: 'OUR SERVICES',
-    title: 'AI & Automation',
-    chips: ['AI Chat', 'Search', 'Workflows', 'Internal Tools', 'Support'],
-    description:
-      'Practical AI that removes manual work and upgrades user experience. Automations, smart features, and assistants that feel natural—never gimmicky.',
-    cta: 'AI services',
-    accent: '#fbbf24',
-    bg: 'linear-gradient(135deg, rgba(74,52,12,0.92), rgba(10,10,10,0.98))',
-    icon: (
-      <svg width="86" height="86" viewBox="0 0 86 86" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#fde68a" />
-            <stop offset="1" stopColor="#f59e0b" />
-          </linearGradient>
-        </defs>
-        <circle cx="43" cy="43" r="40" fill="url(#g4)" opacity="0.98" />
-        <path
-          d="M43 26c6.3 0 11.5 5.2 11.5 11.5S49.3 49 43 49s-11.5-5.2-11.5-11.5S36.7 26 43 26Z"
-          fill="var(--brand-ink)"
-          opacity="0.9"
-        />
-        <path
-          d="M30 61c3.2-7.2 9-10.8 13-10.8S52.8 53.8 56 61"
-          stroke="var(--brand-ink)"
-          strokeWidth="5"
-          strokeLinecap="round"
-          opacity="0.85"
-        />
-      </svg>
-    ),
-  },
 ]
+
+function ServiceCardBody({
+  card,
+  onCta,
+  titleStyle,
+}: {
+  card: ServiceCard
+  onCta: () => void
+  titleStyle: React.CSSProperties
+}) {
+  return (
+    <>
+      <div>
+        <p className="service-pill">{card.eyebrow}</p>
+        <h2 className="mt-4 font-extrabold" style={titleStyle}>
+          {card.title}
+        </h2>
+
+        {!card.locked && card.chips.length > 0 ? (
+          <div className="chip-row" aria-label={`${card.title} offerings`}>
+            {card.chips.map((chip) => (
+              <span key={chip} className="chip">
+                {chip}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70">
+          {card.description}
+        </p>
+
+        {card.locked ? (
+          <span className="coming-soon-badge">Coming Soon</span>
+        ) : (
+          <button
+            type="button"
+            onClick={onCta}
+            className="service-cta"
+            style={{ backgroundColor: card.accent, borderColor: 'rgba(0,0,0,0.15)' }}
+          >
+            <span className="service-cta-badge" />
+            {card.cta}
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
+          </button>
+        )}
+      </div>
+
+      <div className="icon-wrap">
+        <div className="icon-shell">{card.icon}</div>
+      </div>
+    </>
+  )
+}
 
 const StackingServiceCard = memo(function StackingServiceCard({
   card,
@@ -181,10 +357,10 @@ const StackingServiceCard = memo(function StackingServiceCard({
   return (
     <div ref={ref} className="stack-step" id={card.id}>
       <motion.article
-        className="stack-card"
+        className={`stack-card${card.locked ? ' is-locked' : ''}`}
         style={{
           y,
-          opacity,
+          opacity: card.locked ? 0.55 : opacity,
           zIndex: index + 1,
           ['--accent' as string]: card.accent,
           background: card.bg,
@@ -193,47 +369,16 @@ const StackingServiceCard = memo(function StackingServiceCard({
         layout={false}
       >
         <div className="stack-inner">
-          <div>
-            <p className="service-pill">{card.eyebrow}</p>
-            <h2
-              className="mt-4 font-extrabold"
-              style={{
-                fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.02,
-                color: 'rgba(255,255,255,0.9)',
-              }}
-            >
-              {card.title}
-            </h2>
-
-            <div className="chip-row" aria-label={`${card.title} offerings`}>
-              {card.chips.map((chip) => (
-                <span key={chip} className="chip">
-                  {chip}
-                </span>
-              ))}
-            </div>
-
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70">
-              {card.description}
-            </p>
-
-            <button
-              type="button"
-              onClick={onCta}
-              className="service-cta"
-              style={{ backgroundColor: card.accent, borderColor: 'rgba(0,0,0,0.15)' }}
-            >
-              <span className="service-cta-badge" />
-              {card.cta}
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-
-          <div className="icon-wrap">
-            <div className="icon-shell">{card.icon}</div>
-          </div>
+          <ServiceCardBody
+            card={card}
+            onCta={onCta}
+            titleStyle={{
+              fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
+              letterSpacing: '-0.03em',
+              lineHeight: 1.02,
+              color: 'rgba(255,255,255,0.9)',
+            }}
+          />
         </div>
       </motion.article>
     </div>
@@ -291,6 +436,11 @@ export default function ServicesPage() {
           max-width: 1120px;
           margin-inline: auto;
         }
+        .stack-card.is-locked {
+          border: 1px dashed rgba(255,255,255,0.2);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          filter: grayscale(0.35);
+        }
         .stack-inner {
           padding: 58px 56px;
           min-height: 640px;
@@ -343,6 +493,21 @@ export default function ServicesPage() {
           width: 12px; height: 12px; border-radius: 999px;
           background: var(--accent);
           box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 45%, transparent);
+        }
+        .coming-soon-badge {
+          margin-top: 18px;
+          display: inline-flex;
+          align-items: center;
+          padding: 10px 14px;
+          border-radius: 12px;
+          border: 1px dashed rgba(255,255,255,0.28);
+          background: rgba(255,255,255,0.04);
+          color: rgba(255,255,255,0.55);
+          font-family: 'DM Mono', monospace;
+          font-weight: 600;
+          font-size: 12px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
         }
         .icon-wrap {
           display: flex;
@@ -405,83 +570,47 @@ export default function ServicesPage() {
             id="services-heading"
             className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
           >
-            Services that move the needle
+            Services Built Around What Actually Grows Your Business
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65">
-            Silicon Scale helps teams turn ideas into scalable digital products—from the
-            first landing page to AI-powered internal tools. Each service is designed to
-            be practical, measurable, and aligned with real business goals.
+            Seven ways we help — pick the one that matches what you&apos;re building, or tell us
+            the problem and we&apos;ll point you to the right one.
           </p>
         </header>
 
         {/* Stacked cards section */}
         <div className="stack-wrap">
-          {cards.map((card, idx) => (
+          {cards.map((card, idx) =>
             isMobile ? (
               <div key={card.id} className="stack-step" id={card.id}>
                 <article
-                  className="stack-card"
+                  className={`stack-card${card.locked ? ' is-locked' : ''}`}
                   style={{
                     zIndex: idx + 1,
                     ['--accent' as string]: card.accent,
                     background: card.bg,
+                    opacity: card.locked ? 0.55 : undefined,
                     transform: `translateY(${idx * 8}px) translateZ(0)`,
                   }}
                 >
                   <div className="stack-inner">
-                    <div>
-                      <p className="service-pill">{card.eyebrow}</p>
-                      <h2
-                        className="mt-4 font-extrabold"
-                        style={{
-                          fontSize: 'clamp(2.2rem, 7vw, 3.2rem)',
-                          letterSpacing: '-0.03em',
-                          lineHeight: 1.02,
-                          color: 'rgba(255,255,255,0.9)',
-                        }}
-                      >
-                        {card.title}
-                      </h2>
-
-                      <div className="chip-row" aria-label={`${card.title} offerings`}>
-                        {card.chips.map((chip) => (
-                          <span key={chip} className="chip">
-                            {chip}
-                          </span>
-                        ))}
-                      </div>
-
-                      <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70">
-                        {card.description}
-                      </p>
-
-                      <button
-                        type="button"
-                        onClick={() => navigate('/contact')}
-                        className="service-cta"
-                        style={{ backgroundColor: card.accent, borderColor: 'rgba(0,0,0,0.15)' }}
-                      >
-                        <span className="service-cta-badge" />
-                        {card.cta}
-                        <ArrowUpRight className="h-4 w-4" aria-hidden />
-                      </button>
-                    </div>
-
-                    <div className="icon-wrap">
-                      <div className="icon-shell">{card.icon}</div>
-                    </div>
+                    <ServiceCardBody
+                      card={card}
+                      onCta={() => navigate('/contact')}
+                      titleStyle={{
+                        fontSize: 'clamp(2.2rem, 7vw, 3.2rem)',
+                        letterSpacing: '-0.03em',
+                        lineHeight: 1.02,
+                        color: 'rgba(255,255,255,0.9)',
+                      }}
+                    />
                   </div>
                 </article>
               </div>
             ) : (
-              <StackingServiceCard
-                key={card.id}
-                card={card}
-                index={idx}
-                onCta={onCta}
-              />
-            )
-          ))}
+              <StackingServiceCard key={card.id} card={card} index={idx} onCta={onCta} />
+            ),
+          )}
         </div>
 
         {/* Next section after stack */}
@@ -490,10 +619,11 @@ export default function ServicesPage() {
             <div className="max-w-2xl">
               <SectionEyebrow variant="plain">Next step</SectionEyebrow>
               <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
-                Not sure which service fits?
+                Not sure which one fits?
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-white/65">
-                Tell us what you’re building and we’ll recommend the best path—fast, clear, and aligned with your goals.
+                Tell us what you&apos;re trying to solve. We&apos;ll tell you which service actually
+                applies — or if none of them do.
               </p>
             </div>
 
@@ -506,4 +636,3 @@ export default function ServicesPage() {
     </section>
   )
 }
-

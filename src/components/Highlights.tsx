@@ -9,11 +9,12 @@ import { SecondaryCta } from '@/components/ui/SecondaryCta'
 
 const STATS = [
   {
-    value: '14+',
-    label: 'Projects Completed',
-    sub: 'Across SaaS, education, and brands',
+    value: '12+',
+    label: 'Real Projects Delivered',
+    sub: 'Across e-commerce, internal tools, and AI systems',
     color: '#ff5c5c',
   },
+  // 🔶 Still open in siliconscale-v3.md — leave existing values until confirmed
   {
     value: '2+',
     label: 'Years Experience',
@@ -59,15 +60,15 @@ export function Highlights() {
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="space-y-5">
             <SectionEyebrow className="border-white/10 bg-transparent font-medium text-white/55">
-              Highlights
+              By the Numbers
             </SectionEyebrow>
             <h2
               id="highlights-heading"
               className="font-semibold tracking-tight text-white"
               style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)' }}
             >
-              <span className="block leading-[1.05]">Numbers that</span>
-              <span className="block leading-[1.05]">drive success</span>
+              <span className="block leading-[1.05]">Real work.</span>
+              <span className="block leading-[1.05]">Real results.</span>
             </h2>
           </div>
 

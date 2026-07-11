@@ -207,7 +207,7 @@ export function HowWeDo() {
               onClick={() => navigate('/services')}
               className={`inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors ${FOCUS_RING}`}
             >
-              How we work
+              See our process
               <ArrowUpRight className="w-5 h-5" aria-hidden />
             </button>
           </div>
@@ -226,7 +226,7 @@ export function HowWeDo() {
                   type="button"
                   onClick={() => navigate('/services')}
                   className={`absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors z-10 ${FOCUS_RING}`}
-                  aria-label="View how we work"
+                  aria-label="See our process"
                 >
                   <ArrowUpRight className="w-5 h-5" />
                 </button>

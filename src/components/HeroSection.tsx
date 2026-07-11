@@ -146,78 +146,65 @@ function HeroSectionComponent() {
             layout={false}
           >
             <span className="block">
-              We build{" "}
+              We Build the{" "}
               {isMobile ? (
-                <span
-                  className="align-baseline"
-                  style={{
-                    color: "var(--brand-gold)",
-                  }}
-                >
-                  Digital
+                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                  Systems
                 </span>
+              ) : allowCanvasText ? (
+                <CanvasText
+                  text="Systems"
+                  backgroundClassName="bg-brand-gold"
+                  colors={[
+                    "rgba(255,255,255,0.75)",
+                    "rgba(255,246,230,0.65)",
+                    "rgba(255,232,190,0.55)",
+                    brandGoldAlpha(0.75),
+                    brandGoldAlpha(0.45),
+                    "rgba(255,255,255,0.35)",
+                  ]}
+                  lineGap={5}
+                  animationDuration={16}
+                  curveIntensity={54}
+                  lineWidth={1.6}
+                  className="align-baseline"
+                />
               ) : (
-                allowCanvasText ? (
-                  <CanvasText
-                    text="Digital"
-                    backgroundClassName="bg-brand-gold"
-                    colors={[
-                      "rgba(255,255,255,0.75)",
-                      "rgba(255,246,230,0.65)",
-                      "rgba(255,232,190,0.55)",
-                      brandGoldAlpha(0.75),
-                      brandGoldAlpha(0.45),
-                      "rgba(255,255,255,0.35)",
-                    ]}
-                    lineGap={5}
-                    animationDuration={16}
-                    curveIntensity={54}
-                    lineWidth={1.6}
-                    className="align-baseline"
-                  />
-                ) : (
-                  <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
-                    Digital
-                  </span>
-                )
+                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                  Systems
+                </span>
               )}
             </span>
             <span className="block">
+              That{" "}
               {isMobile ? (
-                <span
-                  className="align-baseline"
-                  style={{
-                    color: "var(--brand-gold)",
-                  }}
-                >
-                  Products
+                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                  Grow
                 </span>
+              ) : allowCanvasText ? (
+                <CanvasText
+                  text="Grow"
+                  backgroundClassName="bg-brand-gold"
+                  colors={[
+                    "rgba(255,255,255,0.75)",
+                    "rgba(255,246,230,0.65)",
+                    "rgba(255,232,190,0.55)",
+                    brandGoldAlpha(0.75),
+                    brandGoldAlpha(0.45),
+                    "rgba(255,255,255,0.35)",
+                  ]}
+                  lineGap={5}
+                  animationDuration={16}
+                  curveIntensity={54}
+                  lineWidth={1.6}
+                  className="align-baseline"
+                />
               ) : (
-                allowCanvasText ? (
-                  <CanvasText
-                    text="Products"
-                    backgroundClassName="bg-brand-gold"
-                    colors={[
-                      "rgba(255,255,255,0.75)",
-                      "rgba(255,246,230,0.65)",
-                      "rgba(255,232,190,0.55)",
-                      brandGoldAlpha(0.75),
-                      brandGoldAlpha(0.45),
-                      "rgba(255,255,255,0.35)",
-                    ]}
-                    lineGap={5}
-                    animationDuration={16}
-                    curveIntensity={54}
-                    lineWidth={1.6}
-                    className="align-baseline"
-                  />
-                ) : (
-                  <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
-                    Products
-                  </span>
-                )
+                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                  Grow
+                </span>
               )}{" "}
-              that Scale
+              Your Business
             </span>
           </motion.h1>
 
@@ -227,8 +214,8 @@ function HeroSectionComponent() {
             className="mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto"
             layout={false}
           >
-            Silicon Scale Technologies helps startups and businesses build high-performance websites,
-            SaaS platforms and scalable digital products.
+            Custom software, headless Shopify stores, and AI agents — built to save you hours every week
+            and make your business more money, not just look better online.
           </motion.p>
 
           <motion.div
@@ -250,11 +237,11 @@ function HeroSectionComponent() {
                 onClick={goToWork}
                 className="rounded-full border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
-                View Our Work
+                See Our Work
               </MagneticButton>
             </div>
             <p className="mt-6 text-sm text-white/55">
-              Delivering scalable, high-quality digital solutions.
+              Trusted by founders who needed it built right the first time.
             </p>
           </motion.div>
         </motion.div>

@@ -13,35 +13,54 @@ export function Services() {
   const services = [
     {
       number: '01',
-      title: "Web Design & Development",
-      description: "Creating stunning, responsive websites that deliver exceptional user experiences and drive business growth.",
+      title: 'Custom Systems Development',
+      description:
+        'We build the internal tools, dashboards, and customer-facing platforms that make your business run leaner — and make you money instead of costing you time.',
       accent: '#E8FF47',
     },
     {
       number: '02',
-      title: "Branding & Identity",
-      description: "Crafting unique brand identities that resonate with your audience and build lasting connections.",
+      title: 'Headless Shopify Development',
+      description:
+        "A custom storefront on Shopify's real infrastructure — fast, flexible, and built around your brand instead of a theme's limitations.",
       accent: '#47C2FF',
     },
     {
       number: '03',
-      title: "UI/UX Design",
-      description: "Designing intuitive interfaces and user experiences that prioritize usability and engagement.",
+      title: 'AI Agents & Automation',
+      description:
+        'AI that handles real work: qualifying leads, answering customers, running the repetitive stuff your team shouldn’t have to.',
       accent: '#FF6B47',
     },
     {
-      number: '05',
-      title: "E-commerce Solutions",
-      description: "Building robust e-commerce platforms that streamline sales and enhance customer satisfaction.",
+      number: '04',
+      title: 'Integrations',
+      description:
+        "We connect the tools you already run — CRM, payments, AI, whatever's in your stack — so data moves on its own.",
       accent: '#47FFB4',
     },
     {
-      number: '06',
-      title: "AI Integration",
-      description: "Integrating cutting-edge AI technologies to automate processes and unlock new possibilities.",
+      number: '05',
+      title: 'Website Maintenance',
+      description:
+        "Ongoing care for a live site so nothing breaks quietly while you're busy running the business.",
       accent: '#FF4787',
     },
-  ]
+    {
+      number: '06',
+      title: 'Digital Business Setup',
+      description:
+        "Domain, hosting, ClickUp, Google Workspace — we set up the operational backbone so you're not piecing it together yourself.",
+      accent: '#A78BFA',
+    },
+    {
+      number: '07',
+      title: 'Branding & Identity',
+      description: 'Coming soon.',
+      accent: '#666666',
+      locked: true,
+    },
+  ] as const
 
   useEffect(() => {
     const t = setTimeout(() => setIsVisible(true), 200)
@@ -98,6 +117,30 @@ export function Services() {
         }
         .service-row:hover::before { transform: scaleX(1); }
         .service-row:hover { padding-left: 12px; }
+        .service-row.locked {
+          opacity: 0.45;
+          cursor: default;
+        }
+        .service-row.locked:hover { padding-left: 0; }
+        .service-row.locked:hover::before { transform: scaleX(0); }
+        .service-row.locked .row-desc {
+          max-height: 80px;
+          opacity: 1;
+          margin-top: 10px;
+          margin-bottom: 4px;
+        }
+        .locked-badge {
+          display: inline-block;
+          margin-left: 10px;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.45);
+          border: 1px solid rgba(255,255,255,0.15);
+          padding: 3px 8px;
+          vertical-align: middle;
+        }
         .row-num {
           font-size: 11px;
           font-weight: 700;
@@ -276,7 +319,7 @@ export function Services() {
           <div className="marquee-track">
             {[...Array(4)].map((_, i) => (
               <span key={i} style={{ display: 'inline-flex', gap: 0, alignItems: 'center' }}>
-                {['WEB DESIGN', 'BRANDING', 'UI/UX', 'STRATEGY', 'E-COMMERCE', 'AI INTEGRATION'].map((s, j) => (
+                {['CUSTOM SYSTEMS', 'HEADLESS SHOPIFY', 'AI AGENTS', 'INTEGRATIONS', 'MAINTENANCE', 'DIGITAL SETUP'].map((s, j) => (
                   <span key={`${i}-${j}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '28px', padding: '0 28px' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)' }}>{s}</span>
                     <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'inline-block', flexShrink: 0 }} />
@@ -296,27 +339,27 @@ export function Services() {
                 <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.3)',
                              textTransform: 'uppercase', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ display: 'inline-block', width: '24px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
-                  Our Expertise
+                  What We Do
                 </p>
                 <h2
                   style={{
-                    fontSize: 'clamp(2.8rem, 6vw, 5.5rem)',
+                    fontSize: 'clamp(2.4rem, 5vw, 4.2rem)',
                     fontWeight: 900,
                     color: '#ffffff',
                     letterSpacing: '-0.04em',
-                    lineHeight: 1.0,
+                    lineHeight: 1.05,
                     margin: 0,
                   }}
                 >
-                  What We Do
+                  Built for businesses that need it to actually work.
                 </h2>
               </div>
               <div className="services-header-cta">
                 <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                  Six disciplines. One studio. Infinite possibilities for your digital presence.
+                  Six ways we help you run and grow your business — plus one more coming soon.
                 </p>
-                <button className="cta-btn" onClick={() => navigate('/contact')}>
-                  Let's Talk
+                <button className="cta-btn" onClick={() => navigate('/services')}>
+                  See all services
                   <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -330,9 +373,11 @@ export function Services() {
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               {services.map((service, index) => (
                 <div
-                  key={index}
-                  className="service-row"
-                  onMouseEnter={() => setActiveIndex(index)}
+                  key={service.number}
+                  className={`service-row${'locked' in service && service.locked ? ' locked' : ''}`}
+                  onMouseEnter={() => {
+                    if (!('locked' in service && service.locked)) setActiveIndex(index)
+                  }}
                   onMouseLeave={() => setActiveIndex(null)}
                 >
                   {/* Accent bar on left */}
@@ -348,7 +393,12 @@ export function Services() {
                   <span className="row-num">{service.number}</span>
 
                   <div>
-                    <h3 className="row-title">{service.title}</h3>
+                    <h3 className="row-title">
+                      {service.title}
+                      {'locked' in service && service.locked ? (
+                        <span className="locked-badge">Coming soon</span>
+                      ) : null}
+                    </h3>
                     <p className="row-desc">{service.description}</p>
                   </div>
 
@@ -364,7 +414,7 @@ export function Services() {
                          flexWrap: 'wrap', gap: '24px',
                          borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '40px' }}>
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              At SiliconScale — precision meets ambition
+              SiliconScale — built for the businesses that need it to work, not just look good.
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
               {services.map((s, i) => (

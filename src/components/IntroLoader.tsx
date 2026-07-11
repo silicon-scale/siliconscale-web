@@ -122,7 +122,7 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
           className="intro-pulse intro-text font-bold text-white tracking-tight"
           style={{ fontSize: 'clamp(2.5rem, 6vw, 7rem)' }}
         >
-          Silicon Scale
+          SiliconScale
         </p>
       </div>
     </section>

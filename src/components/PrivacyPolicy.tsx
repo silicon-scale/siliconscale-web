@@ -10,10 +10,10 @@ export default function PrivacyPolicy() {
       lastUpdated="16 March 2026"
     >
           <p>
-            This Privacy Policy explains how <strong>Silicon Scale</strong> (“Silicon Scale”,
+            This Privacy Policy explains how <strong>SiliconScale Tech.</strong> (“SiliconScale Tech.”,
             “we”, “us”, or “our”) collects, uses, and protects your information when you
-            visit our website, use our services, or otherwise interact with us. Silicon
-            Scale is a web development and digital services agency providing websites, web
+            visit our website, use our services, or otherwise interact with us. SiliconScale Tech.
+            is a web development and digital services agency providing websites, web
             applications, branding, and AI-powered solutions to clients worldwide.
           </p>
 
@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
           </p>
           <ul>
             <li>
-              <strong>Company name</strong>: Silicon Scale
+              <strong>Company name</strong>: SiliconScale Tech.
             </li>
             <li>
               <strong>Address</strong>: Hyderabad, India
@@ -287,7 +287,7 @@ export default function PrivacyPolicy() {
           <p>If you have any questions about this Privacy Policy or how we handle your data, please contact:</p>
           <ul>
             <li>
-              <strong>Silicon Scale</strong>
+              <strong>SiliconScale Tech.</strong>
             </li>
             <li>
               <strong>Address</strong>: Hyderabad, India

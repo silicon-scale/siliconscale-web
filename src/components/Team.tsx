@@ -25,12 +25,12 @@ const FOUNDERS: Founder[] = [
     name: 'Mani Jhaneswar',
     role: 'Co-Founder',
     description:
-      '"Leads SiliconScale\'s creative vision and digital product design. Crafting cinematic user experiences and scalable brand systems for tomorrow\'s companies."',
+      '"Leads SiliconScale\'s creative vision and digital product design — building cinematic user experiences and scalable brand systems for the companies we work with."',
     image: maniPhoto,
     objectPosition: 'center top',
   },
   {
-    name: 'Abdul',
+    name: 'Abdul Mohsin',
     role: 'VP of Sales',
     description:
       '"Drives SiliconScale\'s growth and client partnerships — turning cold outreach into long-term retainers, and pipeline into predictable revenue."',
@@ -232,9 +232,9 @@ export default function Team() {
               color: '#ffffff',
             }}
           >
-            The Minds
+            The People
             <br />
-            <em>Behind the SiliconScale</em>
+            <em>Building SiliconScale</em>
           </h1>
         </div>
 

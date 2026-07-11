@@ -24,7 +24,7 @@ const NotFound = () => {
         </SectionEyebrow>
         <h1 className="mb-3 text-5xl font-black tracking-tight">404</h1>
         <p className="mb-7 text-base text-white/55">
-          Oops! This page doesn&apos;t exist.
+          This page doesn&apos;t exist — but SiliconScale still does. Let&apos;s get you back.
         </p>
         <BrandButton type="button" onClick={() => navigate('/')}>
           Return Home

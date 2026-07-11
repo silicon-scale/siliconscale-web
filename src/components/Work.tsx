@@ -12,31 +12,53 @@ import { Lens } from '@/components/ui/lens'
 import { OptimizedImage } from './OptimizedImage'
 import { trackEvent } from '@/utils/analytics'
 
+type ProjectStat = { value: string; label: string }
+
+type Project = {
+  id: string
+  title: string
+  description: string
+  image: string
+  imageAlt: string
+  link: string
+  tag: string
+  year: string
+  services: string
+  tagline?: string
+  isSample?: boolean
+  stat?: string
+  statLabel?: string
+  stats?: ProjectStat[]
+}
+
 function WorkComponent() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState<'left' | 'right'>('right')
   const sectionRef = useRef<HTMLElement>(null)
 
-  const projects = [
+  const projects: Project[] = [
     {
       id: 'dden',
-      title: "DDEN",
-      description: "A comprehensive digital platform for educational excellence and innovation.",
+      title: 'DDEN',
+      description:
+        'A digital platform for a designer fashion marketplace — built for browsing, discovery, and a smooth path to purchase.',
       image: ddenImage,
+      imageAlt: 'DDEN fashion marketplace homepage',
       link: 'https://www.dden.in/',
       tag: 'Fashion-Tech Platform',
       year: '2024',
       services: 'BRANDING · DESIGN · DEVELOPMENT',
-      tagline: 'Digital Excellence in Education',
       stat: '+120%',
       statLabel: 'User Engagement',
     },
     {
       id: 'micronano',
-      title: "MICRONANO",
-      description: "Advanced micro and nano technology application platform for research and development.",
+      title: 'MICRONANO',
+      description:
+        'Advanced micro and nano technology application platform for research and development.',
       image: mnrdcImage,
+      imageAlt: 'MICRONANO resource booking system interface',
       link: 'https://app.micronano.paruluniversity.ac.in/',
       tag: 'Resource Booking System',
       year: '2024',
@@ -47,42 +69,50 @@ function WorkComponent() {
     },
     {
       id: 'rdc',
-      title: "RDC",
-      description: "Research and Development Center fostering innovation and technological advancement.",
+      title: 'RDC',
+      description:
+        'Research and Development Center fostering innovation and technological advancement.',
       image: rdcImage,
+      imageAlt: 'RDC research website homepage',
       link: 'https://rdc.paruluniversity.ac.in/',
       tag: 'Research Website',
       year: '2023',
       services: 'STRATEGY · DESIGN · DEVELOPMENT',
-      tagline: 'Well-being & Harmony to Innovation',
+      tagline: 'From Research to Real-World Impact',
       stat: '+74%',
       statLabel: 'Project Submissions',
-    },
-    {
-      id: 'axels',
-      title: "AXELS",
-      description: "Next-generation platform for accelerated learning and skill enhancement.",
-      image: axelsImage,
-      link: 'https://axels-beta.vercel.app/',
-      tag: 'Ecommerce',
-      year: '2024',
-      services: 'PRODUCT · DESIGN · DEVELOPMENT',
-      tagline: 'Accelerating Skills at Scale',
-      stat: '+95%',
-      statLabel: 'Learning Outcomes',
     },
     {
       id: 'plaam',
       title: 'PLAAM',
       description: 'Curated jewellery-making and craft essentials.',
       image: plaamImage,
+      imageAlt: 'PLAAM craft and jewellery storefront',
       link: 'https://www.plaam.in/',
       tag: 'Craft & Jewellery Store',
       year: '2026',
       services: 'BRANDING · DESIGN · DEVELOPMENT',
       tagline: 'Where Creativity Finds Its Supplies',
-      stat: '+100%',
-      statLabel: 'Digital Transformation',
+      stats: [
+        { value: '₹1.3L+', label: 'Revenue Generated' },
+        { value: '150+', label: 'Orders Processed' },
+        { value: '13.87%', label: 'Conversion Rate' },
+      ],
+    },
+    {
+      id: 'axels',
+      title: 'AXELS',
+      description:
+        'A self-directed build exploring skills/learning platform UX and performance — built to sharpen our own process, not for a paying client.',
+      image: axelsImage,
+      imageAlt: 'AXELS sample skills platform UI',
+      link: 'https://axels-beta.vercel.app/',
+      tag: 'Sample Project — Not a Client Engagement',
+      year: '2024',
+      services: 'PRODUCT · DESIGN · DEVELOPMENT',
+      isSample: true,
+      stat: '+95%',
+      statLabel: 'Learning Outcomes',
     },
   ]
 
@@ -181,8 +211,8 @@ function WorkComponent() {
                 id="work-heading"
                 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.6rem)', fontWeight: 900, color: '#ffffff', lineHeight: 1.1, letterSpacing: '-0.02em' }}
               >
-                <span>How</span> we helped<br />
-                other succeed
+                Real projects.<br />
+                Real results.
               </h2>
             </div>
           </div>
@@ -204,7 +234,7 @@ function WorkComponent() {
                     <Lens zoomFactor={1.35} lensSize={180}>
                       <OptimizedImage
                         src={project.image}
-                        alt={project.title}
+                        alt={project.imageAlt}
                         width={1600}
                         height={900}
                         className="w-full h-full object-cover"
@@ -214,16 +244,51 @@ function WorkComponent() {
                       />
                     </Lens>
 
-                    {/* Stat badge */}
-                    <div className="absolute bottom-6 left-6">
-                      <div className="text-white" style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: 900, lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}>
-                        {project.stat}
+                    {/* Stat overlay */}
+                    {(project.stats?.length || project.stat) && (
+                      <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
+                        {project.stats?.length ? (
+                          <div className="flex flex-wrap gap-x-8 gap-y-4">
+                            {project.stats.map(s => (
+                              <div key={s.label}>
+                                <div
+                                  className="text-white"
+                                  style={{
+                                    fontSize: 'clamp(1.5rem, 3vw, 2.4rem)',
+                                    fontWeight: 900,
+                                    lineHeight: 1,
+                                    textShadow: '0 2px 12px rgba(0,0,0,0.6)',
+                                  }}
+                                >
+                                  {s.value}
+                                </div>
+                                <div className="text-white mt-1 text-sm font-medium" style={{ opacity: 0.85 }}>
+                                  {s.label}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <>
+                            <div
+                              className="text-white"
+                              style={{
+                                fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+                                fontWeight: 900,
+                                lineHeight: 1,
+                                textShadow: '0 2px 12px rgba(0,0,0,0.6)',
+                              }}
+                            >
+                              {project.stat}
+                            </div>
+                            <div className="text-white mt-1 text-base font-medium" style={{ opacity: 0.85 }}>
+                              {project.statLabel}
+                            </div>
+                            <div className="mt-2 h-px w-48" style={{ background: 'rgba(255,255,255,0.3)' }} />
+                          </>
+                        )}
                       </div>
-                      <div className="text-white mt-1 text-base font-medium" style={{ opacity: 0.85 }}>
-                        {project.statLabel}
-                      </div>
-                      <div className="mt-2 h-px w-48" style={{ background: 'rgba(255,255,255,0.3)' }} />
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -234,7 +299,19 @@ function WorkComponent() {
                   {/* Tag */}
                   <span
                     className="inline-block mb-5 text-xs tracking-widest uppercase px-3 py-1 rounded-sm"
-                    style={{ background: 'rgba(255,255,255,0.07)', color: '#ffffff', border: '1px solid rgba(255,255,255,0.09)' }}
+                    style={
+                      project.isSample
+                        ? {
+                            background: 'rgb(var(--brand-gold-rgb) / 0.12)',
+                            color: 'var(--brand-gold)',
+                            border: '1px solid rgb(var(--brand-gold-rgb) / 0.45)',
+                          }
+                        : {
+                            background: 'rgba(255,255,255,0.07)',
+                            color: '#ffffff',
+                            border: '1px solid rgba(255,255,255,0.09)',
+                          }
+                    }
                   >
                     {project.tag}
                   </span>
@@ -252,13 +329,18 @@ function WorkComponent() {
                     {project.services}
                   </p>
 
-                  {/* Tagline */}
-                  <p className="mb-6 text-lg font-semibold" style={{ color: '#ffffff', lineHeight: 1.5 }}>
-                    {project.tagline}
-                  </p>
+                  {/* Tagline — only when present */}
+                  {project.tagline ? (
+                    <p className="mb-6 text-lg font-semibold" style={{ color: '#ffffff', lineHeight: 1.5 }}>
+                      {project.tagline}
+                    </p>
+                  ) : null}
 
                   {/* Description */}
-                  <p className="mb-8 text-sm leading-relaxed" style={{ color: '#ffffff', maxWidth: '340px' }}>
+                  <p
+                    className={`mb-8 text-sm leading-relaxed ${project.tagline ? '' : 'mt-3'}`}
+                    style={{ color: '#ffffff', maxWidth: '340px' }}
+                  >
                     {project.description}
                   </p>
 
@@ -303,7 +385,7 @@ function WorkComponent() {
           {/* Bottom note */}
           <div className={`mt-16 text-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
             <p className="text-sm" style={{ color: '#ffffff' }}>
-              At SiliconScale, every project is built with precision—combining strategy, design, and engineering to create scalable digital experiences
+              Every project on this page is live — click through and see it running, not a mockup.
             </p>
             <div className="flex justify-center mt-4">
               <div className="h-px w-24" style={{ background: 'linear-gradient(to right, transparent, rgba(255,200,80,0.3), transparent)' }} />
