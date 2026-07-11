@@ -308,7 +308,7 @@ export default function TermsOfService() {
             services shall be governed by the laws of India, without
             regard to its conflict of law principles. Any disputes shall preferably be
             resolved amicably. If that is not possible, disputes may be submitted to the
-            competent courts of [City, Country], unless otherwise required by applicable
+            competent courts of Andhra Pradesh, India, unless otherwise required by applicable
             law.
           </p>
 

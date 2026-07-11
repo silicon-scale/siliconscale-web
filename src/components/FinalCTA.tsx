@@ -381,20 +381,25 @@ const FinalCTA = () => {
             </Reveal>
 
             <Reveal delay={0.15}>
-              <div className="mt-10 flex items-center gap-6">
+              <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
                 <div>
                   <p className="text-2xl font-bold text-white">12+</p>
                   <p className="text-xs text-white/55">Real Projects Delivered</p>
                 </div>
-                <div className="h-10 w-px bg-white/10" />
+                <div className="hidden h-10 w-px bg-white/10 sm:block" />
                 <div>
-                  <p className="text-2xl font-bold text-white">99.9%</p>
-                  <p className="text-xs text-white/55">Uptime SLA</p>
+                  <p className="text-2xl font-bold text-white">2.5+</p>
+                  <p className="text-xs text-white/55">Years Building</p>
                 </div>
-                <div className="h-10 w-px bg-white/10" />
+                <div className="hidden h-10 w-px bg-white/10 sm:block" />
                 <div>
-                  <p className="text-2xl font-bold text-white">&lt;24h</p>
-                  <p className="text-xs text-white/55">Response Time</p>
+                  <p className="text-2xl font-bold text-white">95%</p>
+                  <p className="text-xs text-white/55">Client Retention</p>
+                </div>
+                <div className="hidden h-10 w-px bg-white/10 sm:block" />
+                <div>
+                  <p className="text-2xl font-bold text-white">6+</p>
+                  <p className="text-xs text-white/55">Businesses Served</p>
                 </div>
               </div>
             </Reveal>

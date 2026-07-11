@@ -406,9 +406,9 @@ export default function AboutPage() {
 				<div className="stat-row">
 					{[
 						{ n: "12+", l: "Real Projects Delivered" },
-						{ n: "2 yrs", l: "Crafting Experiences" },
-						{ n: "8+", l: "Business Brands Served" },
-						{ n: "99%", l: "Client Retention" },
+						{ n: "2.5+", l: "Years Building" },
+						{ n: "95%", l: "Client Retention" },
+						{ n: "6+", l: "Businesses Served" },
 					].map((s, i) => (
 						<div
 							key={s.l}

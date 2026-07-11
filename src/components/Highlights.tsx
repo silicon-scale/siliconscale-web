@@ -14,22 +14,21 @@ const STATS = [
     sub: 'Across e-commerce, internal tools, and AI systems',
     color: '#ff5c5c',
   },
-  // 🔶 Still open in siliconscale-v3.md — leave existing values until confirmed
   {
-    value: '2+',
-    label: 'Years Experience',
+    value: '2.5+',
+    label: 'Years Building',
     sub: 'Designing & shipping on the web',
     color: '#9be15d',
   },
   {
-    value: '99%',
-    label: 'Client Retention Rate',
+    value: '95%',
+    label: 'Client Retention',
     sub: 'Teams that keep coming back',
     color: '#3dd9a3',
   },
   {
-    value: '8+',
-    label: 'Business Brands Served',
+    value: '6+',
+    label: 'Businesses Served',
     sub: 'From early-stage to growing teams',
     color: '#4da3ff',
   },
