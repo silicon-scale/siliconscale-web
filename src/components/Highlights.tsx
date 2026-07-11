@@ -4,7 +4,8 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { FOCUS_RING } from '@/lib/focus'
+import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import { SecondaryCta } from '@/components/ui/SecondaryCta'
 
 const STATS = [
   {
@@ -57,9 +58,9 @@ export function Highlights() {
         {/* Header row */}
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="space-y-5">
-            <span className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-white/50">
+            <SectionEyebrow className="border-white/10 bg-transparent font-medium text-white/55">
               Highlights
-            </span>
+            </SectionEyebrow>
             <h2
               id="highlights-heading"
               className="font-semibold tracking-tight text-white"
@@ -70,16 +71,12 @@ export function Highlights() {
             </h2>
           </div>
 
-          <motion.button
-            type="button"
-            onClick={() => navigate('/about')}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            className={`group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white uppercase tracking-[0.2em] transition-all duration-300 hover:border-brand-gold/60 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black hover:shadow-[0_0_24px_rgb(var(--brand-gold-rgb)/0.25)] ${FOCUS_RING}`}
-          >
-            More about us
-            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
-          </motion.button>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+            <SecondaryCta variant="outline" onClick={() => navigate('/about')}>
+              More about us
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+            </SecondaryCta>
+          </motion.div>
         </div>
 
         {/* Stats grid */}

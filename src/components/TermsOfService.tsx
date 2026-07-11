@@ -1,67 +1,14 @@
 'use client'
 
-import React from 'react'
+import { LegalShell } from '@/components/ui/LegalShell'
 
 export default function TermsOfService() {
   return (
-    <section
-      className="min-h-screen bg-page text-white"
-      aria-labelledby="tos-heading"
+    <LegalShell
+      title="Terms of Service"
+      headingId="tos-heading"
+      lastUpdated="16 March 2026"
     >
-      <style>{`
-        .legal-shell {
-          font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          color: rgba(255,255,255,0.78);
-        }
-        .legal-shell h1,
-        .legal-shell h2,
-        .legal-shell h3 {
-          color: #ffffff;
-        }
-        .legal-shell h2 {
-          margin-top: 2.4rem;
-          margin-bottom: 0.6rem;
-          font-size: 1.15rem;
-          letter-spacing: -0.01em;
-        }
-        .legal-shell h3 {
-          margin-top: 1.6rem;
-          margin-bottom: 0.4rem;
-          font-size: 1rem;
-        }
-        .legal-shell p {
-          margin-top: 0.6rem;
-          margin-bottom: 0.6rem;
-          line-height: 1.7;
-          font-size: 0.94rem;
-        }
-        .legal-shell ul {
-          margin: 0.3rem 0 0.6rem 1.1rem;
-          padding: 0;
-        }
-        .legal-shell li {
-          margin-bottom: 0.25rem;
-        }
-        .legal-shell strong {
-          color: rgba(255,255,255,0.92);
-        }
-      `}</style>
-
-      <div className="legal-shell mx-auto max-w-3xl px-6 py-24 lg:px-8 lg:py-32">
-        <header className="mb-10">
-          <p className="mb-3 text-xs font-mono uppercase tracking-[0.2em] text-white/55">
-            Legal
-          </p>
-          <h1
-            id="tos-heading"
-            className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
-          >
-            Terms of Service
-          </h1>
-          <p className="mt-3 text-sm text-white/50">Last updated: 16 March 2026</p>
-        </header>
-
-        <div>
           <p>
             These Terms of Service (“Terms”) govern your use of the website and services
             provided by <strong>Silicon Scale</strong> (“Silicon Scale”, “we”, “us”, or
@@ -390,9 +337,6 @@ export default function TermsOfService() {
               <strong>Email</strong>: contact@siliconscale.dev
             </li>
           </ul>
-        </div>
-      </div>
-    </section>
+    </LegalShell>
   )
 }
-

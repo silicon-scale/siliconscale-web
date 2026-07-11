@@ -1,34 +1,37 @@
-import { Link, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import { BrandButton } from '@/components/ui/BrandButton'
 
 const NotFound = () => {
-  const location = useLocation();
+  const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (import.meta.env.DEV) {
-      console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+      console.error(
+        '404 Error: User attempted to access non-existent route:',
+        location.pathname
+      )
     }
-  }, [location.pathname]);
+  }, [location.pathname])
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-page px-6 text-white">
       <div className="text-center">
-        <p className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">
+        <SectionEyebrow className="mb-3 bg-white/[0.04] text-[10px] tracking-[0.22em] text-white/55">
           Not Found
-        </p>
+        </SectionEyebrow>
         <h1 className="mb-3 text-5xl font-black tracking-tight">404</h1>
         <p className="mb-7 text-base text-white/55">
           Oops! This page doesn&apos;t exist.
         </p>
-        <Link
-          to="/"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold px-6 py-3 text-sm font-extrabold uppercase tracking-[0.18em] text-black transition-transform duration-200 hover:-translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-        >
+        <BrandButton type="button" onClick={() => navigate('/')}>
           Return Home
-        </Link>
+        </BrandButton>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default NotFound;
+export default NotFound

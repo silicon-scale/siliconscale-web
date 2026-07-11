@@ -7,7 +7,8 @@ import { Vortex } from '@/components/ui/vortex'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useReducedMotion } from 'framer-motion'
 import { useReveal } from '@/context/RevealContext'
-import { FOCUS_RING } from '@/lib/focus'
+import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import { SecondaryCta } from '@/components/ui/SecondaryCta'
 
 export function AboutSection() {
   const navigate = useNavigate()
@@ -45,9 +46,7 @@ export function AboutSection() {
           <div className="flex flex-col gap-10 p-8 sm:p-10 lg:p-14">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="space-y-5">
-                <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/60">
-                  About us
-                </span>
+                <SectionEyebrow>About us</SectionEyebrow>
                 <h2
                   id="about-home-heading"
                   className="font-semibold tracking-tight text-white"
@@ -63,14 +62,14 @@ export function AboutSection() {
                 </p>
               </div>
 
-              <button
-                type="button"
+              <SecondaryCta
+                variant="solid"
+                className="group"
                 onClick={() => navigate('/about')}
-                className={`group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90 ${FOCUS_RING}`}
               >
                 Learn more
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </button>
+              </SecondaryCta>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

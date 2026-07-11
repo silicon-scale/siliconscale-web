@@ -768,6 +768,44 @@ html {
   }
 }
 
+/* Legal pages — shared shell typography (Privacy / Terms via LegalShell) */
+.legal-shell {
+  font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: rgba(255, 255, 255, 0.78);
+}
+.legal-shell h1,
+.legal-shell h2,
+.legal-shell h3 {
+  color: #ffffff;
+}
+.legal-shell h2 {
+  margin-top: 2.4rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+.legal-shell h3 {
+  margin-top: 1.6rem;
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+.legal-shell p {
+  margin-top: 0.6rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.7;
+  font-size: 0.94rem;
+}
+.legal-shell ul {
+  margin: 0.3rem 0 0.6rem 1.1rem;
+  padding: 0;
+}
+.legal-shell li {
+  margin-bottom: 0.25rem;
+}
+.legal-shell strong {
+  color: rgba(255, 255, 255, 0.92);
+}
+
 /* Ultra-wide screen optimizations (--breakpoint-ultrawide: 2560px) */
 @media (min-width: 2560px) {
   .video-container video {

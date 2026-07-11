@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useReveal } from '@/context/RevealContext'
-import { FOCUS_RING } from '@/lib/focus'
+import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import { SecondaryCta } from '@/components/ui/SecondaryCta'
 
 type ServiceCard = {
   id: string
@@ -399,9 +400,7 @@ export default function ServicesPage() {
       <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
         {/* Header */}
         <header className="mb-14">
-          <p className="mb-4 inline-flex w-fit items-center rounded-full border border-white/12 bg-white/5 px-3 py-1 font-mono text-[0.72rem] uppercase tracking-[0.26em] text-white/65">
-            What we do
-          </p>
+          <SectionEyebrow variant="pillMono">What we do</SectionEyebrow>
           <h1
             id="services-heading"
             className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
@@ -489,9 +488,7 @@ export default function ServicesPage() {
         <section className="mt-28 border-t border-white/10 pt-16">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div className="max-w-2xl">
-              <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.24em] text-white/55">
-                Next step
-              </p>
+              <SectionEyebrow variant="plain">Next step</SectionEyebrow>
               <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
                 Not sure which service fits?
               </h2>
@@ -500,13 +497,9 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => navigate('/contact')}
-              className={`rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90 ${FOCUS_RING}`}
-            >
+            <SecondaryCta variant="solid" onClick={() => navigate('/contact')}>
               Talk to us
-            </button>
+            </SecondaryCta>
           </div>
         </section>
       </div>
