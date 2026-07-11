@@ -261,6 +261,10 @@ function FooterComponent() {
           background: rgba(255,255,255,0.1);
           transform: scale(1.05);
         }
+        .footer-social-link:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
         .footer-social-link svg {
           width: 26px;
           height: 26px;
@@ -279,6 +283,11 @@ function FooterComponent() {
         }
         .footer-email-link:hover {
           color: #fff;
+        }
+        .footer-email-link:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+          border-radius: 4px;
         }
         .footer-email-link svg {
           width: 22px;
@@ -307,7 +316,7 @@ function FooterComponent() {
           font-weight: 700;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.35);
+          color: rgba(255,255,255,0.55);
           margin: 0 0 1.2rem;
         }
 
@@ -323,13 +332,18 @@ function FooterComponent() {
         }
         .footer-link {
           font-size: 0.88rem;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.55);
           text-decoration: none;
           transition: color 0.2s ease, padding-left 0.2s ease;
         }
         .footer-link:hover {
           color: rgba(255,255,255,0.9);
           padding-left: 4px;
+        }
+        .footer-link:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+          border-radius: 2px;
         }
 
         .footer-services {
@@ -339,12 +353,12 @@ function FooterComponent() {
         }
         .footer-service-item {
           font-size: 0.88rem;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.55);
         }
 
         .footer-contact-note {
           font-size: 0.82rem;
-          color: rgba(255,255,255,0.35);
+          color: rgba(255,255,255,0.55);
           margin: 0 0 0.6rem;
         }
 
@@ -362,7 +376,7 @@ function FooterComponent() {
         }
         .footer-bottom-text {
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.55);
           font-size: 0.875rem;
         }
         @media (max-width: 900px) {

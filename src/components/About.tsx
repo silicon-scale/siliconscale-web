@@ -159,7 +159,7 @@ function SectionLabel({ text }: { text: string }) {
 				fontFamily: "'DM Mono',monospace",
 				fontSize: 12,
 				letterSpacing: "0.2em",
-				color: "rgba(255,255,255,0.38)",
+				color: "rgba(255,255,255,0.55)",
 				marginBottom: 48,
 				textTransform: "uppercase",
 			}}
@@ -213,6 +213,10 @@ export default function AboutPage() {
           text-decoration: none; transition: background 0.25s, border-color 0.25s;
         }
         .join-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.55); }
+        .join-btn:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
 
         .ghost-btn {
           display: inline-flex; align-items: center; gap: 8px;
@@ -224,6 +228,10 @@ export default function AboutPage() {
           cursor: pointer; text-decoration: none; transition: all 0.25s;
         }
         .ghost-btn:hover { border-color: rgba(255,255,255,0.45); color: #fff; }
+        .ghost-btn:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
 
         .stat-row {
           display: flex; border-top: 1px solid rgba(255,255,255,0.1);
@@ -356,7 +364,7 @@ export default function AboutPage() {
 					}}
 				>
 					Design.{" "}
-					<span style={{ color: "rgba(255,255,255,0.42)" }}>Build.</span>{" "}
+					<span style={{ color: "rgba(255,255,255,0.55)" }}>Build.</span>{" "}
 					<span style={{ color: "rgba(255,255,255,0.82)" }}>Scale.</span>
 				</h1>
 
@@ -367,7 +375,7 @@ export default function AboutPage() {
 							display: "flex",
 							alignItems: "center",
 							gap: 8,
-							color: "rgba(255,255,255,0.35)",
+							color: "rgba(255,255,255,0.55)",
 							fontSize: 20,
 						}}
 					>
@@ -504,7 +512,7 @@ export default function AboutPage() {
 									fontFamily: "'DM Mono',monospace",
 									fontSize: 15,
 									lineHeight: 1.85,
-									color: "rgba(255,255,255,0.42)",
+									color: "rgba(255,255,255,0.55)",
 									fontWeight: 300,
 								}}
 							>

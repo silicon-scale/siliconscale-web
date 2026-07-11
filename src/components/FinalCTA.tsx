@@ -9,6 +9,7 @@ import { BrandButton } from '@/components/ui/BrandButton'
 import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
+import { FOCUS_RING } from '@/lib/focus'
 import {
   CheckCircle2,
   Clock,
@@ -96,7 +97,7 @@ const FloatingInput = ({
         className={`pointer-events-none absolute left-4 transition-all duration-200 ${
           hasValue
             ? 'top-2 text-[11px] font-medium text-brand-gold'
-            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
+            : 'top-1/2 -translate-y-1/2 text-sm text-white/55 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
         }`}
       >
         {label}
@@ -145,13 +146,13 @@ const FloatingSelect = ({
         className={`pointer-events-none absolute left-4 transition-all duration-200 ${
           hasValue
             ? 'top-2 text-[11px] font-medium text-brand-gold'
-            : 'top-1/2 -translate-y-1/2 text-sm text-white/45 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
+            : 'top-1/2 -translate-y-1/2 text-sm text-white/55 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
         }`}
       >
         {label}
       </label>
       {/* Chevron */}
-      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/45">
+      <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path
             d="M3 4.5L6 7.5L9 4.5"
@@ -383,17 +384,17 @@ const FinalCTA = () => {
               <div className="mt-10 flex items-center gap-6">
                 <div>
                   <p className="text-2xl font-bold text-white">50+</p>
-                  <p className="text-xs text-white/45">Projects Delivered</p>
+                  <p className="text-xs text-white/55">Projects Delivered</p>
                 </div>
                 <div className="h-10 w-px bg-white/10" />
                 <div>
                   <p className="text-2xl font-bold text-white">99.9%</p>
-                  <p className="text-xs text-white/45">Uptime SLA</p>
+                  <p className="text-xs text-white/55">Uptime SLA</p>
                 </div>
                 <div className="h-10 w-px bg-white/10" />
                 <div>
                   <p className="text-2xl font-bold text-white">&lt;24h</p>
-                  <p className="text-xs text-white/45">Response Time</p>
+                  <p className="text-xs text-white/55">Response Time</p>
                 </div>
               </div>
             </Reveal>
@@ -432,7 +433,7 @@ const FinalCTA = () => {
                           )}
                         </div>
                       ))}
-                      <span className="ml-auto text-xs text-white/45">
+                      <span className="ml-auto text-xs text-white/55">
                         Step {step + 1} of 3
                       </span>
                     </div>
@@ -566,7 +567,7 @@ const FinalCTA = () => {
                                   className={`pointer-events-none absolute left-4 transition-all duration-200 ${
                                     form.description
                                       ? 'top-2 text-[11px] font-medium text-brand-gold'
-                                      : 'top-4 text-sm text-white/45 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
+                                      : 'top-4 text-sm text-white/55 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
                                   }`}
                                 >
                                   Project Description
@@ -590,7 +591,7 @@ const FinalCTA = () => {
                           <button
                             type="button"
                             onClick={prev}
-                            className="inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-white"
+                            className={`inline-flex items-center gap-2 text-sm text-white/55 transition-colors hover:text-white ${FOCUS_RING}`}
                           >
                             <ArrowLeft className="h-4 w-4" />
                             Back

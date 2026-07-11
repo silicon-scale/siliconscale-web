@@ -177,7 +177,12 @@ body {
   --switch-background: #e4e4e7;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #a1a1aa;
+  /*
+   * Focus ring — high contrast on near-black marketing pages.
+   * Gray zinc rings fail keyboard visibility on #050505; align with BrandButton/Hero.
+   */
+  --focus-ring: rgba(255, 255, 255, 0.7);
+  --ring: var(--focus-ring);
 
   /* Simplified accent colors */
   --accent-blue: #2563eb;
@@ -206,7 +211,8 @@ body {
   --destructive-foreground: #fafafa;
   --border: #27272a;
   --input: #1a1a1a;
-  --ring: #71717a;
+  --focus-ring: rgba(255, 255, 255, 0.7);
+  --ring: var(--focus-ring);
 }
 
 
@@ -267,8 +273,33 @@ body {
     outline: none;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+  }
+
+  /* Skip link — first tab stop; revealed only on keyboard focus */
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 10000;
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    background: var(--brand-cream);
+    color: var(--brand-black);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transform: translateY(-160%);
+    transition: transform 0.2s ease;
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+    transform: translateY(0);
   }
 
   body {

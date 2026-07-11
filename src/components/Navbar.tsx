@@ -10,6 +10,7 @@ import { trackEvent } from '@/utils/analytics'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
+import { FOCUS_RING } from '@/lib/focus'
 
 const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
 
@@ -86,10 +87,10 @@ export function Navbar() {
   }, [isMobileMenuOpen, closeMobileMenu])
 
   const bookCallClassName =
-    'inline-flex items-center justify-center border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black'
+    `inline-flex items-center justify-center border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
   const mobileBookCallClassName =
-    'inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black'
+    `inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
   return (
     <>
@@ -115,7 +116,7 @@ export function Navbar() {
           <div className="max-w-[1600px] mx-auto flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 md:py-6">
             <Link
               to="/"
-              className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+              className={`flex items-center rounded-sm ${FOCUS_RING}`}
               onClick={() => trackEvent('nav_click', { destination: 'home' })}
             >
               <motion.img
@@ -140,7 +141,7 @@ export function Navbar() {
                 >
                   <Link
                     to={link.path}
-                    className="relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-all duration-300 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+                    className={`relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-all duration-300 group rounded-sm ${FOCUS_RING}`}
                   >
                     {link.name}
                     <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-brand-gold to-brand-gold/50 transition-all duration-300 group-hover:w-full" />
@@ -172,7 +173,7 @@ export function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className="md:hidden text-white p-2 rounded-full bg-white/10 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                className={`md:hidden text-white p-2 rounded-full bg-white/10 backdrop-blur-sm ${FOCUS_RING}`}
                 layout={false}
                 aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
                 aria-expanded={isMobileMenuOpen}
@@ -234,7 +235,7 @@ export function Navbar() {
                         key={link.name}
                         to={link.path}
                         onClick={closeMobileMenu}
-                        className="text-white text-xl uppercase tracking-[0.25em] hover:text-brand-gold transition-all duration-300 relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+                        className={`text-white text-xl uppercase tracking-[0.25em] hover:text-brand-gold transition-all duration-300 relative group rounded-sm ${FOCUS_RING}`}
                       >
                         {link.name}
                         <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-brand-gold transition-all duration-300 group-hover:w-full" />

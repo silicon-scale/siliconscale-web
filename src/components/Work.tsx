@@ -135,6 +135,10 @@ function WorkComponent() {
           transform: scale(1.07);
         }
         .arrow-btn:active { transform: scale(0.96); }
+        .arrow-btn:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
         .browser-mockup {
           border-radius: 16px;
           overflow: hidden;
@@ -174,6 +178,7 @@ function WorkComponent() {
           >
             <div>
               <h2
+                id="work-heading"
                 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.6rem)', fontWeight: 900, color: '#ffffff', lineHeight: 1.1, letterSpacing: '-0.02em' }}
               >
                 <span>How</span> we helped<br />

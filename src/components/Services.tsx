@@ -138,7 +138,7 @@ export function Services() {
           opacity: 0;
           font-size: 0.92rem;
           line-height: 1.7;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.55);
           padding-left: 0;
         }
         .service-row:hover .row-desc {
@@ -245,6 +245,10 @@ export function Services() {
           box-shadow: 0 12px 40px rgba(255,255,255,0.2);
         }
         .cta-btn:active { transform: scale(0.98); }
+        .cta-btn:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
         .reveal { opacity: 0; }
         .reveal.visible { animation: reveal-up 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
       `}</style>

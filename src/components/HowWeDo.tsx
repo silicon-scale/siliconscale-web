@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
+import { FOCUS_RING } from '@/lib/focus'
 
 const CARDS = [
   {
@@ -170,6 +171,10 @@ export function HowWeDo() {
           transform: scale(1.05);
         }
         .arrow-btn-how:active { transform: scale(0.98); }
+        .arrow-btn-how:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
       `}</style>
 
       <section
@@ -185,7 +190,7 @@ export function HowWeDo() {
           <div className={`how-we-do-reveal ${isVisible ? 'visible' : ''} flex flex-wrap items-end justify-between gap-8 mb-14 lg:mb-20`}>
             <div>
               <span
-                className="inline-block mb-4 text-xs font-bold tracking-[0.22em] uppercase text-white/40"
+                className="inline-block mb-4 text-xs font-bold tracking-[0.22em] uppercase text-white/55"
               >
                 HOW WE WORK
               </span>
@@ -200,7 +205,7 @@ export function HowWeDo() {
             <button
               type="button"
               onClick={() => navigate('/services')}
-              className="inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors"
+              className={`inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors ${FOCUS_RING}`}
             >
               How we work
               <ArrowUpRight className="w-5 h-5" aria-hidden />
@@ -220,7 +225,7 @@ export function HowWeDo() {
                 <button
                   type="button"
                   onClick={() => navigate('/services')}
-                  className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors z-10"
+                  className={`absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors z-10 ${FOCUS_RING}`}
                   aria-label="View how we work"
                 >
                   <ArrowUpRight className="w-5 h-5" />

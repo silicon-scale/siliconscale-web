@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useReveal } from '@/context/RevealContext'
+import { FOCUS_RING } from '@/lib/focus'
 
 type ServiceCard = {
   id: string
@@ -333,6 +334,10 @@ export default function ServicesPage() {
         }
         .service-cta:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
         .service-cta:active { transform: translateY(0px); }
+        .service-cta:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
         .service-cta-badge {
           width: 12px; height: 12px; border-radius: 999px;
           background: var(--accent);
@@ -484,7 +489,7 @@ export default function ServicesPage() {
         <section className="mt-28 border-t border-white/10 pt-16">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div className="max-w-2xl">
-              <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.24em] text-white/40">
+              <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.24em] text-white/55">
                 Next step
               </p>
               <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -498,7 +503,7 @@ export default function ServicesPage() {
             <button
               type="button"
               onClick={() => navigate('/contact')}
-              className="rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90"
+              className={`rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90 ${FOCUS_RING}`}
             >
               Talk to us
             </button>

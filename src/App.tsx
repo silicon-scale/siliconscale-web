@@ -66,6 +66,9 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-page text-white">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Navbar />
 
       <main className="relative" role="main" id="main-content">

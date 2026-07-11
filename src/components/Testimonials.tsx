@@ -117,7 +117,7 @@ export function Testimonials() {
           max-width: 520px;
           font-size: 0.95rem;
           line-height: 1.7;
-          color: rgba(255,255,255,0.45);
+          color: rgba(255,255,255,0.55);
         }
 
         .ss-marquee {
