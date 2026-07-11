@@ -303,10 +303,12 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    /* clip avoids creating a scrollport (unlike hidden) so position:sticky works */
+    @apply bg-background text-foreground;
+    overflow-x: clip;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
   }
   
   * {
@@ -430,20 +432,20 @@ html {
 /* Mobile optimizations for video */
 @media (max-width: 768px) {
   html, body {
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
   }
   
-  /* Force all sections to stay within viewport */
+  /* Force all sections to stay within viewport without breaking sticky */
   section {
-    max-width: 100vw;
-    overflow-x: hidden;
+    max-width: 100%;
+    overflow-x: clip;
   }
   
   /* Ensure containers don't exceed viewport */
   .container {
-    max-width: 100vw !important;
+    max-width: 100% !important;
     padding-left: 1rem;
     padding-right: 1rem;
   }

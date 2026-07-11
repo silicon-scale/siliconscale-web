@@ -22,6 +22,7 @@ import Contact from "./components/Contact"
 import PrivacyPolicy from "./components/PrivacyPolicy"
 import TermsOfService from "./components/TermsOfService"
 import ServicesPage from "./components/ServicesPage"
+import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
 
 const Home = memo(function Home() {
@@ -79,7 +80,8 @@ function AppContent() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
             className="min-h-screen"
-            style={{ willChange: "transform", transform: "translateZ(0)" }}
+            // Avoid persistent transform/will-change — both create a containing
+            // block that breaks position:sticky (services card reel, etc.).
             layout={false}
           >
             <Routes location={location}>
@@ -91,6 +93,7 @@ function AppContent() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/tool-stack" element={<ToolStack />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </motion.div>

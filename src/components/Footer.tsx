@@ -501,6 +501,7 @@ function FooterComponent() {
             <div className="footer-links">
               <Link to="/" className="footer-link">Home</Link>
               <Link to="/services" className="footer-link">Services</Link>
+              <Link to="/tool-stack" className="footer-link">Tool Stack</Link>
               <Link to="/contact" className="footer-link">Contact</Link>
               <Link to="/about" className="footer-link">About</Link>
               <Link to="/work" className="footer-link">Work</Link>
