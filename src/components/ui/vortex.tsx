@@ -49,6 +49,15 @@ export const Vortex = (props: VortexProps) => {
     const zOff = 0.0005;
     const backgroundColor = props.backgroundColor ?? "rgba(0,0,0,0)";
 
+    // Glow (ctx.filter blur) is the single most expensive operation in this
+    // component — it's an unaccelerated full-canvas convolution on several
+    // browsers, applied every frame. Decide once, up front, whether this
+    // device can afford it, and how many passes.
+    const dpr = window.devicePixelRatio || 1;
+    const initialWidth = container.getBoundingClientRect().width;
+    const isWeakDevice = dpr > 1.5 || initialWidth < 1200;
+    const glowPasses = isWeakDevice ? 0 : 1; // was: always 2 passes
+
     let tick = 0;
     const noise3D = createNoise3D();
     let particleProps = new Float32Array(0);
@@ -170,14 +179,16 @@ export const Vortex = (props: VortexProps) => {
       }
     };
 
+    // Single-pass glow instead of the previous two blur+brightness passes —
+    // each ctx.filter blur is a full-canvas convolution and is not GPU
+    // accelerated on several browsers, so halving the passes here roughly
+    // halves this function's cost. Skipped entirely on weaker devices
+    // (high-DPR or narrow viewport), matching the same heuristic already
+    // used to scale particle density.
     const renderGlow = (c: HTMLCanvasElement, cctx: CanvasRenderingContext2D) => {
+      if (glowPasses < 1) return;
       cctx.save();
-      cctx.filter = "blur(8px) brightness(200%)";
-      cctx.globalCompositeOperation = "lighter";
-      cctx.drawImage(c, 0, 0);
-      cctx.restore();
-      cctx.save();
-      cctx.filter = "blur(4px) brightness(200%)";
+      cctx.filter = "blur(6px) brightness(180%)";
       cctx.globalCompositeOperation = "lighter";
       cctx.drawImage(c, 0, 0);
       cctx.restore();

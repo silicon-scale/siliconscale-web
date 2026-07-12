@@ -68,6 +68,8 @@ export function ToolPhysicsPlayground() {
     else blockRefs.current.delete(id)
   }, [])
 
+  // Arm once the section first enters the viewport (unchanged — we still only
+  // want to pay the Matter.js/body-creation cost once).
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
@@ -87,9 +89,10 @@ export function ToolPhysicsPlayground() {
   useEffect(() => {
     if (!armed || prefersReducedMotion) return
     const stage = stageRef.current
-    if (!stage) return
+    const section = sectionRef.current
+    if (!stage || !section) return
 
-    const { Engine, Bodies, Body, Composite, Runner, Constraint, Query } = Matter
+    const { Engine, Bodies, Body, Composite, Runner, Constraint, Query, Events } = Matter
 
     const engine = Engine.create({
       gravity: { x: 0, y: 1.15, scale: 0.001 },
@@ -241,9 +244,10 @@ export function ToolPhysicsPlayground() {
     stage.addEventListener('pointercancel', onPointerUp)
 
     const runner = Runner.create()
-    Runner.run(runner, engine)
 
-    let raf = 0
+    // Sync DOM transforms straight off Matter's own tick instead of running a
+    // second, independent requestAnimationFrame loop — one less loop fighting
+    // the main thread every frame.
     const half = BLOCK / 2
     const sync = () => {
       for (const body of bodies) {
@@ -251,9 +255,43 @@ export function ToolPhysicsPlayground() {
         if (!el) continue
         el.style.transform = `translate3d(${body.position.x - half}px, ${body.position.y - half}px, 0) rotate(${body.angle}rad)`
       }
-      raf = requestAnimationFrame(sync)
     }
-    raf = requestAnimationFrame(sync)
+    Events.on(engine, 'afterUpdate', sync)
+
+    // --- Visibility-gated start/stop -----------------------------------
+    // This is the critical fix: previously the Matter runner + a separate
+    // rAF sync loop ran forever once armed, even after the section scrolled
+    // fully out of view — a permanent per-frame cost on every other
+    // interaction on the page. Now the simulation is paused whenever the
+    // stage isn't actually on screen, and resumed when it is.
+    let physicsRunning = false
+
+    const startPhysics = () => {
+      if (physicsRunning) return
+      physicsRunning = true
+      Runner.run(runner, engine)
+    }
+
+    const stopPhysics = () => {
+      if (!physicsRunning) return
+      physicsRunning = false
+      Runner.stop(runner)
+    }
+
+    const visibilityIo = new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? startPhysics() : stopPhysics()),
+      { threshold: 0.05 },
+    )
+    visibilityIo.observe(section)
+
+    const onDocVisibility = () => {
+      if (document.visibilityState === 'hidden') stopPhysics()
+      else if (section.getBoundingClientRect().top < window.innerHeight) startPhysics()
+    }
+    document.addEventListener('visibilitychange', onDocVisibility)
+
+    // Section was just armed because it entered the viewport, so start now.
+    startPhysics()
 
     const onResize = () => {
       const w = stage.clientWidth
@@ -276,14 +314,16 @@ export function ToolPhysicsPlayground() {
 
     return () => {
       clearTimeout(lidTimer)
-      cancelAnimationFrame(raf)
+      visibilityIo.disconnect()
+      document.removeEventListener('visibilitychange', onDocVisibility)
       ro.disconnect()
       stage.removeEventListener('pointerdown', onPointerDown)
       stage.removeEventListener('pointermove', onPointerMove)
       stage.removeEventListener('pointerup', onPointerUp)
       stage.removeEventListener('pointercancel', onPointerUp)
       clearDrag()
-      Runner.stop(runner)
+      Events.off(engine, 'afterUpdate', sync)
+      stopPhysics()
       Composite.clear(engine.world, false)
       Engine.clear(engine)
     }

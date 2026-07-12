@@ -16,10 +16,9 @@ const FOUNDERS: Founder[] = [
     description:
       '"Architect of SiliconScale\'s technical backbone. Specializes in scalable platforms, high-performance systems, and future-ready digital infrastructure."',
     image: pavanPhoto,
-    // tillu.webp is ~1.05:1 (near-square); shared object-top crops ~24% width and
-    // sits the face too high. Anchor horizontally center, bias slightly toward the
-    // upper third so head+shoulders stay in the 4/5 frame (not the global object-top).
-    objectPosition: '50% 18%',
+
+    // Slightly lower crop so more shoulders are visible
+    objectPosition: '50% 14%',
   },
   {
     name: 'Mani Jhaneswar',
@@ -27,7 +26,8 @@ const FOUNDERS: Founder[] = [
     description:
       '"Leads SiliconScale\'s creative vision and digital product design — building cinematic user experiences and scalable brand systems for the companies we work with."',
     image: maniPhoto,
-    objectPosition: 'center top',
+
+    objectPosition: '50% 8%',
   },
   {
     name: 'Abdul Mohsin',
@@ -35,29 +35,73 @@ const FOUNDERS: Founder[] = [
     description:
       '"Drives SiliconScale\'s growth and client partnerships — turning cold outreach into long-term retainers, and pipeline into predictable revenue."',
     image: abdulPhoto,
-    objectPosition: 'center top',
+
+    objectPosition: '50% 8%',
   },
 ]
+
+// Pre-rendered off-screen glow sprite. ctx.shadowBlur recomputes a blur
+// convolution on every single draw call — doing that for 90 dots every
+// frame is one of the most expensive things a 2D canvas can do. Baking the
+// glow into a small gradient sprite once, then just drawImage-ing it per
+// dot, gets the same soft look at a fraction of the cost (drawImage is
+// cheap and GPU-composited; shadowBlur is not).
+function createGlowSprite(): HTMLCanvasElement {
+  const size = 48
+  const sprite = document.createElement('canvas')
+  sprite.width = size
+  sprite.height = size
+  const sctx = sprite.getContext('2d')
+  if (!sctx) return sprite
+
+  const grad = sctx.createRadialGradient(
+    size / 2,
+    size / 2,
+    0,
+    size / 2,
+    size / 2,
+    size / 2
+  )
+  grad.addColorStop(0, brandGoldAlpha(1))
+  grad.addColorStop(0.35, brandGoldAlpha(0.55))
+  grad.addColorStop(1, brandGoldAlpha(0))
+
+  sctx.fillStyle = grad
+  sctx.beginPath()
+  sctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2)
+  sctx.fill()
+
+  return sprite
+}
 
 export default function Team() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const glowSpriteRef = useRef<HTMLCanvasElement | null>(null)
   const prefersReducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const enableCanvas = !isMobile && !prefersReducedMotion
 
   useEffect(() => {
     if (!enableCanvas) return
+
     const canvas = canvasRef.current
     if (!canvas) return
+
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+
+    if (!glowSpriteRef.current) {
+      glowSpriteRef.current = createGlowSprite()
+    }
+    const glowSprite = glowSpriteRef.current
 
     let animId: number
     let running = false
     let isVisible = document.visibilityState !== 'hidden'
     let isInView = true
     let resizeQueued = false
+
     let dots: {
       x: number
       y: number
@@ -71,16 +115,14 @@ export default function Team() {
     }[] = []
 
     function resize() {
-      if (!canvas) return
       canvas.width = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
     }
 
     function init() {
-      if (!canvas) return
       dots = Array.from({ length: 90 }, () => ({
-        x: Math.random() * canvas!.width,
-        y: Math.random() * canvas!.height,
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
         r: Math.random() * 1.1 + 0.25,
         vx: (Math.random() - 0.5) * 0.18,
         vy: (Math.random() - 0.5) * 0.18,
@@ -92,34 +134,49 @@ export default function Team() {
     }
 
     function draw() {
-      if (!canvas || !ctx) return
       if (!running) return
+
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+
       const t = performance.now()
+
       dots.forEach((d) => {
         const tw = (Math.sin(t * d.twSpeed + d.twPhase) + 1) / 2
         const a = Math.min(0.7, d.baseA + tw * d.twAmp)
 
+        // Soft glow — pre-rendered sprite, scaled per dot, alpha modulated
+        // via globalAlpha instead of recomputing a blur per draw call.
+        const glowSize = Math.max(6, d.r * 14 * (0.6 + tw * 0.4))
+        ctx.globalAlpha = a
+        ctx.drawImage(
+          glowSprite,
+          d.x - glowSize / 2,
+          d.y - glowSize / 2,
+          glowSize,
+          glowSize
+        )
+        ctx.globalAlpha = 1
+
+        // Crisp core dot on top, no shadow
         ctx.beginPath()
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
-        ctx.fillStyle = brandGoldAlpha(a)
-        ctx.shadowColor = brandGoldAlpha(0.65)
-        ctx.shadowBlur = 14 * tw
+        ctx.fillStyle = brandGoldAlpha(Math.min(1, a + 0.25))
         ctx.fill()
-        ctx.shadowBlur = 0
+
         d.x += d.vx
         d.y += d.vy
-        if (d.x < 0) d.x = canvas!.width
-        if (d.x > canvas!.width) d.x = 0
-        if (d.y < 0) d.y = canvas!.height
-        if (d.y > canvas!.height) d.y = 0
+
+        if (d.x < 0) d.x = canvas.width
+        if (d.x > canvas.width) d.x = 0
+        if (d.y < 0) d.y = canvas.height
+        if (d.y > canvas.height) d.y = 0
       })
+
       animId = requestAnimationFrame(draw)
     }
 
     function start() {
-      if (running) return
-      if (!isVisible || !isInView) return
+      if (running || !isVisible || !isInView) return
       running = true
       animId = requestAnimationFrame(draw)
     }
@@ -130,15 +187,24 @@ export default function Team() {
       cancelAnimationFrame(animId)
     }
 
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInView = !!entry?.isIntersecting
+        isInView ? start() : stop()
+      },
+      { threshold: 0.08 }
+    )
+
     const onVisibilityChange = () => {
       isVisible = document.visibilityState !== 'hidden'
-      if (!isVisible) stop()
-      else start()
+      isVisible ? start() : stop()
     }
 
     const onResize = () => {
       if (resizeQueued) return
+
       resizeQueued = true
+
       requestAnimationFrame(() => {
         resizeQueued = false
         resize()
@@ -146,22 +212,16 @@ export default function Team() {
       })
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        isInView = Boolean(entry?.isIntersecting)
-        if (!isInView) stop()
-        else start()
-      },
-      { threshold: 0.08 }
-    )
-
     resize()
     init()
+
     observer.observe(sectionRef.current ?? canvas)
+
     document.addEventListener('visibilitychange', onVisibilityChange)
     window.addEventListener('resize', onResize)
+
     start()
+
     return () => {
       stop()
       observer.disconnect()
@@ -174,20 +234,21 @@ export default function Team() {
     <section
       id="team"
       ref={sectionRef}
-      className="relative bg-page text-white overflow-hidden min-h-screen"
+      className="relative min-h-screen overflow-hidden bg-page text-white"
       aria-label="Team section"
       aria-labelledby="team-heading"
     >
       <div className="absolute inset-0 pointer-events-none z-0">
         <div
-          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full"
+          className="absolute -top-40 left-1/2 h-[700px] w-[900px] -translate-x-1/2 rounded-full"
           style={{
             background:
               'radial-gradient(circle at center, rgb(var(--brand-gold-rgb) / 0.06) 0%, transparent 65%)',
           }}
         />
+
         <div
-          className="absolute -bottom-52 right-1/4 w-[700px] h-[600px] rounded-full"
+          className="absolute -bottom-52 right-1/4 h-[600px] w-[700px] rounded-full"
           style={{
             background:
               'radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%)',
@@ -213,23 +274,23 @@ export default function Team() {
       {enableCanvas ? (
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full pointer-events-none z-0"
+          className="absolute inset-0 h-full w-full pointer-events-none z-0"
           style={{ opacity: 0.5 }}
           aria-hidden
         />
       ) : (
-        <div className="absolute inset-0 pointer-events-none z-0" aria-hidden />
+        <div className="absolute inset-0 pointer-events-none z-0" />
       )}
 
-      <div className="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 pb-20">
-        <div className="text-center pt-20 md:pt-24">
+      {/* Changed max-w-6xl -> max-w-7xl */}
+      <div className="relative z-10 mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12">
+        <div className="pt-20 text-center md:pt-24">
           <h1
             id="team-heading"
-            className="leading-[1.2] tracking-normal my-8"
+            className="my-8 leading-[1.2]"
             style={{
-              fontSize: 'clamp(2rem, 2vw, 2.6rem)',
+              fontSize: 'clamp(2rem,2vw,2.6rem)',
               fontWeight: 900,
-              color: '#ffffff',
             }}
           >
             The People
@@ -238,7 +299,8 @@ export default function Team() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 mt-12 mb-16">
+        {/* Slightly smaller gap = wider cards */}
+        <div className="mt-12 mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-8">
           {FOUNDERS.map((founder, i) => (
             <FounderCard
               key={founder.name}

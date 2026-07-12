@@ -116,9 +116,14 @@ export function CanvasText({
     const descent = metrics.actualBoundingBoxDescent;
     const baselineY = (height + ascent - descent) / 2;
 
+    // Weaker devices (high-DPR panels, or narrow/lower-power viewports) get
+    // fewer stroked curves per frame — this runs twice simultaneously on the
+    // hero ("Systems" + "Grow"), so trimming line density here is a cheap
+    // win exactly where first-paint smoothness matters most.
     const densityScale = dpr > 1.5 || width < 1200 ? 0.9 : 1;
+    const effectiveLineGap = densityScale < 1 ? lineGap * 1.4 : lineGap;
     const extraLines = densityScale < 1 ? 6 : 10;
-    const numLines = Math.floor(height / lineGap) + extraLines;
+    const numLines = Math.floor(height / effectiveLineGap) + extraLines;
     startTimeRef.current = performance.now();
     lastTimeRef.current = startTimeRef.current;
     hzSamplesRef.current = 0;
@@ -186,7 +191,7 @@ export function CanvasText({
 
       ctx.globalCompositeOperation = "source-atop";
       for (let i = 0; i < numLines; i++) {
-        const y = i * lineGap;
+        const y = i * effectiveLineGap;
 
         const curve1 = Math.sin(phase) * curveIntensity;
         const curve2 = Math.sin(phase + 0.5) * curveIntensity * 0.6;
@@ -279,4 +284,3 @@ export function CanvasText({
     </span>
   );
 }
-

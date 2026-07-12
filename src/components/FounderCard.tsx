@@ -5,55 +5,71 @@ export type Founder = {
   role: string
   description: string
   image: string
-  /** CSS object-position — per-photo when intrinsic ratio differs from the 4/5 crop */
+  /** CSS object-position — per-photo when intrinsic ratio differs from the crop */
   objectPosition?: string
 }
 
 type FounderCardProps = {
   founder: Founder
-  /** md breakpoint: center the orphaned third card in a 2-col grid (existing layout) */
+  /** Center the third card on md screens */
   featuredOnMd?: boolean
 }
 
-export function FounderCard({ founder, featuredOnMd = false }: FounderCardProps) {
-  const { name, role, description, image, objectPosition = 'center top' } = founder
+export function FounderCard({
+  founder,
+  featuredOnMd = false,
+}: FounderCardProps) {
+  const {
+    name,
+    role,
+    description,
+    image,
+    objectPosition = '50% 10%',
+  } = founder
 
   return (
     <article
-      className={`transition-all duration-500 hover:-translate-y-2 ${
+      className={`group flex flex-col items-center px-6 py-10 text-center transition-transform duration-500 hover:-translate-y-2 md:px-7 ${
         featuredOnMd
           ? 'md:col-span-2 md:max-w-[calc(50%-1.5rem)] md:justify-self-center lg:col-span-1 lg:max-w-none lg:justify-self-stretch'
           : ''
       }`}
+      style={{
+        background: '#050402',
+        border: '0.5px solid #1e1a13',
+      }}
     >
+      {/* Image — square, large */}
       <div
-        className="relative overflow-hidden group aspect-[4/5]"
-        style={{ background: '#0e0c0a', border: '0.5px solid #2a2218' }}
+        className="relative mb-6 overflow-hidden rounded-xl"
+        style={{
+          width: 'clamp(220px, 24vw, 340px)',
+          height: 'clamp(220px, 24vw, 340px)',
+          background: '#0e0c0a',
+          border: '1px solid #2a2218',
+        }}
       >
         <OptimizedImage
           src={image}
           alt={name}
-          width={800}
-          height={1000}
-          className="w-full h-full object-cover transition-transform duration-1200 ease-out group-hover:scale-110"
-          style={{ objectPosition, aspectRatio: 'auto' }}
+          width={680}
+          height={680}
           loading="lazy"
           decoding="async"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 768px) 60vw, 340px"
+          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.06]"
+          style={{ objectPosition }}
         />
       </div>
 
-      <div
-        className="p-6 md:p-7 text-center transition-all duration-500"
-        style={{ background: '#050402', border: '0.5px solid #1e1a13', borderTop: 'none' }}
-      >
+      {/* Content */}
+      <div className="flex flex-col items-center">
         <span
-          className="inline-block mb-3 uppercase"
+          className="mb-3 inline-block uppercase"
           style={{
             fontSize: '1rem',
             letterSpacing: '0.1em',
-            color: 'white',
-            padding: '5px 12px',
+            color: '#ffffff',
           }}
         >
           {role}
