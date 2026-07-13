@@ -6,6 +6,7 @@ import mnrdcImage from '../assets/project-images/mnrdc.webp'
 import rdcImage from '../assets/project-images/rdc.webp'
 import axelsImage from '../assets/project-images/axels.webp'
 import plaamImage from '../assets/project-images/plaam.webp'
+import lavviImage from '../assets/project-images/lavvi.webp'
 
 import { useState, useEffect, useRef } from 'react'
 import { Lens } from '@/components/ui/lens'
@@ -100,6 +101,21 @@ function WorkComponent() {
       ],
     },
     {
+      id: 'lavvi',
+      title: 'LavviStore',
+      description:
+        'Designed and developed a high-performance e-commerce platform for LavviStore, focused on delivering a premium shopping experience through clean design, fast performance, mobile-first responsiveness, and scalable architecture.',
+      image: lavviImage,
+      imageAlt: 'LavviStore e-commerce website preview',
+      link: 'https://www.lavvistore.com/',
+      tag: 'Featured Client Project',
+      year: '2025',
+      services: 'BRANDING · UI/UX · E-COMMERCE · DEVELOPMENT',
+      isSample: false,
+      stat: '100%',
+      statLabel: 'Custom Solution',
+      },
+      {
       id: 'axels',
       title: 'AXELS',
       description:
