@@ -14,6 +14,8 @@ export function HoverBorderGradient({
   as: Tag = 'button',
   duration = 1,
   clockwise = true,
+  /** When false, hold on current direction (used to defer shimmer until entrance settles). */
+  animateActive = true,
   ...props
 }: React.PropsWithChildren<
   {
@@ -22,6 +24,7 @@ export function HoverBorderGradient({
     className?: string
     duration?: number
     clockwise?: boolean
+    animateActive?: boolean
   } & React.HTMLAttributes<HTMLElement>
 >) {
   const [hovered, setHovered] = useState(false)
@@ -29,36 +32,34 @@ export function HoverBorderGradient({
 
   const rotateDirection = useCallback(
     (current: Direction): Direction => {
-    const directions: Direction[] = ['TOP', 'LEFT', 'BOTTOM', 'RIGHT']
-    const idx = directions.indexOf(current)
-    const next = clockwise
-      ? (idx - 1 + directions.length) % directions.length
-      : (idx + 1) % directions.length
-    return directions[next]
+      const directions: Direction[] = ['TOP', 'LEFT', 'BOTTOM', 'RIGHT']
+      const idx = directions.indexOf(current)
+      const next = clockwise
+        ? (idx - 1 + directions.length) % directions.length
+        : (idx + 1) % directions.length
+      return directions[next]
     },
     [clockwise]
   )
 
-  // Gold-forward, subtle shimmer that matches the site theme.
+  // Softer radial falloff replaces former filter:blur(2px) on this layer —
+  // same gold shimmer ring, painted without a live blur filter.
   const movingMap: Record<Direction, string> = {
-    TOP: `radial-gradient(22% 55% at 50% 0%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
-    LEFT: `radial-gradient(18% 48% at 0% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
-    BOTTOM:
-      `radial-gradient(22% 55% at 50% 100%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
-    RIGHT:
-      `radial-gradient(18% 48% at 100% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0)} 100%)`,
+    TOP: `radial-gradient(32% 72% at 50% -8%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0.55)} 38%, ${brandGoldAlpha(0)} 78%)`,
+    LEFT: `radial-gradient(28% 65% at -8% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0.55)} 38%, ${brandGoldAlpha(0)} 78%)`,
+    BOTTOM: `radial-gradient(32% 72% at 50% 108%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0.55)} 38%, ${brandGoldAlpha(0)} 78%)`,
+    RIGHT: `radial-gradient(28% 65% at 108% 50%, ${brandGoldAlpha(0.95)} 0%, ${brandGoldAlpha(0.55)} 38%, ${brandGoldAlpha(0)} 78%)`,
   }
 
-  const highlight =
-    `radial-gradient(85% 190% at 50% 50%, ${brandGoldAlpha(0.85)} 0%, rgba(255,255,255,0.22) 28%, ${brandGoldAlpha(0)} 70%)`
+  const highlight = `radial-gradient(95% 210% at 50% 50%, ${brandGoldAlpha(0.85)} 0%, rgba(255,255,255,0.22) 30%, ${brandGoldAlpha(0)} 74%)`
 
   useEffect(() => {
-    if (hovered) return
+    if (hovered || !animateActive) return
     const interval = window.setInterval(() => {
       setDirection((prev) => rotateDirection(prev))
     }, duration * 1000)
     return () => window.clearInterval(interval)
-  }, [duration, hovered, rotateDirection])
+  }, [duration, hovered, rotateDirection, animateActive])
 
   return (
     <Tag
@@ -73,7 +74,6 @@ export function HoverBorderGradient({
       )}
       {...props}
     >
-      {/* content */}
       <span
         className={cn(
           'relative z-10 inline-flex items-center justify-center rounded-[inherit]',
@@ -87,11 +87,11 @@ export function HoverBorderGradient({
         {children}
       </span>
 
-      {/* animated border glow */}
+      {/* Soft-edge border glow — paint only, no filter:blur */}
       <motion.span
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
-        style={{ filter: 'blur(2px)' }}
+        className="pointer-events-none absolute -inset-px z-0 rounded-[inherit]"
+        style={{ filter: 'none' }}
         initial={{ background: movingMap[direction] }}
         animate={{
           background: hovered ? [movingMap[direction], highlight] : movingMap[direction],
@@ -99,7 +99,6 @@ export function HoverBorderGradient({
         transition={{ ease: 'linear', duration }}
       />
 
-      {/* inner cutout to keep glow outside */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-[2px] z-[1] rounded-[inherit] bg-page"
@@ -107,4 +106,3 @@ export function HoverBorderGradient({
     </Tag>
   )
 }
-

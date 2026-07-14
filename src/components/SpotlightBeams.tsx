@@ -118,7 +118,7 @@ const DUST_SPECKS: Speck[] = (() => {
   return specks
 })()
 
-function SpotlightBeamsComponent() {
+function SpotlightBeamsComponent({ loopActive = true }: { loopActive?: boolean }) {
   const prefersReducedMotion = useReducedMotion()
   const [vp, setVp] = useState<ViewportSize>(() => {
     if (typeof window === 'undefined') return { width: BASE_W, height: BASE_H }
@@ -193,7 +193,7 @@ function SpotlightBeamsComponent() {
 
   const cls = 'pointer-events-none absolute inset-0 z-[1] w-full h-full overflow-hidden'
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || !loopActive) {
     return (
       <svg
         aria-hidden
@@ -201,6 +201,7 @@ function SpotlightBeamsComponent() {
         viewBox="0 0 1920 1080"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.85 }}
       >
         {defs}
         <polygon points={leftPoints} fill={`url(#${BEAM_GRAD})`} />
@@ -217,7 +218,7 @@ function SpotlightBeamsComponent() {
       viewBox="0 0 1920 1080"
       preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 0.85 }}
       animate={{ opacity: [0.7, 1, 0.7] }}
       transition={{
         duration: 9,

@@ -12,7 +12,7 @@ import { Testimonials } from "./components/Testimonials"
 import FinalCTA from "./components/FinalCTA"
 import { Footer } from "./components/Footer"
 import { IntroLoader } from "./components/IntroLoader"
-import { RevealProvider } from "./context/RevealContext"
+import { RevealProvider, useReveal } from "./context/RevealContext"
 import { trackPageView } from "./utils/analytics"
 
 import About from "./components/About"
@@ -25,19 +25,74 @@ import ServicesPage from "./components/ServicesPage"
 import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
 
+function scheduleIdle(cb: () => void, timeout = 400): () => void {
+  const ric = (window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+    cancelIdleCallback?: (id: number) => void
+  }).requestIdleCallback
+  if (ric) {
+    const id = ric(cb, { timeout })
+    return () =>
+      (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback?.(id)
+  }
+  const t = window.setTimeout(cb, 100)
+  return () => clearTimeout(t)
+}
+
 const Home = memo(function Home() {
+  const { mountStage } = useReveal()
+  const [belowFold, setBelowFold] = useState(false)
+
+  useEffect(() => {
+    if (mountStage < 2) return
+    return scheduleIdle(() => setBelowFold(true), 350)
+  }, [mountStage])
+
   return (
     <>
       <HeroSection />
-      <AboutSection />
-      <Highlights />
-      <Services />
-      <HowWeDo />
-      <Testimonials />
-      <FinalCTA />
+      {belowFold ? (
+        <>
+          <div className="cv-auto">
+            <AboutSection />
+          </div>
+          <div className="cv-auto">
+            <Highlights />
+          </div>
+          <div className="cv-auto">
+            <Services />
+          </div>
+          <div className="cv-auto">
+            <HowWeDo />
+          </div>
+          <div className="cv-auto">
+            <Testimonials />
+          </div>
+          <div className="cv-auto">
+            <FinalCTA />
+          </div>
+        </>
+      ) : null}
     </>
   )
 })
+
+function DeferredFooter() {
+  const { mountStage } = useReveal()
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    if (mountStage < 2) return
+    return scheduleIdle(() => setReady(true), 500)
+  }, [mountStage])
+
+  if (!ready) return null
+  return (
+    <div className="cv-auto-footer">
+      <Footer />
+    </div>
+  )
+}
 
 function AppContent() {
   const location = useLocation()
@@ -100,7 +155,7 @@ function AppContent() {
         </AnimatePresence>
       </main>
 
-      <Footer />
+      <DeferredFooter />
     </div>
   )
 }

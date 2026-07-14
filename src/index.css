@@ -537,3 +537,77 @@ html {
   color: rgba(255, 255, 255, 0.92);
 }
 
+/*
+ * FounderCard photo fill: abspos replaced <img> keeps intrinsic height and
+ * ignores stretch — letterboxing the 4/5 frame so the caption can collide with
+ * the dark photo area on mobile. Stretch a non-replaced slot; force the img
+ * to fill it (beats Tailwind preflight img { max-width:100%; height:auto }).
+ */
+.founder-photo-slot {
+  position: absolute;
+  inset: 0;
+}
+.founder-photo-slot img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  object-fit: cover !important;
+}
+
+/*
+ * Hero glow dots — soft falloff via radial-gradient (no filter:blur).
+ * Sized/offset to match prior 6px disc + blur-[3px]/blur-[4px] footprint.
+ */
+.hero-glow-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -6px 0 0 -6px;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.hero-glow-dot--35 {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.2) 28%,
+    rgba(255, 255, 255, 0.06) 52%,
+    transparent 72%
+  );
+}
+.hero-glow-dot--30 {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.16) 28%,
+    rgba(255, 255, 255, 0.05) 52%,
+    transparent 72%
+  );
+}
+.hero-glow-dot--pulse {
+  width: 22px;
+  height: 22px;
+  margin: -8px 0 0 -8px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.55) 26%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 72%
+  );
+}
+
+/* Skip layout/paint for off-screen home sections (pair with intrinsic size to limit CLS). */
+.cv-auto {
+  content-visibility: auto;
+  /* Tall enough for About/Highlights/Services/HowWeDo; `auto` remembers last size after first paint */
+  contain-intrinsic-size: auto 1200px;
+}
+.cv-auto-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 980px;
+}
+

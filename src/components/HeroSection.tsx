@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { memo, useCallback, useRef, useEffect } from 'react'
+import { memo, useCallback, useRef, useEffect, useState } from 'react'
 import { MagneticButton } from './ui/MagneticButton'
 import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
@@ -10,7 +10,7 @@ import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 import { trackEvent } from '@/utils/analytics'
-import { REVEAL_EASE } from '@/lib/motion'
+import { ENTRANCE_SETTLE_MS, REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 
 const HERO_DURATION = 0.75
@@ -43,17 +43,66 @@ const GPU_LAYER_STYLE = {
   backfaceVisibility: 'hidden' as const,
 } as const
 
+const PULSE_DOTS = [
+  {
+    style: { top: '30%', left: '26%' },
+    opacity: [0.4, 1, 0.4] as number[],
+    scale: [1, 1.9, 1] as number[],
+    duration: 5,
+    delay: 0.6,
+  },
+  {
+    style: { top: '45%', left: '60%' },
+    opacity: [0.35, 0.95, 0.35] as number[],
+    scale: [1, 1.7, 1] as number[],
+    duration: 6.2,
+    delay: 1.4,
+  },
+  {
+    style: { top: '62%', left: '34%' },
+    opacity: [0.4, 1, 0.4] as number[],
+    scale: [1, 1.8, 1] as number[],
+    duration: 7,
+    delay: 0.9,
+  },
+  {
+    style: { top: '52%', right: '20%' },
+    opacity: [0.45, 1, 0.45] as number[],
+    scale: [1, 2, 1] as number[],
+    duration: 5.8,
+    delay: 1.8,
+  },
+] as const
+
 function HeroSectionComponent() {
   const navigate = useNavigate()
   const { mountStage, revealStarted } = useReveal()
   const prefersReducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const hasRevealedRef = useRef(false)
+  const [ambientReady, setAmbientReady] = useState(false)
+
   useEffect(() => {
     if (revealStarted) hasRevealedRef.current = true
   }, [revealStarted])
+
   const shouldReveal = hasRevealedRef.current || revealStarted || prefersReducedMotion
   const allowCanvasText = mountStage >= 2
+
+  // Ambient loops (pulsing dots / beams / CTA shimmer) start after entrance settles.
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setAmbientReady(false)
+      return
+    }
+    if (!shouldReveal) {
+      setAmbientReady(false)
+      return
+    }
+    const t = window.setTimeout(() => setAmbientReady(true), ENTRANCE_SETTLE_MS)
+    return () => clearTimeout(t)
+  }, [shouldReveal, prefersReducedMotion])
+
   const goToContact = useCallback(() => {
     trackEvent('cta_click', { location: 'hero' })
     navigate('/contact')
@@ -82,46 +131,40 @@ function HeroSectionComponent() {
         }}
       />
 
-      {/* Subtle (but visible) glowing grid points at some tile intersections */}
+      {/* Soft grid points — radial-gradient glow (no live filter:blur) */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-        {/* a handful of static anchors */}
-        <div className="absolute top-[22%] left-[18%] h-1.5 w-1.5 rounded-full bg-white/35 blur-[3px]" />
-        <div className="absolute top-[38%] left-[42%] h-1.5 w-1.5 rounded-full bg-white/30 blur-[3px]" />
-        <div className="absolute top-[55%] right-[26%] h-1.5 w-1.5 rounded-full bg-white/30 blur-[3px]" />
+        <div className="hero-glow-dot hero-glow-dot--35" style={{ top: '22%', left: '18%' }} />
+        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '38%', left: '42%' }} />
+        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '55%', right: '26%' }} />
 
-        {/* only some intersections glow/pulse */}
-        {!prefersReducedMotion ? (
-          <>
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '30%', left: '26%' }}
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.9, 1] }}
-              transition={{ duration: 5, repeat: Infinity, repeatType: 'mirror', delay: 0.6 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '45%', left: '60%' }}
-              animate={{ opacity: [0.35, 0.95, 0.35], scale: [1, 1.7, 1] }}
-              transition={{ duration: 6.2, repeat: Infinity, repeatType: 'mirror', delay: 1.4 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '62%', left: '34%' }}
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.8, 1] }}
-              transition={{ duration: 7, repeat: Infinity, repeatType: 'mirror', delay: 0.9 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '52%', right: '20%' }}
-              animate={{ opacity: [0.45, 1, 0.45], scale: [1, 2, 1] }}
-              transition={{ duration: 5.8, repeat: Infinity, repeatType: 'mirror', delay: 1.8 }}
-            />
-          </>
-        ) : null}
+        {!prefersReducedMotion
+          ? PULSE_DOTS.map((dot, i) => (
+              <motion.div
+                key={i}
+                className="hero-glow-dot hero-glow-dot--pulse"
+                style={dot.style}
+                initial={false}
+                animate={
+                  ambientReady
+                    ? { opacity: [...dot.opacity], scale: [...dot.scale] }
+                    : { opacity: dot.opacity[0], scale: 1 }
+                }
+                transition={
+                  ambientReady
+                    ? {
+                        duration: dot.duration,
+                        repeat: Infinity,
+                        repeatType: 'mirror',
+                        delay: dot.delay,
+                      }
+                    : { duration: 0 }
+                }
+              />
+            ))
+          : null}
       </div>
 
-      {/* Spotlight beams (SVG-based, responsive) */}
-      <SpotlightBeams />
+      <SpotlightBeams loopActive={ambientReady} />
 
       {/* Hero content: GPU-only — translate3d(0, 80px, 0) + opacity, 0.75s, stagger 0.14 */}
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
@@ -137,7 +180,6 @@ function HeroSectionComponent() {
             variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
             style={{
               ...GPU_LAYER_STYLE,
-              // Smaller on mobile while keeping desktop impact
               fontSize: 'clamp(2.15rem, 7.2vw, 4.8rem)',
               textWrap: 'balance',
               textShadow: '0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.10)',
@@ -229,6 +271,7 @@ function HeroSectionComponent() {
                 onClick={goToContact}
                 containerClassName="rounded-full"
                 as="button"
+                animateActive={ambientReady}
                 className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
                 Start Your Project
