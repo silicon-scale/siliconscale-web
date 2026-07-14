@@ -156,14 +156,106 @@ export function ToolPhysicsPlayground() {
     let dragBody: Matter.Body | null = null
     let lastSample = { x: 0, y: 0, t: 0 }
     let velocity = { x: 0, y: 0 }
+    let lastMoveAt = 0
+    let lastClient = { x: 0, y: 0 }
+    let dragPointerId: number | null = null
+    let docReleaseAttached = false
+    let deadManTimer: ReturnType<typeof setInterval> | null = null
 
-    const clearDrag = () => {
-      if (dragConstraint) {
-        Composite.remove(engine.world, dragConstraint)
-        dragConstraint = null
+    const stopDeadMan = () => {
+      if (deadManTimer !== null) {
+        clearInterval(deadManTimer)
+        deadManTimer = null
       }
+    }
+
+    const detachDocumentReleaseListeners = () => {
+      if (!docReleaseAttached) return
+      document.removeEventListener('pointerup', onDocumentRelease)
+      document.removeEventListener('pointercancel', onDocumentRelease)
+      docReleaseAttached = false
+    }
+
+    /** Idempotent — safe from pointerup + lostcapture + doc fallback + watchdog. */
+    const clearDrag = () => {
+      stopDeadMan()
+      detachDocumentReleaseListeners()
+      const constraint = dragConstraint
+      dragConstraint = null
       dragBody = null
+      dragPointerId = null
+      if (constraint) {
+        try {
+          Composite.remove(engine.world, constraint)
+        } catch {
+          /* already removed from world */
+        }
+      }
       setDragging(false)
+    }
+
+    const attachDocumentReleaseListeners = () => {
+      if (docReleaseAttached) return
+      document.addEventListener('pointerup', onDocumentRelease)
+      document.addEventListener('pointercancel', onDocumentRelease)
+      docReleaseAttached = true
+    }
+
+    const startDeadMan = () => {
+      stopDeadMan()
+      // Fires only if the pointer left the stage and then went silent —
+      // avoids killing a deliberate stationary hold inside the box.
+      deadManTimer = setInterval(() => {
+        if (!dragConstraint && !dragBody) {
+          stopDeadMan()
+          return
+        }
+        if (performance.now() - lastMoveAt < 150) return
+        const rect = stage.getBoundingClientRect()
+        const outside =
+          lastClient.x < rect.left ||
+          lastClient.x > rect.right ||
+          lastClient.y < rect.top ||
+          lastClient.y > rect.bottom
+        if (!outside) return
+        clearDrag()
+      }, 50)
+    }
+
+    const applyThrowAndClear = (e?: PointerEvent) => {
+      if (!dragBody) {
+        clearDrag()
+        return
+      }
+      // Throw impulse from recent pointer velocity
+      const throwScale = 0.012
+      Body.setVelocity(dragBody, {
+        x: Math.max(-22, Math.min(22, velocity.x * throwScale)),
+        y: Math.max(-22, Math.min(22, velocity.y * throwScale)),
+      })
+      Body.setAngularVelocity(
+        dragBody,
+        Math.max(-0.28, Math.min(0.28, velocity.x * 0.0003)),
+      )
+      if (e) {
+        try {
+          stage.releasePointerCapture(e.pointerId)
+        } catch {
+          /* already released */
+        }
+      } else if (dragPointerId !== null) {
+        try {
+          stage.releasePointerCapture(dragPointerId)
+        } catch {
+          /* already released */
+        }
+      }
+      clearDrag()
+    }
+
+    function onDocumentRelease(e: PointerEvent) {
+      if (dragPointerId !== null && e.pointerId !== dragPointerId) return
+      applyThrowAndClear(e)
     }
 
     const onPointerDown = (e: PointerEvent) => {
@@ -176,7 +268,11 @@ export function ToolPhysicsPlayground() {
       if (!hits.length) return
 
       e.preventDefault()
+      // End any prior drag cleanly before starting a new one
+      clearDrag()
+
       dragBody = hits[hits.length - 1]
+      dragPointerId = e.pointerId
       Body.setAngularVelocity(dragBody, 0)
       Body.setVelocity(dragBody, { x: 0, y: 0 })
 
@@ -193,14 +289,24 @@ export function ToolPhysicsPlayground() {
       })
       Composite.add(engine.world, dragConstraint)
 
-      lastSample = { x: point.x, y: point.y, t: performance.now() }
+      const now = performance.now()
+      lastSample = { x: point.x, y: point.y, t: now }
+      lastMoveAt = now
+      lastClient = { x: e.clientX, y: e.clientY }
       velocity = { x: 0, y: 0 }
       setDragging(true)
-      stage.setPointerCapture(e.pointerId)
+      attachDocumentReleaseListeners()
+      startDeadMan()
+      try {
+        stage.setPointerCapture(e.pointerId)
+      } catch {
+        /* capture unsupported — document fallback still covers release */
+      }
     }
 
     const onPointerMove = (e: PointerEvent) => {
       if (!dragConstraint || !dragBody) return
+      if (dragPointerId !== null && e.pointerId !== dragPointerId) return
       e.preventDefault()
       const point = stagePoint(stage, e.clientX, e.clientY)
       dragConstraint.pointA.x = point.x
@@ -213,25 +319,19 @@ export function ToolPhysicsPlayground() {
         y: (point.y - lastSample.y) / dt,
       }
       lastSample = { x: point.x, y: point.y, t: now }
+      lastMoveAt = now
+      lastClient = { x: e.clientX, y: e.clientY }
     }
 
     const onPointerUp = (e: PointerEvent) => {
-      if (!dragBody) return
-      // Throw impulse from recent pointer velocity
-      const throwScale = 0.012
-      Body.setVelocity(dragBody, {
-        x: Math.max(-22, Math.min(22, velocity.x * throwScale)),
-        y: Math.max(-22, Math.min(22, velocity.y * throwScale)),
-      })
-      Body.setAngularVelocity(
-        dragBody,
-        Math.max(-0.28, Math.min(0.28, velocity.x * 0.0003)),
-      )
-      try {
-        stage.releasePointerCapture(e.pointerId)
-      } catch {
-        /* already released */
-      }
+      if (dragPointerId !== null && e.pointerId !== dragPointerId) return
+      applyThrowAndClear(e)
+    }
+
+    const onLostPointerCapture = (e: PointerEvent) => {
+      if (dragPointerId !== null && e.pointerId !== dragPointerId) return
+      // Capture gone without a reliable up/cancel — drop the constraint so gravity wins.
+      // Throw already applied if pointerup ran first; clearDrag is idempotent either way.
       clearDrag()
     }
 
@@ -239,6 +339,7 @@ export function ToolPhysicsPlayground() {
     stage.addEventListener('pointermove', onPointerMove)
     stage.addEventListener('pointerup', onPointerUp)
     stage.addEventListener('pointercancel', onPointerUp)
+    stage.addEventListener('lostpointercapture', onLostPointerCapture)
 
     const runner = Runner.create()
     Runner.run(runner, engine)
@@ -282,6 +383,7 @@ export function ToolPhysicsPlayground() {
       stage.removeEventListener('pointermove', onPointerMove)
       stage.removeEventListener('pointerup', onPointerUp)
       stage.removeEventListener('pointercancel', onPointerUp)
+      stage.removeEventListener('lostpointercapture', onLostPointerCapture)
       clearDrag()
       Runner.stop(runner)
       Composite.clear(engine.world, false)
