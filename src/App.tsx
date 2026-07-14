@@ -165,18 +165,22 @@ export default function App() {
   const [loaderVisible, setLoaderVisible] = useState(true)
   const [mountStage, setMountStage] = useState<0 | 1 | 2 | 3>(0)
 
+  // Stage 1 = loader exit finished & unmounted. Promote to reveal (2) only after
+  // two animation frames so the hero entrance never overlaps the loader zoom.
   useEffect(() => {
     if (mountStage !== 1) return
-    const raf1 = requestAnimationFrame(() => setMountStage(2))
-    let t: number | undefined
-    let raf2: number | undefined
-    raf2 = requestAnimationFrame(() => {
-      t = window.setTimeout(() => setMountStage(3), 60)
+    let raf2 = 0
+    let stage3Timer = 0
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        setMountStage(2)
+        stage3Timer = window.setTimeout(() => setMountStage(3), 60)
+      })
     })
     return () => {
       cancelAnimationFrame(raf1)
-      if (raf2) cancelAnimationFrame(raf2)
-      if (t) clearTimeout(t)
+      cancelAnimationFrame(raf2)
+      if (stage3Timer) clearTimeout(stage3Timer)
     }
   }, [mountStage])
 
@@ -186,10 +190,10 @@ export default function App() {
         <IntroLoader
           visible={loaderVisible}
           onExitComplete={() => {
-            // Keep mounted to avoid a repaint spike; fade it out and unmount shortly after.
-            setMountStage(1)
+            // Unmount loader first — then stage 1 → (double rAF) → reveal stage 2.
             setLoaderVisible(false)
-            window.setTimeout(() => setLoaderMounted(false), 350)
+            setLoaderMounted(false)
+            setMountStage(1)
           }}
         />
       )}

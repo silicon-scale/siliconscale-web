@@ -1,31 +1,49 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type TransitionEvent } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/SiliconScaleLogo.png'
 import { useReveal } from '../context/RevealContext'
 import { trackEvent } from '@/utils/analytics'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
+import { MOBILE_BREAKPOINT } from '@/lib/breakpoints'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
 
-const REVEAL_TRANSITION = { duration: 0.7, ease: REVEAL_EASE }
-
 /** Mobile menu open/close — transform + opacity only; keep short but eased (no blur). */
 const MENU_DURATION = 0.22
-const MENU_EASE = REVEAL_EASE
-const MENU_TRANSITION = { duration: MENU_DURATION, ease: MENU_EASE }
+const MENU_TRANSITION = { duration: MENU_DURATION, ease: REVEAL_EASE }
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+function clearWillChange(e: TransitionEvent<HTMLElement>) {
+  if (e.target !== e.currentTarget) return
+  if (e.propertyName !== 'transform' && e.propertyName !== 'opacity') return
+  e.currentTarget.style.willChange = 'auto'
+  e.currentTarget.classList.remove('is-animating')
+}
+
 export function Navbar() {
   const { revealStarted } = useReveal()
+  const prefersReducedMotion = useReducedMotion()
+  const [isMobile, setIsMobile] = useState(
+    () => (typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false),
+  )
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    mql.addEventListener('change', onChange)
+    onChange()
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
   const isScrolled = useScrollThreshold(40)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [navRevealed, setNavRevealed] = useState(false)
   const menuId = useId()
   const toggleRef = useRef<HTMLButtonElement>(null)
   const menuPanelRef = useRef<HTMLDivElement>(null)
@@ -41,9 +59,22 @@ export function Navbar() {
     setIsMobileMenuOpen(false)
   }, [])
 
+  useEffect(() => {
+    if (!revealStarted && !prefersReducedMotion) {
+      setNavRevealed(false)
+      return
+    }
+    if (prefersReducedMotion) {
+      setNavRevealed(true)
+      return
+    }
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setNavRevealed(true))
+    })
+    return () => cancelAnimationFrame(id)
+  }, [revealStarted, prefersReducedMotion])
+
   // Escape, focus trap, restore focus, and body scroll lock while menu is open.
-  // Overflow + focus are deferred past the first open frames so they don't hitch
-  // on the same tick as the scrim/panel entrance (Android Chrome sensitive).
   useEffect(() => {
     if (!isMobileMenuOpen) return
 
@@ -88,7 +119,6 @@ export function Navbar() {
       document.body.style.overflow = 'hidden'
     }
 
-    // After paint, before focus — keeps scroll locked without starving the entrance.
     const lockRaf = requestAnimationFrame(lockOverflow)
     const focusTimer = window.setTimeout(() => {
       getFocusable()[0]?.focus({ preventScroll: true })
@@ -111,22 +141,24 @@ export function Navbar() {
   const mobileBookCallClassName =
     `inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
+  const navRevealClass = [
+    'nav-reveal',
+    'fixed top-0 left-0 w-full z-[200]',
+    navRevealed ? 'is-revealed' : '',
+    navRevealed && !prefersReducedMotion ? 'is-animating' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <>
-      <motion.nav
-        initial={{ y: -70, opacity: 0 }}
-        animate={revealStarted ? { y: 0, opacity: 1 } : { y: -70, opacity: 0 }}
-        transition={REVEAL_TRANSITION}
-        style={{
-          transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-        }}
-        layout={false}
-        className="fixed top-0 left-0 w-full z-[200]"
+      <nav
+        className={navRevealClass}
         aria-label="Primary"
+        onTransitionEnd={clearWillChange}
       >
         <div
-          className={`transition-all duration-500 ${
+          className={`transition-colors duration-500 ${
             isScrolled
               ? 'bg-black/60 backdrop-blur-2xl shadow-2xl border-b border-white/10'
               : 'bg-transparent'
@@ -150,41 +182,53 @@ export function Navbar() {
               />
             </Link>
 
-            <div className="hidden md:flex items-center space-x-5 lg:space-x-12 xl:space-x-16">
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={revealStarted ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
-                  transition={{ ...REVEAL_TRANSITION, delay: revealStarted ? 0.05 * index : 0 }}
-                >
-                  <Link
-                    to={link.path}
-                    className={`relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-all duration-300 group rounded-sm ${FOCUS_RING}`}
+            {/* Desktop links: CSS kills entrance under md; also skip mount when known-mobile. */}
+            {!isMobile ? (
+              <div className="flex items-center space-x-5 lg:space-x-12 xl:space-x-16">
+                {navLinks.map((link, index) => (
+                  <div
+                    key={link.name}
+                    className={[
+                      'nav-link-reveal',
+                      `nav-link-reveal--${index}`,
+                      navRevealed ? 'is-revealed' : '',
+                      navRevealed && !prefersReducedMotion ? 'is-animating' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onTransitionEnd={clearWillChange}
                   >
-                    {link.name}
-                    <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-brand-gold to-brand-gold/50 transition-all duration-300 group-hover:w-full" />
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+                    <Link
+                      to={link.path}
+                      className={`relative text-white text-xs lg:text-base uppercase tracking-[0.18em] lg:tracking-[0.25em] hover:text-white/80 transition-colors duration-300 group rounded-sm ${FOCUS_RING}`}
+                    >
+                      {link.name}
+                      <span className="absolute left-0 -bottom-2 h-[1px] w-0 bg-gradient-to-r from-brand-gold to-brand-gold/50 transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Placeholder keeps header layout stable once isMobile resolves; row is md-only elsewhere. */
+              null
+            )}
 
             <div className="flex items-center gap-4 md:gap-6">
-              {/* Single interactive element: Link (not Link wrapping button) */}
-              <motion.div
-                className="hidden md:block"
-                whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${brandGoldAlpha(0.3)}` }}
-                whileTap={{ scale: 0.95 }}
-                layout={false}
-              >
-                <Link
-                  to="/contact"
-                  onClick={() => trackEvent('nav_click', { destination: 'contact' })}
-                  className={bookCallClassName}
+              {!isMobile ? (
+                <motion.div
+                  whileHover={{ scale: 1.05, boxShadow: `0 0 20px ${brandGoldAlpha(0.3)}` }}
+                  whileTap={{ scale: 0.95 }}
+                  layout={false}
                 >
-                  Book Call
-                </Link>
-              </motion.div>
+                  <Link
+                    to="/contact"
+                    onClick={() => trackEvent('nav_click', { destination: 'contact' })}
+                    className={bookCallClassName}
+                  >
+                    Book Call
+                  </Link>
+                </motion.div>
+              ) : null}
 
               <motion.button
                 ref={toggleRef}
@@ -192,8 +236,6 @@ export function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen((open) => !open)}
-                /* Nav is transparent pre-scroll over a near-black hero — backdrop-blur-sm
-                   added no readable frost vs bg-white/10 alone; drop filter cost on Android. */
                 className={`md:hidden text-white p-2 rounded-full bg-white/10 ${FOCUS_RING}`}
                 layout={false}
                 aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -205,7 +247,7 @@ export function Navbar() {
             </div>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
       <AnimatePresence>
         {isMobileMenuOpen && (
