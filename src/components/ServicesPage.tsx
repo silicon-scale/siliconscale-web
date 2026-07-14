@@ -6,6 +6,8 @@ import { ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import {
   motion,
+  useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -306,21 +308,26 @@ function ServiceCardBody({
   card,
   onCta,
   titleStyle,
+  showWatermark = true,
 }: {
   card: ServiceCard
   onCta: () => void
   titleStyle: React.CSSProperties
+  /** Large 4.4× watermark SVG — only mount on the lead card. */
+  showWatermark?: boolean
 }) {
   return (
     <>
       {/* Ambient watermark — fills dead space below CTA; behind all copy */}
-      <div
-        className="card-watermark"
-        aria-hidden="true"
-        style={{ ['--wm-accent' as string]: card.accent }}
-      >
-        <div className="card-watermark-glyph">{card.icon(`${card.id}-wm`)}</div>
-      </div>
+      {showWatermark ? (
+        <div
+          className="card-watermark"
+          aria-hidden="true"
+          style={{ ['--wm-accent' as string]: card.accent }}
+        >
+          <div className="card-watermark-glyph">{card.icon(`${card.id}-wm`)}</div>
+        </div>
+      ) : null}
 
       <div className="card-copy">
         <p className="service-pill">{card.eyebrow}</p>
@@ -367,8 +374,46 @@ function ServiceCardBody({
 
 type ReelMode = 'desktop' | 'mobile'
 
-/** Stepped peek blur — toggled, never interpolated. */
-const PEEK_BLUR = 'blur(3px)'
+/** Cards beyond this distance get a one-shot idle pose; no per-frame transform work. */
+const FAR_DIST = 1.5
+/** Lead dwell — matches prior opacity==1 band (also watermark mount). */
+const LEAD_DIST = 0.55
+/** Promote compositor layers only while meaningfully visible. */
+const COMPOSITE_OPACITY = 0.04
+/** Drop any filter surface (incl. locked grayscale) below this opacity. */
+const FILTER_IDLE_OPACITY = 0.05
+
+function reelScale(index: number, v: number, mode: ReelMode): number {
+  if (mode === 'mobile') return 1
+  const d = Math.abs(index - v)
+  if (d >= FAR_DIST) return 0.82
+  return 1 - Math.min(d, 1) * 0.15
+}
+
+function reelOpacity(index: number, v: number, mode: ReelMode): number {
+  const d = Math.abs(index - v)
+  // Lead card stays fully opaque across its dwell so peek siblings cannot show through.
+  if (d < LEAD_DIST) return 1
+  if (mode === 'mobile') {
+    if (d < 0.85) return 1 - (d - LEAD_DIST) / 0.3
+    return 0
+  }
+  if (d >= FAR_DIST) return 0
+  if (d <= 1) return 1 - ((d - LEAD_DIST) / 0.45) * 0.65 // 1 → 0.35
+  return 0.35 * (1 - (d - 1) / 0.5) // 0.35 → 0
+}
+
+function reelY(index: number, v: number, mode: ReelMode): number {
+  const d = index - v
+  if (mode === 'mobile') {
+    return Math.max(-1, Math.min(1, d)) * 72
+  }
+  return Math.max(-FAR_DIST, Math.min(FAR_DIST, d)) * 140
+}
+
+function reelZIndex(index: number, v: number): number {
+  return Math.round(1000 - Math.abs(index - v) * 100)
+}
 
 function ReelCard({
   card,
@@ -383,60 +428,85 @@ function ReelCard({
   mode: ReelMode
   onCta: () => void
 }) {
-  // All derived values are raw useTransform — 1:1 with scroll, no per-property springs.
-  const scale = useTransform(activeFloat, (v) => {
-    if (mode === 'mobile') return 1
-    const d = Math.abs(index - v)
-    if (d >= 1.5) return 0.82
-    return 1 - Math.min(d, 1) * 0.15
-  })
+  const articleRef = React.useRef<HTMLElement>(null)
+  const farIdleRef = React.useRef(false)
+  const leadRef = React.useRef(index === 0)
+  const [showWatermark, setShowWatermark] = React.useState(() => index === 0)
 
-  const opacity = useTransform(activeFloat, (v) => {
-    const d = Math.abs(index - v)
-    // Lead card stays fully opaque across its dwell so peek siblings cannot show through.
-    if (d < 0.55) return 1
-    if (mode === 'mobile') {
-      if (d < 0.85) return 1 - (d - 0.55) / 0.3
-      return 0
-    }
-    if (d >= 1.5) return 0
-    if (d <= 1) return 1 - ((d - 0.55) / 0.45) * 0.65 // 1 → 0.35
-    return 0.35 * (1 - (d - 1) / 0.5) // 0.35 → 0
-  })
-
-  const y = useTransform(activeFloat, (v) => {
-    const d = index - v
-    if (mode === 'mobile') {
-      return Math.max(-1, Math.min(1, d)) * 72
-    }
-    return Math.max(-1.5, Math.min(1.5, d)) * 140
-  })
-
-  // Closer cards always stack above — avoids z-ties during mid-transition.
-  const zIndex = useTransform(activeFloat, (v) =>
-    Math.round(1000 - Math.abs(index - v) * 100),
+  const initialV = activeFloat.get()
+  const scale = useMotionValue(reelScale(index, initialV, mode))
+  const opacity = useMotionValue(reelOpacity(index, initialV, mode))
+  const y = useMotionValue(reelY(index, initialV, mode))
+  const zIndex = useMotionValue(reelZIndex(index, initialV))
+  const pointerEvents = useMotionValue<'none' | 'auto'>(
+    reelOpacity(index, initialV, mode) < COMPOSITE_OPACITY ? 'none' : 'auto',
   )
 
-  // Locked = grayscale; peek = fixed blur. Never animate blur amount.
-  const filter = useTransform(activeFloat, (v) => {
-    const d = Math.abs(index - v)
-    const parts: string[] = []
-    if (card.locked) parts.push('grayscale(0.35)')
-    if (mode !== 'mobile' && d >= 0.55) parts.push(PEEK_BLUR)
-    return parts.length ? parts.join(' ') : 'none'
-  })
+  const syncLayerFlags = React.useCallback((o: number) => {
+    const el = articleRef.current
+    if (!el) return
+    // will-change only while opacity > 0.04 (≤2–3 cards mid-scroll)
+    el.classList.toggle('is-composited', o > COMPOSITE_OPACITY)
+    // Force filter:none when nearly invisible so Skia drops filtered surfaces
+    el.classList.toggle('is-filter-idle', o < FILTER_IDLE_OPACITY)
+  }, [])
 
-  const pointerEvents = useTransform(opacity, (o) => (o < 0.04 ? 'none' : 'auto'))
+  // Apply initial compositor flags after mount (refs ready).
+  React.useLayoutEffect(() => {
+    syncLayerFlags(opacity.get())
+  }, [opacity, syncLayerFlags])
+
+  useMotionValueEvent(activeFloat, 'change', (v) => {
+    const d = Math.abs(index - v)
+
+    // Far cards: write idle pose once, then skip all transform work.
+    if (d >= FAR_DIST) {
+      if (!farIdleRef.current) {
+        farIdleRef.current = true
+        scale.set(reelScale(index, v, mode))
+        opacity.set(0)
+        y.set(reelY(index, v, mode))
+        zIndex.set(reelZIndex(index, v))
+        pointerEvents.set('none')
+        syncLayerFlags(0)
+        if (leadRef.current) {
+          leadRef.current = false
+          setShowWatermark(false)
+        }
+      }
+      return
+    }
+
+    farIdleRef.current = false
+    const o = reelOpacity(index, v, mode)
+    scale.set(reelScale(index, v, mode))
+    opacity.set(o)
+    y.set(reelY(index, v, mode))
+    zIndex.set(reelZIndex(index, v))
+    pointerEvents.set(o < COMPOSITE_OPACITY ? 'none' : 'auto')
+    syncLayerFlags(o)
+
+    // Exactly one lead watermark (avoids dual mounts when two cards share the dwell band).
+    const isLead = Math.round(v) === index
+    if (isLead !== leadRef.current) {
+      leadRef.current = isLead
+      setShowWatermark(isLead)
+    }
+  })
 
   return (
     <motion.article
-      className={`reel-card${card.locked ? ' is-locked' : ''}`}
+      ref={articleRef}
+      className={`reel-card${card.locked ? ' is-locked' : ''}${
+        reelOpacity(index, initialV, mode) < FILTER_IDLE_OPACITY ? ' is-filter-idle' : ''
+      }${
+        reelOpacity(index, initialV, mode) > COMPOSITE_OPACITY ? ' is-composited' : ''
+      }`}
       style={{
         scale,
         opacity,
         y,
         zIndex,
-        filter,
         pointerEvents,
         ['--accent' as string]: card.accent,
         backgroundColor: '#0a0a0a',
@@ -449,6 +519,7 @@ function ReelCard({
           card={card}
           onCta={onCta}
           titleStyle={mode === 'mobile' ? TITLE_MOBILE : TITLE_DESKTOP}
+          showWatermark={showWatermark}
         />
       </div>
     </motion.article>
@@ -633,13 +704,22 @@ export default function ServicesPage() {
           /* Opaque floor under gradient — blocks peek cards from bleeding through */
           background-color: #0a0a0a;
           isolation: isolate;
-          /* Promote transform/opacity layers only — not filter (filter will-change is costly) */
-          will-change: transform, opacity;
+          /* Default off — .is-composited promotes only the 2–3 visible cards */
+          will-change: auto;
           backface-visibility: hidden;
+        }
+        .reel-card.is-composited {
+          will-change: transform, opacity;
         }
         .reel-card.is-locked {
           border: 1px dashed rgba(255,255,255,0.2);
           box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          /* Static grayscale — not a per-frame MotionValue */
+          filter: grayscale(0.35);
+        }
+        /* Opacity < ~0.05: force filter none so Skia drops the filtered surface */
+        .reel-card.is-filter-idle {
+          filter: none;
         }
         .stack-inner {
           position: relative;
