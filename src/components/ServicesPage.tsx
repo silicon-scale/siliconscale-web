@@ -14,10 +14,12 @@ import {
   type MotionValue,
 } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { usePreferSimpleServicesReel } from '@/hooks/usePreferSimpleServicesReel'
 import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta } from '@/components/ui/SecondaryCta'
 import { ToolPhysicsPlayground } from '@/components/ToolPhysicsPlayground'
+import { REVEAL_EASE } from '@/lib/motion'
 
 type ServiceCard = {
   id: string
@@ -308,26 +310,21 @@ function ServiceCardBody({
   card,
   onCta,
   titleStyle,
-  showWatermark = true,
 }: {
   card: ServiceCard
   onCta: () => void
   titleStyle: React.CSSProperties
-  /** Large 4.4× watermark SVG — only mount on the lead card. */
-  showWatermark?: boolean
 }) {
   return (
     <>
-      {/* Ambient watermark — fills dead space below CTA; behind all copy */}
-      {showWatermark ? (
-        <div
-          className="card-watermark"
-          aria-hidden="true"
-          style={{ ['--wm-accent' as string]: card.accent }}
-        >
-          <div className="card-watermark-glyph">{card.icon(`${card.id}-wm`)}</div>
-        </div>
-      ) : null}
+      {/* Always mounted — lead visibility via .reel-card.is-lead opacity (no DOM churn) */}
+      <div
+        className="card-watermark"
+        aria-hidden="true"
+        style={{ ['--wm-accent' as string]: card.accent }}
+      >
+        <div className="card-watermark-glyph">{card.icon(`${card.id}-wm`)}</div>
+      </div>
 
       <div className="card-copy">
         <p className="service-pill">{card.eyebrow}</p>
@@ -376,12 +373,14 @@ type ReelMode = 'desktop' | 'mobile'
 
 /** Cards beyond this distance get a one-shot idle pose; no per-frame transform work. */
 const FAR_DIST = 1.5
-/** Lead dwell — matches prior opacity==1 band (also watermark mount). */
+/** Lead dwell — matches prior opacity==1 band. */
 const LEAD_DIST = 0.55
-/** Promote compositor layers only while meaningfully visible. */
-const COMPOSITE_OPACITY = 0.04
-/** Drop any filter surface (incl. locked grayscale) below this opacity. */
-const FILTER_IDLE_OPACITY = 0.05
+/**
+ * Layer promotion hysteresis (single class `.is-live`):
+ * promote above 0.08, demote below 0.03 — real gap, not 0.04/0.05 twin toggles.
+ */
+const LIVE_PROMOTE_OPACITY = 0.08
+const LIVE_DEMOTE_OPACITY = 0.03
 
 function reelScale(index: number, v: number, mode: ReelMode): number {
   if (mode === 'mobile') return 1
@@ -415,6 +414,11 @@ function reelZIndex(index: number, v: number): number {
   return Math.round(1000 - Math.abs(index - v) * 100)
 }
 
+function nextLiveState(currentlyLive: boolean, opacity: number): boolean {
+  if (currentlyLive) return opacity >= LIVE_DEMOTE_OPACITY
+  return opacity > LIVE_PROMOTE_OPACITY
+}
+
 function ReelCard({
   card,
   index,
@@ -431,7 +435,9 @@ function ReelCard({
   const articleRef = React.useRef<HTMLElement>(null)
   const farIdleRef = React.useRef(false)
   const leadRef = React.useRef(index === 0)
-  const [showWatermark, setShowWatermark] = React.useState(() => index === 0)
+  const liveRef = React.useRef(
+    reelOpacity(index, activeFloat.get(), mode) > LIVE_PROMOTE_OPACITY,
+  )
 
   const initialV = activeFloat.get()
   const scale = useMotionValue(reelScale(index, initialV, mode))
@@ -439,22 +445,34 @@ function ReelCard({
   const y = useMotionValue(reelY(index, initialV, mode))
   const zIndex = useMotionValue(reelZIndex(index, initialV))
   const pointerEvents = useMotionValue<'none' | 'auto'>(
-    reelOpacity(index, initialV, mode) < COMPOSITE_OPACITY ? 'none' : 'auto',
+    reelOpacity(index, initialV, mode) < LIVE_DEMOTE_OPACITY ? 'none' : 'auto',
   )
 
-  const syncLayerFlags = React.useCallback((o: number) => {
+  /** One class — `.is-live` — owns will-change + filter-idle policy. */
+  const syncLiveClass = React.useCallback((o: number) => {
     const el = articleRef.current
     if (!el) return
-    // will-change only while opacity > 0.04 (≤2–3 cards mid-scroll)
-    el.classList.toggle('is-composited', o > COMPOSITE_OPACITY)
-    // Force filter:none when nearly invisible so Skia drops filtered surfaces
-    el.classList.toggle('is-filter-idle', o < FILTER_IDLE_OPACITY)
+    const next = nextLiveState(liveRef.current, o)
+    if (next === liveRef.current && el.classList.contains('is-live') === next) return
+    liveRef.current = next
+    el.classList.toggle('is-live', next)
   }, [])
 
-  // Apply initial compositor flags after mount (refs ready).
+  const syncLeadClass = React.useCallback((isLead: boolean) => {
+    const el = articleRef.current
+    if (!el) return
+    if (isLead === leadRef.current && el.classList.contains('is-lead') === isLead) return
+    leadRef.current = isLead
+    el.classList.toggle('is-lead', isLead)
+  }, [])
+
   React.useLayoutEffect(() => {
-    syncLayerFlags(opacity.get())
-  }, [opacity, syncLayerFlags])
+    const el = articleRef.current
+    if (!el) return
+    el.classList.toggle('is-live', liveRef.current)
+    el.classList.toggle('is-lead', leadRef.current)
+    syncLiveClass(opacity.get())
+  }, [opacity, syncLiveClass])
 
   useMotionValueEvent(activeFloat, 'change', (v) => {
     const d = Math.abs(index - v)
@@ -468,11 +486,8 @@ function ReelCard({
         y.set(reelY(index, v, mode))
         zIndex.set(reelZIndex(index, v))
         pointerEvents.set('none')
-        syncLayerFlags(0)
-        if (leadRef.current) {
-          leadRef.current = false
-          setShowWatermark(false)
-        }
+        syncLiveClass(0)
+        syncLeadClass(false)
       }
       return
     }
@@ -483,25 +498,20 @@ function ReelCard({
     opacity.set(o)
     y.set(reelY(index, v, mode))
     zIndex.set(reelZIndex(index, v))
-    pointerEvents.set(o < COMPOSITE_OPACITY ? 'none' : 'auto')
-    syncLayerFlags(o)
-
-    // Exactly one lead watermark (avoids dual mounts when two cards share the dwell band).
-    const isLead = Math.round(v) === index
-    if (isLead !== leadRef.current) {
-      leadRef.current = isLead
-      setShowWatermark(isLead)
-    }
+    pointerEvents.set(o < LIVE_DEMOTE_OPACITY ? 'none' : 'auto')
+    syncLiveClass(o)
+    syncLeadClass(Math.round(v) === index)
   })
+
+  const initialLive = liveRef.current
+  const initialLead = leadRef.current
 
   return (
     <motion.article
       ref={articleRef}
       className={`reel-card${card.locked ? ' is-locked' : ''}${
-        reelOpacity(index, initialV, mode) < FILTER_IDLE_OPACITY ? ' is-filter-idle' : ''
-      }${
-        reelOpacity(index, initialV, mode) > COMPOSITE_OPACITY ? ' is-composited' : ''
-      }`}
+        initialLive ? ' is-live' : ''
+      }${initialLead ? ' is-lead' : ''}`}
       style={{
         scale,
         opacity,
@@ -519,7 +529,6 @@ function ReelCard({
           card={card}
           onCta={onCta}
           titleStyle={mode === 'mobile' ? TITLE_MOBILE : TITLE_DESKTOP}
-          showWatermark={showWatermark}
         />
       </div>
     </motion.article>
@@ -619,7 +628,7 @@ function StaticServiceList({
         <article
           key={card.id}
           id={card.id}
-          className={`reel-static-card${card.locked ? ' is-locked' : ''}`}
+          className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
           style={{
             ['--accent' as string]: card.accent,
             backgroundColor: '#0a0a0a',
@@ -635,11 +644,51 @@ function StaticServiceList({
   )
 }
 
+/** Document-flow cards — no sticky runway, no per-frame scroll physics. */
+function ScrollRevealServiceList({
+  cards,
+  onCta,
+}: {
+  cards: ServiceCard[]
+  onCta: () => void
+}) {
+  return (
+    <div className="reel-static" data-services-layout="simple">
+      {cards.map((card, i) => (
+        <motion.article
+          key={card.id}
+          id={card.id}
+          className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
+          style={{
+            ['--accent' as string]: card.accent,
+            backgroundColor: '#0a0a0a',
+            backgroundImage: card.bg,
+          }}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.22, margin: '0px 0px -8% 0px' }}
+          transition={{
+            duration: 0.55,
+            ease: REVEAL_EASE,
+            delay: Math.min(i * 0.045, 0.18),
+          }}
+          layout={false}
+        >
+          <div className="stack-inner">
+            <ServiceCardBody card={card} onCta={onCta} titleStyle={TITLE_MOBILE} />
+          </div>
+        </motion.article>
+      ))}
+    </div>
+  )
+}
+
 export default function ServicesPage() {
   const navigate = useNavigate()
   const cards = SERVICE_CARDS
   const isMobile = useIsMobile()
   const prefersReducedMotion = useReducedMotion()
+  const preferSimpleReel = usePreferSimpleServicesReel()
   const { mountStage } = useReveal()
   const [showBackground, setShowBackground] = useState(false)
   useEffect(() => {
@@ -655,10 +704,17 @@ export default function ServicesPage() {
   const onCta = useCallback(() => navigate('/contact'), [navigate])
   const reelMode: ReelMode = isMobile ? 'mobile' : 'desktop'
 
+  const servicesLayout = prefersReducedMotion
+    ? 'static'
+    : preferSimpleReel
+      ? 'simple'
+      : 'reel'
+
   return (
     <section
       className="relative min-h-screen bg-page text-white"
       aria-labelledby="services-heading"
+      data-services-capability={servicesLayout}
     >
       <style>{`
         .services-shell {
@@ -704,21 +760,24 @@ export default function ServicesPage() {
           /* Opaque floor under gradient — blocks peek cards from bleeding through */
           background-color: #0a0a0a;
           isolation: isolate;
-          /* Default off — .is-composited promotes only the 2–3 visible cards */
+          /* Default off — single .is-live class owns will-change + filter policy */
           will-change: auto;
           backface-visibility: hidden;
         }
-        .reel-card.is-composited {
+        .reel-card.is-live {
           will-change: transform, opacity;
         }
-        .reel-card.is-locked {
+        .reel-card.is-locked.is-live {
           border: 1px dashed rgba(255,255,255,0.2);
           box-shadow: 0 24px 60px rgba(0,0,0,0.45);
-          /* Static grayscale — not a per-frame MotionValue */
           filter: grayscale(0.35);
         }
-        /* Opacity < ~0.05: force filter none so Skia drops the filtered surface */
-        .reel-card.is-filter-idle {
+        .reel-card.is-locked:not(.is-live) {
+          border: 1px dashed rgba(255,255,255,0.2);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          filter: none;
+        }
+        .reel-card:not(.is-live) {
           filter: none;
         }
         .stack-inner {
@@ -748,6 +807,14 @@ export default function ServicesPage() {
           display: grid;
           place-items: center;
           color: var(--wm-accent);
+          /* Always in DOM — only lead card paints it */
+          opacity: 0;
+          visibility: hidden;
+        }
+        .reel-card.is-lead .card-watermark,
+        .reel-static-card.is-lead .card-watermark {
+          opacity: 1;
+          visibility: visible;
         }
         .card-watermark::before {
           content: '';
@@ -939,8 +1006,10 @@ export default function ServicesPage() {
           </p>
         </header>
 
-        {prefersReducedMotion ? (
+        {servicesLayout === 'static' ? (
           <StaticServiceList cards={cards} onCta={onCta} />
+        ) : servicesLayout === 'simple' ? (
+          <ScrollRevealServiceList cards={cards} onCta={onCta} />
         ) : (
           <ServiceCardReel cards={cards} mode={reelMode} onCta={onCta} />
         )}
