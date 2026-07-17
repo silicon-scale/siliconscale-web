@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { memo, useCallback, useRef, useEffect } from 'react'
+import { memo, useCallback, useRef, useEffect, useState, type TransitionEvent } from 'react'
 import { MagneticButton } from './ui/MagneticButton'
 import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
@@ -10,38 +10,46 @@ import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 import { trackEvent } from '@/utils/analytics'
-import { REVEAL_EASE } from '@/lib/motion'
+import { ENTRANCE_SETTLE_MS } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 
-const HERO_DURATION = 0.75
-
-const heroContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.14 },
+const PULSE_DOTS = [
+  {
+    style: { top: '30%', left: '26%' },
+    opacity: [0.4, 1, 0.4] as number[],
+    scale: [1, 1.9, 1] as number[],
+    duration: 5,
+    delay: 0.6,
   },
-} as const
-
-const heroItemHidden = {
-  opacity: 0,
-  y: 80,
-  z: 0,
-} as const
-
-const heroItemVisible = {
-  opacity: 1,
-  y: 0,
-  z: 0,
-  transition: {
-    duration: HERO_DURATION,
-    ease: REVEAL_EASE,
+  {
+    style: { top: '45%', left: '60%' },
+    opacity: [0.35, 0.95, 0.35] as number[],
+    scale: [1, 1.7, 1] as number[],
+    duration: 6.2,
+    delay: 1.4,
   },
-} as const
+  {
+    style: { top: '62%', left: '34%' },
+    opacity: [0.4, 1, 0.4] as number[],
+    scale: [1, 1.8, 1] as number[],
+    duration: 7,
+    delay: 0.9,
+  },
+  {
+    style: { top: '52%', right: '20%' },
+    opacity: [0.45, 1, 0.45] as number[],
+    scale: [1, 2, 1] as number[],
+    duration: 5.8,
+    delay: 1.8,
+  },
+] as const
 
-const GPU_LAYER_STYLE = {
-  transform: 'translateZ(0)',
-  backfaceVisibility: 'hidden' as const,
-} as const
+function clearWillChange(e: TransitionEvent<HTMLElement>) {
+  if (e.target !== e.currentTarget) return
+  if (e.propertyName !== 'transform' && e.propertyName !== 'opacity') return
+  e.currentTarget.style.willChange = 'auto'
+  e.currentTarget.classList.remove('is-animating')
+}
 
 function HeroSectionComponent() {
   const navigate = useNavigate()
@@ -49,11 +57,46 @@ function HeroSectionComponent() {
   const prefersReducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const hasRevealedRef = useRef(false)
+  const [ambientReady, setAmbientReady] = useState(false)
+  const [revealClassOn, setRevealClassOn] = useState(false)
+
   useEffect(() => {
     if (revealStarted) hasRevealedRef.current = true
   }, [revealStarted])
-  const shouldReveal = hasRevealedRef.current || revealStarted || prefersReducedMotion
+
+  const shouldReveal = hasRevealedRef.current || revealStarted || !!prefersReducedMotion
   const allowCanvasText = mountStage >= 2
+
+  // Double-rAF so the "hidden" styles paint before .is-revealed toggles (CSS transition).
+  useEffect(() => {
+    if (!shouldReveal) {
+      setRevealClassOn(false)
+      return
+    }
+    if (prefersReducedMotion) {
+      setRevealClassOn(true)
+      return
+    }
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setRevealClassOn(true))
+    })
+    return () => cancelAnimationFrame(id)
+  }, [shouldReveal, prefersReducedMotion])
+
+  // Ambient loops start after entrance settles.
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setAmbientReady(false)
+      return
+    }
+    if (!shouldReveal) {
+      setAmbientReady(false)
+      return
+    }
+    const t = window.setTimeout(() => setAmbientReady(true), ENTRANCE_SETTLE_MS)
+    return () => clearTimeout(t)
+  }, [shouldReveal, prefersReducedMotion])
+
   const goToContact = useCallback(() => {
     trackEvent('cta_click', { location: 'hero' })
     navigate('/contact')
@@ -63,13 +106,23 @@ function HeroSectionComponent() {
     navigate('/work')
   }, [navigate])
 
+  const itemClass = (index: number, extra = '') =>
+    [
+      'reveal-item',
+      `reveal-item--${index}`,
+      extra,
+      revealClassOn ? 'is-revealed' : '',
+      revealClassOn && !prefersReducedMotion ? 'is-animating' : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
+
   return (
     <section
       className="relative min-h-screen w-full overflow-hidden bg-page"
       aria-label="Hero"
       style={{ contain: 'layout paint' }}
     >
-      {/* Grid background */}
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-40"
         aria-hidden
@@ -82,73 +135,51 @@ function HeroSectionComponent() {
         }}
       />
 
-      {/* Subtle (but visible) glowing grid points at some tile intersections */}
       <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-        {/* a handful of static anchors */}
-        <div className="absolute top-[22%] left-[18%] h-1.5 w-1.5 rounded-full bg-white/35 blur-[3px]" />
-        <div className="absolute top-[38%] left-[42%] h-1.5 w-1.5 rounded-full bg-white/30 blur-[3px]" />
-        <div className="absolute top-[55%] right-[26%] h-1.5 w-1.5 rounded-full bg-white/30 blur-[3px]" />
+        <div className="hero-glow-dot hero-glow-dot--35" style={{ top: '22%', left: '18%' }} />
+        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '38%', left: '42%' }} />
+        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '55%', right: '26%' }} />
 
-        {/* only some intersections glow/pulse */}
-        {!prefersReducedMotion ? (
-          <>
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '30%', left: '26%' }}
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.9, 1] }}
-              transition={{ duration: 5, repeat: Infinity, repeatType: 'mirror', delay: 0.6 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '45%', left: '60%' }}
-              animate={{ opacity: [0.35, 0.95, 0.35], scale: [1, 1.7, 1] }}
-              transition={{ duration: 6.2, repeat: Infinity, repeatType: 'mirror', delay: 1.4 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '62%', left: '34%' }}
-              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.8, 1] }}
-              transition={{ duration: 7, repeat: Infinity, repeatType: 'mirror', delay: 0.9 }}
-            />
-            <motion.div
-              className="absolute h-1.5 w-1.5 rounded-full bg-white/90 blur-[4px]"
-              style={{ top: '52%', right: '20%' }}
-              animate={{ opacity: [0.45, 1, 0.45], scale: [1, 2, 1] }}
-              transition={{ duration: 5.8, repeat: Infinity, repeatType: 'mirror', delay: 1.8 }}
-            />
-          </>
-        ) : null}
+        {!prefersReducedMotion
+          ? PULSE_DOTS.map((dot, i) => (
+              <motion.div
+                key={i}
+                className="hero-glow-dot hero-glow-dot--pulse"
+                style={dot.style}
+                initial={false}
+                animate={
+                  ambientReady
+                    ? { opacity: [...dot.opacity], scale: [...dot.scale] }
+                    : { opacity: dot.opacity[0], scale: 1 }
+                }
+                transition={
+                  ambientReady
+                    ? {
+                        duration: dot.duration,
+                        repeat: Infinity,
+                        repeatType: 'mirror',
+                        delay: dot.delay,
+                      }
+                    : { duration: 0 }
+                }
+              />
+            ))
+          : null}
       </div>
 
-      {/* Spotlight beams (SVG-based, responsive) */}
-      <SpotlightBeams />
+      <SpotlightBeams loopActive={ambientReady} />
 
-      {/* Hero content: GPU-only — translate3d(0, 80px, 0) + opacity, 0.75s, stagger 0.14 */}
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
-        <motion.div
-          className="mx-auto max-w-4xl text-center"
-          variants={heroContainer}
-          initial="hidden"
-          animate={shouldReveal ? 'visible' : 'hidden'}
-          aria-hidden={!shouldReveal}
-          layout={false}
-        >
-          <motion.h1
-            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
-            style={{
-              ...GPU_LAYER_STYLE,
-              // Smaller on mobile while keeping desktop impact
-              fontSize: 'clamp(2.15rem, 7.2vw, 4.8rem)',
-              textWrap: 'balance',
-              textShadow: '0 0 20px rgba(255,255,255,0.15), 0 0 40px rgba(255,255,255,0.10)',
-            }}
-            className="mt-6 font-black leading-[1.02] tracking-tight text-white"
-            layout={false}
+        <div className="mx-auto max-w-4xl text-center" aria-hidden={!shouldReveal}>
+          <h1
+            className={itemClass(0, 'reveal-h1 mt-6 font-black leading-[1.02] tracking-tight text-white')}
+            style={{ fontSize: 'clamp(2.15rem, 7.2vw, 4.8rem)', textWrap: 'balance' }}
+            onTransitionEnd={clearWillChange}
           >
             <span className="block">
               We Build the{" "}
               {isMobile ? (
-                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
                   Systems
                 </span>
               ) : allowCanvasText ? (
@@ -156,12 +187,12 @@ function HeroSectionComponent() {
                   text="Systems"
                   backgroundClassName="bg-brand-gold"
                   colors={[
-                    "rgba(255,255,255,0.75)",
-                    "rgba(255,246,230,0.65)",
-                    "rgba(255,232,190,0.55)",
+                    'rgba(255,255,255,0.75)',
+                    'rgba(255,246,230,0.65)',
+                    'rgba(255,232,190,0.55)',
                     brandGoldAlpha(0.75),
                     brandGoldAlpha(0.45),
-                    "rgba(255,255,255,0.35)",
+                    'rgba(255,255,255,0.35)',
                   ]}
                   lineGap={5}
                   animationDuration={16}
@@ -170,7 +201,7 @@ function HeroSectionComponent() {
                   className="align-baseline"
                 />
               ) : (
-                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
                   Systems
                 </span>
               )}
@@ -178,7 +209,7 @@ function HeroSectionComponent() {
             <span className="block">
               That{" "}
               {isMobile ? (
-                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
                   Grow
                 </span>
               ) : allowCanvasText ? (
@@ -186,12 +217,12 @@ function HeroSectionComponent() {
                   text="Grow"
                   backgroundClassName="bg-brand-gold"
                   colors={[
-                    "rgba(255,255,255,0.75)",
-                    "rgba(255,246,230,0.65)",
-                    "rgba(255,232,190,0.55)",
+                    'rgba(255,255,255,0.75)',
+                    'rgba(255,246,230,0.65)',
+                    'rgba(255,232,190,0.55)',
                     brandGoldAlpha(0.75),
                     brandGoldAlpha(0.45),
-                    "rgba(255,255,255,0.35)",
+                    'rgba(255,255,255,0.35)',
                   ]}
                   lineGap={5}
                   animationDuration={16}
@@ -200,35 +231,32 @@ function HeroSectionComponent() {
                   className="align-baseline"
                 />
               ) : (
-                <span className="align-baseline" style={{ color: "var(--brand-gold)" }}>
+                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
                   Grow
                 </span>
               )}{" "}
               Your Business
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
-            style={GPU_LAYER_STYLE}
-            className="mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto"
-            layout={false}
+          <p
+            className={itemClass(1, 'mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto')}
+            onTransitionEnd={clearWillChange}
           >
             Custom software, headless Shopify stores, and AI agents — built to save you hours every week
             and make your business more money, not just look better online.
-          </motion.p>
+          </p>
 
-          <motion.div
-            variants={{ hidden: heroItemHidden, visible: heroItemVisible }}
-            style={GPU_LAYER_STYLE}
-            className="mt-10 flex flex-col items-center gap-4"
-            layout={false}
+          <div
+            className={itemClass(2, 'mt-10 flex flex-col items-center gap-4')}
+            onTransitionEnd={clearWillChange}
           >
             <div className="flex flex-wrap justify-center gap-4">
               <HoverBorderGradient
                 onClick={goToContact}
                 containerClassName="rounded-full"
                 as="button"
+                animateActive={ambientReady}
                 className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
                 Start Your Project
@@ -243,8 +271,8 @@ function HeroSectionComponent() {
             <p className="mt-6 text-sm text-white/55">
               Trusted by founders who needed it built right the first time.
             </p>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   )

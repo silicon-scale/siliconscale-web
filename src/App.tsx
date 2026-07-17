@@ -12,7 +12,7 @@ import { Testimonials } from "./components/Testimonials"
 import FinalCTA from "./components/FinalCTA"
 import { Footer } from "./components/Footer"
 import { IntroLoader } from "./components/IntroLoader"
-import { RevealProvider } from "./context/RevealContext"
+import { RevealProvider, useReveal } from "./context/RevealContext"
 import { trackPageView } from "./utils/analytics"
 
 import About from "./components/About"
@@ -25,19 +25,74 @@ import ServicesPage from "./components/ServicesPage"
 import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
 
+function scheduleIdle(cb: () => void, timeout = 400): () => void {
+  const ric = (window as Window & {
+    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+    cancelIdleCallback?: (id: number) => void
+  }).requestIdleCallback
+  if (ric) {
+    const id = ric(cb, { timeout })
+    return () =>
+      (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback?.(id)
+  }
+  const t = window.setTimeout(cb, 100)
+  return () => clearTimeout(t)
+}
+
 const Home = memo(function Home() {
+  const { mountStage } = useReveal()
+  const [belowFold, setBelowFold] = useState(false)
+
+  useEffect(() => {
+    if (mountStage < 2) return
+    return scheduleIdle(() => setBelowFold(true), 350)
+  }, [mountStage])
+
   return (
     <>
       <HeroSection />
-      <AboutSection />
-      <Highlights />
-      <Services />
-      <HowWeDo />
-      <Testimonials />
-      <FinalCTA />
+      {belowFold ? (
+        <>
+          <div className="cv-auto">
+            <AboutSection />
+          </div>
+          <div className="cv-auto">
+            <Highlights />
+          </div>
+          <div className="cv-auto">
+            <Services />
+          </div>
+          <div className="cv-auto">
+            <HowWeDo />
+          </div>
+          <div className="cv-auto">
+            <Testimonials />
+          </div>
+          <div className="cv-auto">
+            <FinalCTA />
+          </div>
+        </>
+      ) : null}
     </>
   )
 })
+
+function DeferredFooter() {
+  const { mountStage } = useReveal()
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    if (mountStage < 2) return
+    return scheduleIdle(() => setReady(true), 500)
+  }, [mountStage])
+
+  if (!ready) return null
+  return (
+    <div className="cv-auto-footer">
+      <Footer />
+    </div>
+  )
+}
 
 function AppContent() {
   const location = useLocation()
@@ -100,7 +155,7 @@ function AppContent() {
         </AnimatePresence>
       </main>
 
-      <Footer />
+      <DeferredFooter />
     </div>
   )
 }
@@ -110,18 +165,22 @@ export default function App() {
   const [loaderVisible, setLoaderVisible] = useState(true)
   const [mountStage, setMountStage] = useState<0 | 1 | 2 | 3>(0)
 
+  // Stage 1 = loader exit finished & unmounted. Promote to reveal (2) only after
+  // two animation frames so the hero entrance never overlaps the loader zoom.
   useEffect(() => {
     if (mountStage !== 1) return
-    const raf1 = requestAnimationFrame(() => setMountStage(2))
-    let t: number | undefined
-    let raf2: number | undefined
-    raf2 = requestAnimationFrame(() => {
-      t = window.setTimeout(() => setMountStage(3), 60)
+    let raf2 = 0
+    let stage3Timer = 0
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        setMountStage(2)
+        stage3Timer = window.setTimeout(() => setMountStage(3), 60)
+      })
     })
     return () => {
       cancelAnimationFrame(raf1)
-      if (raf2) cancelAnimationFrame(raf2)
-      if (t) clearTimeout(t)
+      cancelAnimationFrame(raf2)
+      if (stage3Timer) clearTimeout(stage3Timer)
     }
   }, [mountStage])
 
@@ -131,10 +190,10 @@ export default function App() {
         <IntroLoader
           visible={loaderVisible}
           onExitComplete={() => {
-            // Keep mounted to avoid a repaint spike; fade it out and unmount shortly after.
-            setMountStage(1)
+            // Unmount loader first — then stage 1 → (double rAF) → reveal stage 2.
             setLoaderVisible(false)
-            window.setTimeout(() => setLoaderMounted(false), 350)
+            setLoaderMounted(false)
+            setMountStage(1)
           }}
         />
       )}

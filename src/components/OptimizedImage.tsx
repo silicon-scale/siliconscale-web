@@ -14,6 +14,11 @@ export interface OptimizedImageProps {
   style?: React.CSSProperties
   /** Fallback image URL if src fails to load */
   fallback?: string
+  /**
+   * Fill a positioned parent (e.g. aspect-ratio frame). Omits intrinsic size attrs
+   * that fight absolute stretch / object-fit:cover on mobile.
+   */
+  fill?: boolean
 }
 
 const DEFAULT_FALLBACK =
@@ -32,6 +37,7 @@ function OptimizedImageComponent({
   fetchPriority,
   style,
   fallback = DEFAULT_FALLBACK,
+  fill = false,
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState(src)
   const handleError = useCallback(() => {
@@ -42,15 +48,28 @@ function OptimizedImageComponent({
     <img
       src={imgSrc}
       alt={alt}
-      width={width}
-      height={height}
+      width={fill ? undefined : width}
+      height={fill ? undefined : height}
       loading={loading}
       decoding={decoding}
       fetchPriority={fetchPriority}
       srcSet={srcSet}
       sizes={sizes}
       className={className}
-      style={{ aspectRatio: `${width} / ${height}`, ...style }}
+      style={
+        fill
+          ? {
+              display: 'block',
+              width: '100%',
+              height: '100%',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              aspectRatio: 'unset',
+              objectFit: 'cover',
+              ...style,
+            }
+          : { aspectRatio: `${width} / ${height}`, ...style }
+      }
       onError={handleError}
     />
   )

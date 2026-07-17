@@ -537,3 +537,190 @@ html {
   color: rgba(255, 255, 255, 0.92);
 }
 
+/*
+ * FounderCard photo fill: abspos replaced <img> keeps intrinsic height and
+ * ignores stretch — letterboxing the 4/5 frame so the caption can collide with
+ * the dark photo area on mobile. Stretch a non-replaced slot; force the img
+ * to fill it (beats Tailwind preflight img { max-width:100%; height:auto }).
+ */
+.founder-photo-slot {
+  position: absolute;
+  inset: 0;
+}
+.founder-photo-slot img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  object-fit: cover !important;
+}
+
+/*
+ * Hero glow dots — soft falloff via radial-gradient (no filter:blur).
+ * Sized/offset to match prior 6px disc + blur-[3px]/blur-[4px] footprint.
+ */
+.hero-glow-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -6px 0 0 -6px;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.hero-glow-dot--35 {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.2) 28%,
+    rgba(255, 255, 255, 0.06) 52%,
+    transparent 72%
+  );
+}
+.hero-glow-dot--30 {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.16) 28%,
+    rgba(255, 255, 255, 0.05) 52%,
+    transparent 72%
+  );
+}
+.hero-glow-dot--pulse {
+  width: 22px;
+  height: 22px;
+  margin: -8px 0 0 -8px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.55) 26%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 72%
+  );
+}
+
+/* Skip layout/paint for off-screen home sections (pair with intrinsic size to limit CLS). */
+.cv-auto {
+  content-visibility: auto;
+  /* Tall enough for About/Highlights/Services/HowWeDo; `auto` remembers last size after first paint */
+  contain-intrinsic-size: auto 1200px;
+}
+.cv-auto-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 980px;
+}
+
+/*
+ * Hero / Nav entrance — compositor-only (transform + opacity).
+ * Timing mirrors src/lib/motion.ts (HERO_REVEAL_DURATION_S, HERO_STAGGER_S,
+ * NAV_REVEAL_DURATION_S, REVEAL_EASE_CSS). Driven by .is-revealed class toggle.
+ */
+.reveal-item {
+  opacity: 0;
+  transform: translate3d(0, 80px, 0);
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+}
+@media (max-width: 767px) {
+  .reveal-item {
+    transform: translate3d(0, 42px, 0);
+  }
+}
+.reveal-item--0 {
+  transition-delay: 0s;
+}
+.reveal-item--1 {
+  transition-delay: 0.14s;
+}
+.reveal-item--2 {
+  transition-delay: 0.28s;
+}
+.reveal-item.is-animating {
+  will-change: transform, opacity;
+}
+.reveal-item.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+/* H1 glow only after its own translate settles (no shadow paint mid-tween). */
+.reveal-h1 {
+  text-shadow: none;
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    text-shadow 0.35s ease;
+}
+.reveal-h1.is-revealed {
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 0.15),
+    0 0 40px rgba(255, 255, 255, 0.1);
+  transition-delay: 0s, 0s, 0.75s;
+}
+
+.nav-reveal {
+  opacity: 0;
+  transform: translate3d(0, -70px, 0);
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+}
+.nav-reveal.is-animating {
+  will-change: transform, opacity;
+}
+.nav-reveal.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.nav-link-reveal {
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+}
+.nav-link-reveal.is-animating {
+  will-change: transform, opacity;
+}
+.nav-link-reveal.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.nav-link-reveal--0 {
+  transition-delay: 0s;
+}
+.nav-link-reveal--1 {
+  transition-delay: 0.05s;
+}
+.nav-link-reveal--2 {
+  transition-delay: 0.1s;
+}
+.nav-link-reveal--3 {
+  transition-delay: 0.15s;
+}
+
+/* Below md, desktop link row is display:none — skip any entrance work. */
+@media (max-width: 767px) {
+  .nav-link-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item,
+  .reveal-h1,
+  .nav-reveal,
+  .nav-link-reveal {
+    transition: none !important;
+    transition-delay: 0s !important;
+  }
+}
+

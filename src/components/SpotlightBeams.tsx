@@ -35,7 +35,90 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t
 }
 
-function SpotlightBeamsComponent() {
+// Deterministic seed-like function for spreading particles
+function pseudoVal(seed: number): number {
+  return ((seed * 9301 + 49297) % 233280) / 233280
+}
+
+// Generate many tiny dust specks spread across both beams
+// Left beam approximate area: x 420-930, y 0-650
+// Right beam approximate area: x 1090-1500, y 0-650
+type Speck = {
+  x: number
+  y: number
+  r: number
+  dx: number
+  dy: number
+  duration: number
+  delay: number
+  brightness: number
+}
+
+const DUST_SPECKS: Speck[] = (() => {
+  const specks: Speck[] = []
+  // Left beam specks - spread throughout the cone shape
+  // At y=0, beam is narrow around x=420. At y=650, beam is wide around x=670-930
+  for (let i = 0; i < 70; i++) {
+    const v1 = pseudoVal(i * 7 + 1)
+    const v2 = pseudoVal(i * 13 + 3)
+    const v3 = pseudoVal(i * 19 + 7)
+    const v4 = pseudoVal(i * 23 + 11)
+    const v5 = pseudoVal(i * 31 + 17)
+    const v6 = pseudoVal(i * 37 + 23)
+
+    // Small per-speck vertical jitter so no row of dust lines up perfectly
+    const yPos = v1 * 640 + 10 + (v2 - 0.5) * 8 // 10–650 with ±4px jitter
+    // Beam widens as y increases: interpolate x range
+    const yRatio = yPos / 650
+    const centerX = lerp(420, 700, yRatio)
+    const halfWidth = lerp(26, 130, yRatio)
+    const xPos = centerX + (v2 - 0.5) * 2 * halfWidth
+
+    specks.push({
+      x: xPos,
+      y: yPos,
+      // Smaller specks for a fine dust feel
+      r: 0.45 + v3 * 0.45, // 0.45–0.9
+      dx: (v4 - 0.5) * 24,
+      dy: -16 - v5 * 48,
+      duration: 7 + v6 * 9,
+      delay: v1 * 6,
+      // Still bright enough to read against the beam
+      brightness: 0.55 + v3 * 0.45,
+    })
+  }
+
+  // Right beam specks
+  for (let i = 0; i < 70; i++) {
+    const v1 = pseudoVal(i * 11 + 41)
+    const v2 = pseudoVal(i * 17 + 43)
+    const v3 = pseudoVal(i * 23 + 47)
+    const v4 = pseudoVal(i * 29 + 53)
+    const v5 = pseudoVal(i * 31 + 59)
+    const v6 = pseudoVal(i * 37 + 61)
+
+    const yPos = v1 * 640 + 10 + (v2 - 0.5) * 8
+    const yRatio = yPos / 650
+    const centerX = lerp(1500, 1120, yRatio)
+    const halfWidth = lerp(26, 130, yRatio)
+    const xPos = centerX + (v2 - 0.5) * 2 * halfWidth
+
+    specks.push({
+      x: xPos,
+      y: yPos,
+      r: 0.45 + v3 * 0.45,
+      dx: (v4 - 0.5) * 24,
+      dy: -16 - v5 * 48,
+      duration: 7 + v6 * 9,
+      delay: v1 * 6,
+      brightness: 0.55 + v3 * 0.45,
+    })
+  }
+
+  return specks
+})()
+
+function SpotlightBeamsComponent({ loopActive = true }: { loopActive?: boolean }) {
   const prefersReducedMotion = useReducedMotion()
   const [vp, setVp] = useState<ViewportSize>(() => {
     if (typeof window === 'undefined') return { width: BASE_W, height: BASE_H }
@@ -94,12 +177,23 @@ function SpotlightBeamsComponent() {
         <stop offset="35%" stopColor="white" stopOpacity="0.10" />
         <stop offset="100%" stopColor="white" stopOpacity="0" />
       </linearGradient>
+      {/* Tiny subtle glow — just enough to not be a hard dot */}
+      <filter id="dustTinyGlow" x="-250%" y="-250%" width="600%" height="600%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
     </defs>
   )
 
+  // Particles removed to keep beams clean and minimal
+  const particles = null
+
   const cls = 'pointer-events-none absolute inset-0 z-[1] w-full h-full overflow-hidden'
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || !loopActive) {
     return (
       <svg
         aria-hidden
@@ -107,10 +201,12 @@ function SpotlightBeamsComponent() {
         viewBox="0 0 1920 1080"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ opacity: 0.85 }}
       >
         {defs}
         <polygon points={leftPoints} fill={`url(#${BEAM_GRAD})`} />
         <polygon points={rightPoints} fill={`url(#${BEAM_GRAD})`} />
+        {particles}
       </svg>
     )
   }
@@ -122,7 +218,7 @@ function SpotlightBeamsComponent() {
       viewBox="0 0 1920 1080"
       preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 0.85 }}
       animate={{ opacity: [0.7, 1, 0.7] }}
       transition={{
         duration: 9,
@@ -134,6 +230,7 @@ function SpotlightBeamsComponent() {
       {defs}
       <polygon points={leftPoints} fill={`url(#${BEAM_GRAD})`} />
       <polygon points={rightPoints} fill={`url(#${BEAM_GRAD})`} />
+      {particles}
     </motion.svg>
   )
 }

@@ -6,16 +6,20 @@ import { ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import {
   motion,
+  useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
   type MotionValue,
 } from 'framer-motion'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { usePreferSimpleServicesReel } from '@/hooks/usePreferSimpleServicesReel'
 import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta } from '@/components/ui/SecondaryCta'
 import { ToolPhysicsPlayground } from '@/components/ToolPhysicsPlayground'
+import { REVEAL_EASE } from '@/lib/motion'
 
 type ServiceCard = {
   id: string
@@ -313,7 +317,7 @@ function ServiceCardBody({
 }) {
   return (
     <>
-      {/* Ambient watermark — fills dead space below CTA; behind all copy */}
+      {/* Always mounted — lead visibility via .reel-card.is-lead opacity (no DOM churn) */}
       <div
         className="card-watermark"
         aria-hidden="true"
@@ -367,8 +371,53 @@ function ServiceCardBody({
 
 type ReelMode = 'desktop' | 'mobile'
 
-/** Stepped peek blur — toggled, never interpolated. */
-const PEEK_BLUR = 'blur(3px)'
+/** Cards beyond this distance get a one-shot idle pose; no per-frame transform work. */
+const FAR_DIST = 1.5
+/** Lead dwell — matches prior opacity==1 band. */
+const LEAD_DIST = 0.55
+/**
+ * Layer promotion hysteresis (single class `.is-live`):
+ * promote above 0.08, demote below 0.03 — real gap, not 0.04/0.05 twin toggles.
+ */
+const LIVE_PROMOTE_OPACITY = 0.08
+const LIVE_DEMOTE_OPACITY = 0.03
+
+function reelScale(index: number, v: number, mode: ReelMode): number {
+  if (mode === 'mobile') return 1
+  const d = Math.abs(index - v)
+  if (d >= FAR_DIST) return 0.82
+  return 1 - Math.min(d, 1) * 0.15
+}
+
+function reelOpacity(index: number, v: number, mode: ReelMode): number {
+  const d = Math.abs(index - v)
+  // Lead card stays fully opaque across its dwell so peek siblings cannot show through.
+  if (d < LEAD_DIST) return 1
+  if (mode === 'mobile') {
+    if (d < 0.85) return 1 - (d - LEAD_DIST) / 0.3
+    return 0
+  }
+  if (d >= FAR_DIST) return 0
+  if (d <= 1) return 1 - ((d - LEAD_DIST) / 0.45) * 0.65 // 1 → 0.35
+  return 0.35 * (1 - (d - 1) / 0.5) // 0.35 → 0
+}
+
+function reelY(index: number, v: number, mode: ReelMode): number {
+  const d = index - v
+  if (mode === 'mobile') {
+    return Math.max(-1, Math.min(1, d)) * 72
+  }
+  return Math.max(-FAR_DIST, Math.min(FAR_DIST, d)) * 140
+}
+
+function reelZIndex(index: number, v: number): number {
+  return Math.round(1000 - Math.abs(index - v) * 100)
+}
+
+function nextLiveState(currentlyLive: boolean, opacity: number): boolean {
+  if (currentlyLive) return opacity >= LIVE_DEMOTE_OPACITY
+  return opacity > LIVE_PROMOTE_OPACITY
+}
 
 function ReelCard({
   card,
@@ -383,60 +432,91 @@ function ReelCard({
   mode: ReelMode
   onCta: () => void
 }) {
-  // All derived values are raw useTransform — 1:1 with scroll, no per-property springs.
-  const scale = useTransform(activeFloat, (v) => {
-    if (mode === 'mobile') return 1
-    const d = Math.abs(index - v)
-    if (d >= 1.5) return 0.82
-    return 1 - Math.min(d, 1) * 0.15
-  })
-
-  const opacity = useTransform(activeFloat, (v) => {
-    const d = Math.abs(index - v)
-    // Lead card stays fully opaque across its dwell so peek siblings cannot show through.
-    if (d < 0.55) return 1
-    if (mode === 'mobile') {
-      if (d < 0.85) return 1 - (d - 0.55) / 0.3
-      return 0
-    }
-    if (d >= 1.5) return 0
-    if (d <= 1) return 1 - ((d - 0.55) / 0.45) * 0.65 // 1 → 0.35
-    return 0.35 * (1 - (d - 1) / 0.5) // 0.35 → 0
-  })
-
-  const y = useTransform(activeFloat, (v) => {
-    const d = index - v
-    if (mode === 'mobile') {
-      return Math.max(-1, Math.min(1, d)) * 72
-    }
-    return Math.max(-1.5, Math.min(1.5, d)) * 140
-  })
-
-  // Closer cards always stack above — avoids z-ties during mid-transition.
-  const zIndex = useTransform(activeFloat, (v) =>
-    Math.round(1000 - Math.abs(index - v) * 100),
+  const articleRef = React.useRef<HTMLElement>(null)
+  const farIdleRef = React.useRef(false)
+  const leadRef = React.useRef(index === 0)
+  const liveRef = React.useRef(
+    reelOpacity(index, activeFloat.get(), mode) > LIVE_PROMOTE_OPACITY,
   )
 
-  // Locked = grayscale; peek = fixed blur. Never animate blur amount.
-  const filter = useTransform(activeFloat, (v) => {
+  const initialV = activeFloat.get()
+  const scale = useMotionValue(reelScale(index, initialV, mode))
+  const opacity = useMotionValue(reelOpacity(index, initialV, mode))
+  const y = useMotionValue(reelY(index, initialV, mode))
+  const zIndex = useMotionValue(reelZIndex(index, initialV))
+  const pointerEvents = useMotionValue<'none' | 'auto'>(
+    reelOpacity(index, initialV, mode) < LIVE_DEMOTE_OPACITY ? 'none' : 'auto',
+  )
+
+  /** One class — `.is-live` — owns will-change + filter-idle policy. */
+  const syncLiveClass = React.useCallback((o: number) => {
+    const el = articleRef.current
+    if (!el) return
+    const next = nextLiveState(liveRef.current, o)
+    if (next === liveRef.current && el.classList.contains('is-live') === next) return
+    liveRef.current = next
+    el.classList.toggle('is-live', next)
+  }, [])
+
+  const syncLeadClass = React.useCallback((isLead: boolean) => {
+    const el = articleRef.current
+    if (!el) return
+    if (isLead === leadRef.current && el.classList.contains('is-lead') === isLead) return
+    leadRef.current = isLead
+    el.classList.toggle('is-lead', isLead)
+  }, [])
+
+  React.useLayoutEffect(() => {
+    const el = articleRef.current
+    if (!el) return
+    el.classList.toggle('is-live', liveRef.current)
+    el.classList.toggle('is-lead', leadRef.current)
+    syncLiveClass(opacity.get())
+  }, [opacity, syncLiveClass])
+
+  useMotionValueEvent(activeFloat, 'change', (v) => {
     const d = Math.abs(index - v)
-    const parts: string[] = []
-    if (card.locked) parts.push('grayscale(0.35)')
-    if (mode !== 'mobile' && d >= 0.55) parts.push(PEEK_BLUR)
-    return parts.length ? parts.join(' ') : 'none'
+
+    // Far cards: write idle pose once, then skip all transform work.
+    if (d >= FAR_DIST) {
+      if (!farIdleRef.current) {
+        farIdleRef.current = true
+        scale.set(reelScale(index, v, mode))
+        opacity.set(0)
+        y.set(reelY(index, v, mode))
+        zIndex.set(reelZIndex(index, v))
+        pointerEvents.set('none')
+        syncLiveClass(0)
+        syncLeadClass(false)
+      }
+      return
+    }
+
+    farIdleRef.current = false
+    const o = reelOpacity(index, v, mode)
+    scale.set(reelScale(index, v, mode))
+    opacity.set(o)
+    y.set(reelY(index, v, mode))
+    zIndex.set(reelZIndex(index, v))
+    pointerEvents.set(o < LIVE_DEMOTE_OPACITY ? 'none' : 'auto')
+    syncLiveClass(o)
+    syncLeadClass(Math.round(v) === index)
   })
 
-  const pointerEvents = useTransform(opacity, (o) => (o < 0.04 ? 'none' : 'auto'))
+  const initialLive = liveRef.current
+  const initialLead = leadRef.current
 
   return (
     <motion.article
-      className={`reel-card${card.locked ? ' is-locked' : ''}`}
+      ref={articleRef}
+      className={`reel-card${card.locked ? ' is-locked' : ''}${
+        initialLive ? ' is-live' : ''
+      }${initialLead ? ' is-lead' : ''}`}
       style={{
         scale,
         opacity,
         y,
         zIndex,
-        filter,
         pointerEvents,
         ['--accent' as string]: card.accent,
         backgroundColor: '#0a0a0a',
@@ -548,7 +628,7 @@ function StaticServiceList({
         <article
           key={card.id}
           id={card.id}
-          className={`reel-static-card${card.locked ? ' is-locked' : ''}`}
+          className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
           style={{
             ['--accent' as string]: card.accent,
             backgroundColor: '#0a0a0a',
@@ -564,11 +644,51 @@ function StaticServiceList({
   )
 }
 
+/** Document-flow cards — no sticky runway, no per-frame scroll physics. */
+function ScrollRevealServiceList({
+  cards,
+  onCta,
+}: {
+  cards: ServiceCard[]
+  onCta: () => void
+}) {
+  return (
+    <div className="reel-static" data-services-layout="simple">
+      {cards.map((card, i) => (
+        <motion.article
+          key={card.id}
+          id={card.id}
+          className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
+          style={{
+            ['--accent' as string]: card.accent,
+            backgroundColor: '#0a0a0a',
+            backgroundImage: card.bg,
+          }}
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.22, margin: '0px 0px -8% 0px' }}
+          transition={{
+            duration: 0.55,
+            ease: REVEAL_EASE,
+            delay: Math.min(i * 0.045, 0.18),
+          }}
+          layout={false}
+        >
+          <div className="stack-inner">
+            <ServiceCardBody card={card} onCta={onCta} titleStyle={TITLE_MOBILE} />
+          </div>
+        </motion.article>
+      ))}
+    </div>
+  )
+}
+
 export default function ServicesPage() {
   const navigate = useNavigate()
   const cards = SERVICE_CARDS
   const isMobile = useIsMobile()
   const prefersReducedMotion = useReducedMotion()
+  const preferSimpleReel = usePreferSimpleServicesReel()
   const { mountStage } = useReveal()
   const [showBackground, setShowBackground] = useState(false)
   useEffect(() => {
@@ -584,10 +704,17 @@ export default function ServicesPage() {
   const onCta = useCallback(() => navigate('/contact'), [navigate])
   const reelMode: ReelMode = isMobile ? 'mobile' : 'desktop'
 
+  const servicesLayout = prefersReducedMotion
+    ? 'static'
+    : preferSimpleReel
+      ? 'simple'
+      : 'reel'
+
   return (
     <section
       className="relative min-h-screen bg-page text-white"
       aria-labelledby="services-heading"
+      data-services-capability={servicesLayout}
     >
       <style>{`
         .services-shell {
@@ -633,13 +760,25 @@ export default function ServicesPage() {
           /* Opaque floor under gradient — blocks peek cards from bleeding through */
           background-color: #0a0a0a;
           isolation: isolate;
-          /* Promote transform/opacity layers only — not filter (filter will-change is costly) */
-          will-change: transform, opacity;
+          /* Default off — single .is-live class owns will-change + filter policy */
+          will-change: auto;
           backface-visibility: hidden;
         }
-        .reel-card.is-locked {
+        .reel-card.is-live {
+          will-change: transform, opacity;
+        }
+        .reel-card.is-locked.is-live {
           border: 1px dashed rgba(255,255,255,0.2);
           box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          filter: grayscale(0.35);
+        }
+        .reel-card.is-locked:not(.is-live) {
+          border: 1px dashed rgba(255,255,255,0.2);
+          box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+          filter: none;
+        }
+        .reel-card:not(.is-live) {
+          filter: none;
         }
         .stack-inner {
           position: relative;
@@ -668,6 +807,14 @@ export default function ServicesPage() {
           display: grid;
           place-items: center;
           color: var(--wm-accent);
+          /* Always in DOM — only lead card paints it */
+          opacity: 0;
+          visibility: hidden;
+        }
+        .reel-card.is-lead .card-watermark,
+        .reel-static-card.is-lead .card-watermark {
+          opacity: 1;
+          visibility: visible;
         }
         .card-watermark::before {
           content: '';
@@ -859,8 +1006,10 @@ export default function ServicesPage() {
           </p>
         </header>
 
-        {prefersReducedMotion ? (
+        {servicesLayout === 'static' ? (
           <StaticServiceList cards={cards} onCta={onCta} />
+        ) : servicesLayout === 'simple' ? (
+          <ScrollRevealServiceList cards={cards} onCta={onCta} />
         ) : (
           <ServiceCardReel cards={cards} mode={reelMode} onCta={onCta} />
         )}
