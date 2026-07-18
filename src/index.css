@@ -659,6 +659,26 @@ html {
   }
 }
 
+/* One-shot settle pulse when a Highlights stat count completes. */
+@keyframes count-up-settle {
+  0% {
+    opacity: 0.88;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.count-up-settled {
+  animation: count-up-settle 150ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .count-up-settled {
+    animation: none;
+  }
+}
+
 /* Skip layout/paint for off-screen home sections (pair with intrinsic size to limit CLS). */
 .cv-auto {
   content-visibility: auto;

@@ -1,14 +1,20 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
+import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
+import { useSectionInView } from '@/hooks/useSectionInView'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 export function Services() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
   const sectionRef = useRef<HTMLElement>(null)
-  const navigate = useNavigate()
+  const inView = useSectionInView(sectionRef)
+
+  useEffect(() => {
+    setPerfDebugLoop('servicesTicker', inView ? 'active' : 'paused')
+  }, [inView])
 
   const services = [
     {
@@ -65,14 +71,6 @@ export function Services() {
   useEffect(() => {
     const t = setTimeout(() => setIsVisible(true), 200)
     return () => clearTimeout(t)
-  }, [])
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   return (
@@ -195,6 +193,11 @@ export function Services() {
           display: inline-flex;
           gap: 0;
           white-space: nowrap;
+          will-change: transform;
+        }
+        .marquee-track.is-offscreen {
+          animation-play-state: paused !important;
+          will-change: auto !important;
         }
         .stat-grid {
           display: grid;
@@ -241,57 +244,6 @@ export function Services() {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
-        .services-header {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: flex-end;
-          justify-content: space-between;
-          gap: 24px;
-        }
-        .services-header-cta {
-          text-align: right;
-          max-width: 320px;
-        }
-        @media (max-width: 768px) {
-          .services-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-          .services-header-cta {
-            align-self: flex-end;
-            text-align: right;
-            max-width: 100%;
-          }
-          .services-header-cta p {
-            text-align: left;
-          }
-        }
-        .cta-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          padding: 16px 32px;
-          border-radius: 999px;
-          background: #ffffff;
-          color: #111111;
-          font-size: 0.875rem;
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          text-decoration: none;
-          text-transform: uppercase;
-          transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-          cursor: pointer;
-          border: none;
-        }
-        .cta-btn:hover {
-          transform: translateY(-2px) scale(1.03);
-          box-shadow: 0 12px 40px rgba(255,255,255,0.2);
-        }
-        .cta-btn:active { transform: scale(0.98); }
-        .cta-btn:focus-visible {
-          outline: 2px solid var(--focus-ring);
-          outline-offset: 3px;
-        }
         .reveal { opacity: 0; }
         .reveal.visible { animation: reveal-up 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
       `}</style>
@@ -316,7 +268,7 @@ export function Services() {
         {/* ── MARQUEE TICKER ── */}
         <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', borderTop: '1px solid rgba(255,255,255,0.07)',
                       padding: '14px 0', overflow: 'hidden', marginBottom: '5rem' }}>
-          <div className="marquee-track">
+          <div className={`marquee-track${inView ? '' : ' is-offscreen'}`}>
             {[...Array(4)].map((_, i) => (
               <span key={i} style={{ display: 'inline-flex', gap: 0, alignItems: 'center' }}>
                 {['CUSTOM SYSTEMS', 'HEADLESS SHOPIFY', 'AI AGENTS', 'INTEGRATIONS', 'MAINTENANCE', 'DIGITAL SETUP'].map((s, j) => (
@@ -333,38 +285,58 @@ export function Services() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 64px)' }}>
 
           {/* ── HEADER ── */}
-          <div className={`reveal ${isVisible ? 'visible' : ''}`} style={{ marginBottom: '5rem' }}>
-            <div className="services-header">
-              <div>
-                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.3)',
-                             textTransform: 'uppercase', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ display: 'inline-block', width: '24px', height: '1px', background: 'rgba(255,255,255,0.3)' }} />
-                  What We Do
-                </p>
-                <h2
-                  style={{
-                    fontSize: 'clamp(2.4rem, 5vw, 4.2rem)',
-                    fontWeight: 900,
-                    color: '#ffffff',
-                    letterSpacing: '-0.04em',
-                    lineHeight: 1.05,
-                    margin: 0,
-                  }}
-                >
-                  Built for businesses that need it to actually work.
-                </h2>
-              </div>
-              <div className="services-header-cta">
-                <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                  Six ways we help you run and grow your business — plus one more coming soon.
-                </p>
-                <button className="cta-btn" onClick={() => navigate('/services')}>
-                  See all services
-                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-              </div>
+          <div className={`reveal ${isVisible ? 'visible' : ''}`} style={{ marginBottom: '2.5rem' }}>
+            <p
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                letterSpacing: '0.22em',
+                color: 'rgba(255,255,255,0.3)',
+                textTransform: 'uppercase',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '24px',
+                  height: '1px',
+                  background: 'rgba(255,255,255,0.3)',
+                }}
+              />
+              What We Do
+            </p>
+            <h2
+              style={{
+                fontSize: 'clamp(2.4rem, 5vw, 4.2rem)',
+                fontWeight: 900,
+                color: '#ffffff',
+                letterSpacing: '-0.04em',
+                lineHeight: 1.05,
+                margin: 0,
+              }}
+            >
+              Built for businesses that need it to actually work.
+            </h2>
+            <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
+              <p
+                style={{
+                  fontSize: '0.95rem',
+                  color: 'rgba(255,255,255,0.4)',
+                  lineHeight: 1.7,
+                  margin: 0,
+                  maxWidth: '520px',
+                }}
+              >
+                Six ways we help you run and grow your business — plus one more coming soon.
+              </p>
+              <SecondaryCta variant="textLink" to="/services">
+                Services
+                <ArrowRight className={SECTION_ARROW_ICON_CLASS} aria-hidden />
+              </SecondaryCta>
             </div>
           </div>
 

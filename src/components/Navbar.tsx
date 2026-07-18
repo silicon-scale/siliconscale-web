@@ -12,6 +12,7 @@ import { MOBILE_BREAKPOINT } from '@/lib/breakpoints'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
+import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 
 /** Mobile menu open/close — transform + opacity only; keep short but eased (no blur). */
 const MENU_DURATION = 0.22
@@ -30,6 +31,7 @@ function clearWillChange(e: TransitionEvent<HTMLElement>) {
 export function Navbar() {
   const { revealStarted } = useReveal()
   const prefersReducedMotion = useReducedMotion()
+  const preferReducedEffects = usePreferReducedEffects()
   const [isMobile, setIsMobile] = useState(
     () => (typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false),
   )
@@ -160,7 +162,9 @@ export function Navbar() {
         <div
           className={`transition-colors duration-500 ${
             isScrolled
-              ? 'bg-black/60 backdrop-blur-2xl shadow-2xl border-b border-white/10'
+              ? preferReducedEffects
+                ? 'border-b border-white/10 bg-[#0a0a0c]/88 shadow-2xl'
+                : 'border-b border-white/10 bg-black/60 shadow-2xl backdrop-blur-2xl'
               : 'bg-transparent'
           }`}
         >

@@ -8,10 +8,12 @@ import { SpotlightBeams } from './SpotlightBeams'
 import { useReveal } from '../context/RevealContext'
 import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { useSectionInView } from '@/hooks/useSectionInView'
 import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
 import { trackEvent } from '@/utils/analytics'
 import { ENTRANCE_SETTLE_MS } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 const PULSE_DOTS = [
   {
@@ -57,8 +59,17 @@ function HeroSectionComponent() {
   const prefersReducedMotion = useReducedMotion()
   const isMobile = useIsMobile()
   const hasRevealedRef = useRef(false)
+  const sectionRef = useRef<HTMLElement>(null)
   const [ambientReady, setAmbientReady] = useState(false)
   const [revealClassOn, setRevealClassOn] = useState(false)
+  const sectionInView = useSectionInView(sectionRef, { initial: true })
+
+  const pulseLoopsActive =
+    !prefersReducedMotion && ambientReady && sectionInView
+
+  useEffect(() => {
+    setPerfDebugLoop('hero', pulseLoopsActive ? 'active' : 'paused')
+  }, [pulseLoopsActive])
 
   useEffect(() => {
     if (revealStarted) hasRevealedRef.current = true
@@ -119,6 +130,7 @@ function HeroSectionComponent() {
 
   return (
     <section
+      ref={sectionRef}
       className="relative min-h-screen w-full overflow-hidden bg-page"
       aria-label="Hero"
       style={{ contain: 'layout paint' }}
@@ -148,12 +160,12 @@ function HeroSectionComponent() {
                 style={dot.style}
                 initial={false}
                 animate={
-                  ambientReady
+                  pulseLoopsActive
                     ? { opacity: [...dot.opacity], scale: [...dot.scale] }
                     : { opacity: dot.opacity[0], scale: 1 }
                 }
                 transition={
-                  ambientReady
+                  pulseLoopsActive
                     ? {
                         duration: dot.duration,
                         repeat: Infinity,
@@ -167,7 +179,7 @@ function HeroSectionComponent() {
           : null}
       </div>
 
-      <SpotlightBeams loopActive={ambientReady} />
+      <SpotlightBeams loopActive={pulseLoopsActive} />
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-4xl text-center" aria-hidden={!shouldReveal}>
@@ -256,7 +268,7 @@ function HeroSectionComponent() {
                 onClick={goToContact}
                 containerClassName="rounded-full"
                 as="button"
-                animateActive={ambientReady}
+                animateActive={pulseLoopsActive}
                 className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
                 Start Your Project

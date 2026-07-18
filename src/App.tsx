@@ -23,6 +23,7 @@ import TermsOfService from "./components/TermsOfService"
 import ServicesPage from "./components/ServicesPage"
 import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
+import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
 
 function scheduleIdle(cb: () => void, timeout = 400): () => void {
   const ric = (window as Window & {
@@ -156,6 +157,7 @@ function AppContent() {
       </main>
 
       <DeferredFooter />
+      <PerfDebugOverlay />
     </div>
   )
 }

@@ -10,7 +10,7 @@ import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
-import { detectPreferSimpleServicesReel } from '@/hooks/usePreferSimpleServicesReel'
+import { detectPreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import {
   CheckCircle2,
   Clock,
@@ -264,7 +264,7 @@ const FinalCTA = () => {
   const honeypotRef = useRef<HTMLInputElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const preferReducedEffects = useMemo(
-    () => detectPreferSimpleServicesReel(prefersReducedMotion),
+    () => detectPreferReducedEffects(prefersReducedMotion),
     [prefersReducedMotion],
   )
 

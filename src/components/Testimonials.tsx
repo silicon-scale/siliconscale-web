@@ -1,6 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useSectionInView } from '@/hooks/useSectionInView'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 type Testimonial = {
   quote: string
@@ -62,11 +64,19 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 }
 
 export function Testimonials() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const inView = useSectionInView(sectionRef)
+
+  useEffect(() => {
+    setPerfDebugLoop('testimonials', inView ? 'active' : 'paused')
+  }, [inView])
+
   const rowA = [...TESTIMONIALS.slice(0, 2), ...TESTIMONIALS.slice(0, 2)]
   const rowB = [...TESTIMONIALS.slice(2, 4), ...TESTIMONIALS.slice(2, 4)]
 
   return (
     <section
+      ref={sectionRef}
       aria-labelledby="testimonials-heading"
       className="w-full bg-page py-16 sm:py-20 lg:py-24"
     >
@@ -162,6 +172,11 @@ export function Testimonials() {
           animation: 36s linear infinite marqueeRight;
         }
         .ss-row:hover { animation-play-state: paused; }
+        .ss-marquee.is-offscreen .ss-row.left,
+        .ss-marquee.is-offscreen .ss-row.right {
+          animation-play-state: paused !important;
+          will-change: auto !important;
+        }
 
         .ss-test-card {
           width: clamp(260px, 30vw, 420px);
@@ -243,7 +258,10 @@ export function Testimonials() {
           </p>
         </div>
 
-        <div className="ss-marquee" aria-label="Testimonials scrolling rows">
+        <div
+          className={`ss-marquee${inView ? '' : ' is-offscreen'}`}
+          aria-label="Testimonials scrolling rows"
+        >
           <div className="ss-rows">
             <div className="ss-row left" aria-hidden>
               {rowA.map((t, i) => (
