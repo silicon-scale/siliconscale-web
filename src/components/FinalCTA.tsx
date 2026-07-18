@@ -399,26 +399,30 @@ const FinalCTA = () => {
             </Reveal>
 
             <Reveal delay={0.1}>
-              <div className="mt-10 flex flex-col gap-4">
-                {TRUST.map(({ icon: Icon, text }) => (
-                  <div key={text} className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-gold/10">
-                      <Icon className="h-4 w-4 text-brand-gold" />
+              <div className="mt-10">
+                <div className="flex flex-col gap-4">
+                  {TRUST.map(({ icon: Icon, text }) => (
+                    <div key={text} className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-gold/10">
+                        <Icon className="h-4 w-4 text-brand-gold" />
+                      </div>
+                      <span className="text-sm text-white/55">{text}</span>
                     </div>
-                    <span className="text-sm text-white/55">{text}</span>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
+                  ))}
+                </div>
 
-            <Reveal delay={0.15}>
-              <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-white/8 pt-8">
-                {STATS.map((stat) => (
-                  <div key={stat.label} className="border-b border-white/6 pb-6 text-left">
-                    <p className="text-2xl font-bold text-white">{stat.value}</p>
-                    <p className="mt-0.5 text-xs text-white/55">{stat.label}</p>
-                  </div>
-                ))}
+                {/* Compact stats — same numbers as Highlights, lighter pre-form strip */}
+                <div
+                  className="mt-6 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-white/6 pt-6 sm:grid-cols-4 sm:gap-y-0"
+                  aria-label="Results at a glance"
+                >
+                  {STATS.map((stat) => (
+                    <div key={stat.label} className="text-left">
+                      <p className="text-xl font-bold text-white sm:text-2xl">{stat.value}</p>
+                      <p className="mt-0.5 text-xs text-white/45">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </Reveal>
           </div>
