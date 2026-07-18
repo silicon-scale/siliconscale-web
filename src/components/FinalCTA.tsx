@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, type FormEvent } from 'react'
+import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import SectionShell from '@/components/ui/SectionShell'
@@ -10,6 +10,7 @@ import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
+import { detectPreferSimpleServicesReel } from '@/hooks/usePreferSimpleServicesReel'
 import {
   CheckCircle2,
   Clock,
@@ -59,6 +60,17 @@ const TRUST = [
   { icon: Sparkles, text: 'No pressure, no hard sell — just a real conversation' },
   { icon: ShieldCheck, text: 'Your information stays private' },
 ] as const
+
+const STATS = [
+  { value: '12+', label: 'Real Projects Delivered' },
+  { value: '2.5+', label: 'Years Building' },
+  { value: '95%', label: 'Client Retention' },
+  { value: '6+', label: 'Businesses Served' },
+] as const
+
+/** Frosted card fill — static tint over a dark section (no backdrop-filter). */
+const FORM_CARD_SURFACE =
+  'border border-white/[0.08] bg-gradient-to-br from-[#0a0a0c]/95 to-[#141418]/92'
 
 /* ─── Floating Label Input ─── */
 const FloatingInput = ({
@@ -188,18 +200,34 @@ const stepVariants = {
 /* ─── Rotating Word ─── */
 const WORDS = ['Actually Works.', 'Saves You Hours.', 'Makes You Money.', 'Lasts.'] as const
 
-const RotatingWord = () => {
+const wordGradientClass =
+  'inline-block bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold bg-clip-text font-extrabold text-transparent'
+
+const RotatingWord = ({ preferReducedEffects }: { preferReducedEffects: boolean }) => {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const prefersReducedMotion = useReducedMotion()
+  const staticWord = preferReducedEffects || prefersReducedMotion
 
   useEffect(() => {
-    if (prefersReducedMotion || paused) return
+    if (staticWord || paused) return
     const id = window.setInterval(() => {
       setIndex((i) => (i + 1) % WORDS.length)
     }, 2500)
     return () => window.clearInterval(id)
-  }, [paused, prefersReducedMotion])
+  }, [paused, staticWord])
+
+  const wordStyle = { textShadow: `0 0 40px ${brandGoldAlpha(0.22)}` }
+
+  if (staticWord) {
+    return (
+      <span className="relative inline-block" style={{ minWidth: '16ch' }}>
+        <span className={wordGradientClass} style={wordStyle}>
+          {WORDS[index]}
+        </span>
+      </span>
+    )
+  }
 
   return (
     <span
@@ -215,8 +243,8 @@ const RotatingWord = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.6, ease: REVEAL_EASE }}
-          className="inline-block bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold bg-clip-text font-extrabold text-transparent"
-          style={{ textShadow: `0 0 40px ${brandGoldAlpha(0.22)}` }}
+          className={wordGradientClass}
+          style={wordStyle}
         >
           {WORDS[index]}
         </motion.span>
@@ -234,6 +262,11 @@ const FinalCTA = () => {
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const honeypotRef = useRef<HTMLInputElement>(null)
+  const prefersReducedMotion = useReducedMotion()
+  const preferReducedEffects = useMemo(
+    () => detectPreferSimpleServicesReel(prefersReducedMotion),
+    [prefersReducedMotion],
+  )
 
   const set = (key: keyof FinalCTAFormData) => (v: string) =>
     setForm((p) => ({ ...p, [key]: v }))
@@ -335,13 +368,11 @@ const FinalCTA = () => {
       id="contact"
       className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36"
     >
-      {/* Ambient gradient */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/[0.06] blur-3xl" />
-        <motion.div
-          className="absolute right-1/4 top-1/3 h-[420px] w-[420px] rounded-full bg-brand-gold/[0.04] blur-3xl"
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+      {/* Ambient gradient — radial-gradient orbs (transform-only drift, no blur) */}
+      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+        <div className="final-cta-glow final-cta-glow--center" />
+        <div
+          className={`final-cta-glow final-cta-glow--accent${preferReducedEffects ? '' : ' is-animated'}`}
         />
       </div>
 
@@ -359,7 +390,7 @@ const FinalCTA = () => {
               >
                 Let&apos;s Build Something{' '}
                 <br className="hidden sm:inline" />
-                That&nbsp;<RotatingWord />
+                That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
               </h2>
               <p className="mt-5 text-lg leading-relaxed text-white/55">
                 Tell us what you&apos;re building. We&apos;ll tell you honestly whether it&apos;s a
@@ -381,26 +412,13 @@ const FinalCTA = () => {
             </Reveal>
 
             <Reveal delay={0.15}>
-              <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-                <div>
-                  <p className="text-2xl font-bold text-white">12+</p>
-                  <p className="text-xs text-white/55">Real Projects Delivered</p>
-                </div>
-                <div className="hidden h-10 w-px bg-white/10 sm:block" />
-                <div>
-                  <p className="text-2xl font-bold text-white">2.5+</p>
-                  <p className="text-xs text-white/55">Years Building</p>
-                </div>
-                <div className="hidden h-10 w-px bg-white/10 sm:block" />
-                <div>
-                  <p className="text-2xl font-bold text-white">95%</p>
-                  <p className="text-xs text-white/55">Client Retention</p>
-                </div>
-                <div className="hidden h-10 w-px bg-white/10 sm:block" />
-                <div>
-                  <p className="text-2xl font-bold text-white">6+</p>
-                  <p className="text-xs text-white/55">Businesses Served</p>
-                </div>
+              <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-white/8 pt-8">
+                {STATS.map((stat) => (
+                  <div key={stat.label} className="border-b border-white/6 pb-6 text-left">
+                    <p className="text-2xl font-bold text-white">{stat.value}</p>
+                    <p className="mt-0.5 text-xs text-white/55">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>
@@ -414,7 +432,7 @@ const FinalCTA = () => {
                     key="form-card"
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.3 }}
-                    className="relative rounded-[20px] border border-white/[0.08] bg-white/[0.04] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-10"
+                    className={`relative rounded-[20px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.55)] sm:p-10 ${FORM_CARD_SURFACE}`}
                   >
                     {/* Progress indicator */}
                     <div className="mb-8 flex items-center gap-2">
@@ -631,7 +649,7 @@ const FinalCTA = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: REVEAL_EASE }}
-                    className="flex flex-col items-center gap-5 rounded-[20px] border border-brand-gold/30 bg-white/[0.04] p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+                    className={`flex flex-col items-center gap-5 rounded-[20px] border border-brand-gold/30 p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] ${FORM_CARD_SURFACE}`}
                   >
                     <motion.div
                       initial={{ scale: 0 }}

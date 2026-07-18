@@ -600,6 +600,65 @@ html {
   );
 }
 
+/*
+ * FinalCTA ambient — soft gold orbs via radial-gradient (no filter:blur).
+ * Sized/tuned to match prior 700px / 420px discs + blur-3xl footprint.
+ */
+.final-cta-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+}
+.final-cta-glow--center {
+  left: 50%;
+  top: 50%;
+  width: 700px;
+  height: 700px;
+  transform: translate3d(-50%, -50%, 0);
+  background: radial-gradient(
+    circle,
+    rgb(var(--brand-gold-rgb) / 0.14) 0%,
+    rgb(var(--brand-gold-rgb) / 0.08) 24%,
+    rgb(var(--brand-gold-rgb) / 0.035) 46%,
+    rgb(var(--brand-gold-rgb) / 0.012) 58%,
+    transparent 72%
+  );
+}
+.final-cta-glow--accent {
+  right: 25%;
+  top: 33.333%;
+  width: 420px;
+  height: 420px;
+  transform: translate3d(50%, -50%, 0);
+  background: radial-gradient(
+    circle,
+    rgb(var(--brand-gold-rgb) / 0.1) 0%,
+    rgb(var(--brand-gold-rgb) / 0.055) 26%,
+    rgb(var(--brand-gold-rgb) / 0.022) 48%,
+    rgb(var(--brand-gold-rgb) / 0.008) 60%,
+    transparent 72%
+  );
+}
+.final-cta-glow--accent.is-animated {
+  animation: final-cta-glow-drift 12s linear infinite;
+  will-change: transform;
+}
+@keyframes final-cta-glow-drift {
+  0%,
+  100% {
+    transform: translate3d(50%, -50%, 0);
+  }
+  50% {
+    transform: translate3d(calc(50% + 30px), calc(-50% - 20px), 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .final-cta-glow--accent.is-animated {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* Skip layout/paint for off-screen home sections (pair with intrinsic size to limit CLS). */
 .cv-auto {
   content-visibility: auto;
