@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
 import { memo, useEffect, useState } from "react"
-
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
 import { AboutSection } from "./components/AboutSection"
@@ -14,9 +13,9 @@ import { Footer } from "./components/Footer"
 import { IntroLoader } from "./components/IntroLoader"
 import { RevealProvider, useReveal } from "./context/RevealContext"
 import { trackPageView } from "./utils/analytics"
-
 import About from "./components/About"
 import Work from "./components/Work"
+import WorkCaseStudy from "./components/WorkCaseStudy"
 import Team from "./components/Team"
 import Contact from "./components/Contact"
 import PrivacyPolicy from "./components/PrivacyPolicy"
@@ -143,6 +142,7 @@ function AppContent() {
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/work" element={<Work />} />
+              <Route path="/work/:slug" element={<WorkCaseStudy />} />
               <Route path="/team" element={<Team />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />

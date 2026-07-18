@@ -1,416 +1,345 @@
 'use client'
 
 import { memo } from 'react'
-import ddenImage from '../assets/project-images/dden.webp'
-import mnrdcImage from '../assets/project-images/mnrdc.webp'
-import rdcImage from '../assets/project-images/rdc.webp'
-import axelsImage from '../assets/project-images/axels.webp'
-import plaamImage from '../assets/project-images/plaam.webp'
-import lavviImage from '../assets/project-images/lavvi.webp'
-
-import { useState, useEffect, useRef } from 'react'
-import { Lens } from '@/components/ui/lens'
+import { Link } from 'react-router-dom'
+import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
 import { OptimizedImage } from './OptimizedImage'
+import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import { PROJECTS, type Project } from '@/data/projects'
+import { REVEAL_EASE } from '@/lib/motion'
 import { trackEvent } from '@/utils/analytics'
+import { cn } from '@/lib/utils'
 
-type ProjectStat = { value: string; label: string }
-
-type Project = {
-  id: string
-  title: string
-  description: string
-  image: string
-  imageAlt: string
-  link: string
-  tag: string
-  year: string
-  services: string
-  tagline?: string
-  isSample?: boolean
-  stat?: string
-  statLabel?: string
-  stats?: ProjectStat[]
-}
-
-function WorkComponent() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [direction, setDirection] = useState<'left' | 'right'>('right')
-  const sectionRef = useRef<HTMLElement>(null)
-
-  const projects: Project[] = [
-    {
-      id: 'dden',
-      title: 'DDEN',
-      description:
-        'A digital platform for a designer fashion marketplace — built for browsing, discovery, and a smooth path to purchase.',
-      image: ddenImage,
-      imageAlt: 'DDEN fashion marketplace homepage',
-      link: 'https://www.dden.in/',
-      tag: 'Fashion-Tech Platform',
-      year: '2024',
-      services: 'BRANDING · DESIGN · DEVELOPMENT',
-      stat: '+120%',
-      statLabel: 'User Engagement',
-    },
-    {
-      id: 'micronano',
-      title: 'MICRONANO',
-      description:
-        'Advanced micro and nano technology application platform for research and development.',
-      image: mnrdcImage,
-      imageAlt: 'MICRONANO resource booking system interface',
-      link: 'https://app.micronano.paruluniversity.ac.in/',
-      tag: 'Resource Booking System',
-      year: '2024',
-      services: 'UI/UX · ENGINEERING · RESEARCH',
-      tagline: 'Precision at the Nanoscale',
-      stat: '+89%',
-      statLabel: 'Traffic Growth',
-    },
-    {
-      id: 'rdc',
-      title: 'RDC',
-      description:
-        'Research and Development Center fostering innovation and technological advancement.',
-      image: rdcImage,
-      imageAlt: 'RDC research website homepage',
-      link: 'https://rdc.paruluniversity.ac.in/',
-      tag: 'Research Website',
-      year: '2023',
-      services: 'STRATEGY · DESIGN · DEVELOPMENT',
-      tagline: 'From Research to Real-World Impact',
-      stat: '+74%',
-      statLabel: 'Project Submissions',
-    },
-    {
-      id: 'plaam',
-      title: 'PLAAM',
-      description: 'Curated jewellery-making and craft essentials.',
-      image: plaamImage,
-      imageAlt: 'PLAAM craft and jewellery storefront',
-      link: 'https://www.plaam.in/',
-      tag: 'Craft & Jewellery Store',
-      year: '2026',
-      services: 'BRANDING · DESIGN · DEVELOPMENT',
-      tagline: 'Where Creativity Finds Its Supplies',
-      stats: [
-        { value: '₹1.3L+', label: 'Revenue Generated' },
-        { value: '150+', label: 'Orders Processed' },
-        { value: '13.87%', label: 'Conversion Rate' },
-      ],
-    },
-    {
-      id: 'lavvi',
-      title: 'LavviStore',
-      description:
-        'Designed and developed a high-performance e-commerce platform for LavviStore, focused on delivering a premium shopping experience through clean design, fast performance, mobile-first responsiveness, and scalable architecture.',
-      image: lavviImage,
-      imageAlt: 'LavviStore e-commerce website preview',
-      link: 'https://www.lavvistore.com/',
-      tag: 'Featured Client Project',
-      year: '2025',
-      services: 'BRANDING · UI/UX · E-COMMERCE · DEVELOPMENT',
-      isSample: false,
-      stat: '100%',
-      statLabel: 'Custom Solution',
-      },
-      {
-      id: 'axels',
-      title: 'AXELS',
-      description:
-        'A self-directed build exploring skills/learning platform UX and performance — built to sharpen our own process, not for a paying client.',
-      image: axelsImage,
-      imageAlt: 'AXELS sample skills platform UI',
-      link: 'https://axels-beta.vercel.app/',
-      tag: 'Sample Project — Not a Client Engagement',
-      year: '2024',
-      services: 'PRODUCT · DESIGN · DEVELOPMENT',
-      isSample: true,
-      stat: '+95%',
-      statLabel: 'Learning Outcomes',
-    },
-  ]
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 300)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const goTo = (dir: 'left' | 'right') => {
-    setDirection(dir)
-    setCurrentIndex(prev =>
-      dir === 'right'
-        ? (prev + 1) % projects.length
-        : (prev - 1 + projects.length) % projects.length
-    )
-  }
-
-  const project = projects[currentIndex]
-
+function BrowserMockup({
+  project,
+  priority,
+}: {
+  project: Project
+  priority?: boolean
+}) {
   return (
-    <>
-      <style>{`
-        @keyframes fadeSlideRight {
-          from { opacity: 0; transform: translateX(40px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeSlideLeft {
-          from { opacity: 0; transform: translateX(-40px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .slide-in-right { animation: fadeSlideRight 0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
-        .slide-in-left  { animation: fadeSlideLeft  0.4s cubic-bezier(0.22,1,0.36,1) forwards; }
-        .slide-in-up    { animation: fadeSlideUp    0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
-        .arrow-btn {
-          width: 52px; height: 52px;
-          border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.18);
-          background: rgba(255,255,255,0.06);
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer;
-          transition: background 0.2s, border-color 0.2s, transform 0.15s;
-        }
-        .arrow-btn:hover {
-          background: rgba(255,255,255,0.14);
-          border-color: rgba(255,255,255,0.35);
-          transform: scale(1.07);
-        }
-        .arrow-btn:active { transform: scale(0.96); }
-        .arrow-btn:focus-visible {
-          outline: 2px solid var(--focus-ring);
-          outline-offset: 3px;
-        }
-        .browser-mockup {
-          border-radius: 16px;
-          overflow: hidden;
-          background: #1a1a1a;
-          box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06);
-        }
-        .browser-bar {
-          height: 38px;
-          background: #2a2a2a;
-          display: flex; align-items: center;
-          padding: 0 16px; gap: 8px;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-        }
-        .browser-dot { width: 12px; height: 12px; border-radius: 50%; }
-      `}</style>
-
-      <section
-        id="work"
-        ref={sectionRef}
-        className="relative py-20"
-        aria-labelledby="work-heading"
-        style={{ background: 'black', overflow: 'hidden' }}
-      >
-        {/* Subtle background glow */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full"
-               style={{ background: 'radial-gradient(circle, rgba(255,200,80,0.04) 0%, transparent 70%)' }} />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full"
-               style={{ background: 'radial-gradient(circle, rgba(255,120,50,0.03) 0%, transparent 70%)' }} />
-        </div>
-
-        <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-8 md:py-12 relative z-10">
-
-          {/* Header row */}
+    <div className="work-browser">
+      <div className="work-browser-bar" aria-hidden>
+        <span className="work-browser-dot" style={{ background: '#ff5f57' }} />
+        <span className="work-browser-dot" style={{ background: '#febc2e' }} />
+        <span className="work-browser-dot" style={{ background: '#28c840' }} />
+      </div>
+      <div className="work-browser-shot">
+        <OptimizedImage
+          src={project.image}
+          alt={project.imageAlt}
+          width={1600}
+          height={900}
+          className="h-full w-full object-cover"
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          sizes="(max-width: 1024px) 100vw, 58vw"
+        />
+        {project.statOverlay ? (
           <div
-            className={`flex flex-wrap items-end gap-4 mb-14 transform transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className="work-stat-overlay"
+            aria-label={`${project.statOverlay.value} ${project.statOverlay.label}`}
           >
-            <div>
-              <h2
-                id="work-heading"
-                style={{ fontSize: 'clamp(2.2rem, 4vw, 3.6rem)', fontWeight: 900, color: '#ffffff', lineHeight: 1.1, letterSpacing: '-0.02em' }}
-              >
-                Real projects.<br />
-                Real results.
-              </h2>
-            </div>
+            <p className="work-stat-value">{project.statOverlay.value}</p>
+            <p className="work-stat-label">{project.statOverlay.label}</p>
           </div>
-
-          {/* Main project layout */}
-          <div
-            className={`transform transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-          >
-            <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
-
-              {/* LEFT: Browser mockup */}
-              <div className="w-full lg:w-[75%] flex-shrink-0">
-                <div
-                  className={`browser-mockup ${direction === 'right' ? 'slide-in-right' : 'slide-in-left'}`}
-                  key={`mockup-${currentIndex}`}
-                >
-                  {/* Screenshot */}
-                  <div className="relative" style={{ aspectRatio: '16/9' }}>
-                    <Lens zoomFactor={1.35} lensSize={180}>
-                      <OptimizedImage
-                        src={project.image}
-                        alt={project.imageAlt}
-                        width={1600}
-                        height={900}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                        sizes="(max-width: 1024px) 100vw, 75vw"
-                      />
-                    </Lens>
-
-                    {/* Stat overlay */}
-                    {(project.stats?.length || project.stat) && (
-                      <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
-                        {project.stats?.length ? (
-                          <div className="flex flex-wrap gap-x-8 gap-y-4">
-                            {project.stats.map(s => (
-                              <div key={s.label}>
-                                <div
-                                  className="text-white"
-                                  style={{
-                                    fontSize: 'clamp(1.5rem, 3vw, 2.4rem)',
-                                    fontWeight: 900,
-                                    lineHeight: 1,
-                                    textShadow: '0 2px 12px rgba(0,0,0,0.6)',
-                                  }}
-                                >
-                                  {s.value}
-                                </div>
-                                <div className="text-white mt-1 text-sm font-medium" style={{ opacity: 0.85 }}>
-                                  {s.label}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <>
-                            <div
-                              className="text-white"
-                              style={{
-                                fontSize: 'clamp(2rem, 4vw, 3.2rem)',
-                                fontWeight: 900,
-                                lineHeight: 1,
-                                textShadow: '0 2px 12px rgba(0,0,0,0.6)',
-                              }}
-                            >
-                              {project.stat}
-                            </div>
-                            <div className="text-white mt-1 text-base font-medium" style={{ opacity: 0.85 }}>
-                              {project.statLabel}
-                            </div>
-                            <div className="mt-2 h-px w-48" style={{ background: 'rgba(255,255,255,0.3)' }} />
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* RIGHT: Project info */}
-              <div className="w-full lg:flex-1 flex flex-col justify-between" style={{ minHeight: '380px' }}>
-                <div key={`info-${currentIndex}`} className="slide-in-up">
-                  {/* Tag */}
-                  <span
-                    className="inline-block mb-5 text-xs tracking-widest uppercase px-3 py-1 rounded-sm"
-                    style={
-                      project.isSample
-                        ? {
-                            background: 'rgb(var(--brand-gold-rgb) / 0.12)',
-                            color: 'var(--brand-gold)',
-                            border: '1px solid rgb(var(--brand-gold-rgb) / 0.45)',
-                          }
-                        : {
-                            background: 'rgba(255,255,255,0.07)',
-                            color: '#ffffff',
-                            border: '1px solid rgba(255,255,255,0.09)',
-                          }
-                    }
-                  >
-                    {project.tag}
-                  </span>
-
-                  {/* Title */}
-                  <h3
-                    className="mb-6"
-                    style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em', lineHeight: 1.1 }}
-                  >
-                    {project.title}
-                  </h3>
-
-                  {/* Services */}
-                  <p className="mb-3 text-xs tracking-widest uppercase" style={{ color: '#ffffff' }}>
-                    {project.services}
-                  </p>
-
-                  {/* Tagline — only when present */}
-                  {project.tagline ? (
-                    <p className="mb-6 text-lg font-semibold" style={{ color: '#ffffff', lineHeight: 1.5 }}>
-                      {project.tagline}
-                    </p>
-                  ) : null}
-
-                  {/* Description */}
-                  <p
-                    className={`mb-8 text-sm leading-relaxed ${project.tagline ? '' : 'mt-3'}`}
-                    style={{ color: '#ffffff', maxWidth: '340px' }}
-                  >
-                    {project.description}
-                  </p>
-
-                  {/* Visit link */}
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 group"
-                    style={{ color: '#ffffff', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', textDecoration: 'none', transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#ffffff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = '#ffffff')}
-                    onClick={() => trackEvent('project_click', { project_name: project.id })}
-                  >
-                    View Project
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </a>
-                </div>
-
-                {/* Arrow navigation + counter */}
-                <div className="flex items-center gap-4 mt-12">
-                  <button className="arrow-btn" onClick={() => goTo('left')} aria-label="Previous project">
-                    <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button className="arrow-btn" onClick={() => goTo('right')} aria-label="Next project">
-                    <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                  <span className="ml-2 text-sm" style={{ color: '#ffffff', fontVariantNumeric: 'tabular-nums' }}>
-                    {String(currentIndex + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom note */}
-          <div className={`mt-16 text-center transform transition-all duration-700 delay-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <p className="text-sm" style={{ color: '#ffffff' }}>
-              Every project on this page is live — click through and see it running, not a mockup.
-            </p>
-            <div className="flex justify-center mt-4">
-              <div className="h-px w-24" style={{ background: 'linear-gradient(to right, transparent, rgba(255,200,80,0.3), transparent)' }} />
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+        ) : null}
+      </div>
+    </div>
   )
 }
 
-export default memo(WorkComponent)
+function ProjectRow({
+  project,
+  index,
+  reduceMotion,
+}: {
+  project: Project
+  index: number
+  reduceMotion: boolean | null
+}) {
+  const imageFirst = index % 2 === 0
+
+  return (
+    <motion.article
+      className={cn('work-row', imageFirst ? 'work-row--image-first' : 'work-row--text-first')}
+      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, ease: REVEAL_EASE, delay: Math.min(index * 0.04, 0.16) }}
+      layout={false}
+    >
+      <Link
+        to={`/work/${project.slug}`}
+        className="work-row-link"
+        onClick={() => trackEvent('project_click', { project_name: project.id, surface: 'listing' })}
+        aria-label={`Open case study: ${project.title}`}
+      >
+        <div className="work-row-media">
+          <BrowserMockup project={project} priority={index === 0} />
+        </div>
+
+        <div className="work-row-panel">
+          <span className={cn('work-row-tag', project.isSample && 'work-row-tag--sample')}>
+            {project.tag}
+          </span>
+          <h2 className="work-row-title">{project.title}</h2>
+          {project.tagline ? <p className="work-row-tagline">{project.tagline}</p> : null}
+          <p className="work-row-desc">{project.description}</p>
+          <span className="work-row-cta">
+            View case study
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
+          </span>
+        </div>
+      </Link>
+    </motion.article>
+  )
+}
+
+function WorkListing() {
+  const prefersReducedMotion = useReducedMotion()
+
+  return (
+    <section
+      id="work"
+      className="work-page relative bg-page text-white"
+      aria-labelledby="work-heading"
+    >
+      <style>{`
+        .work-page {
+          padding: 7.5rem 0 5rem;
+          font-family: 'Sora', system-ui, sans-serif;
+        }
+        .work-shell {
+          position: relative;
+          z-index: 1;
+          max-width: 1120px;
+          margin-inline: auto;
+          padding-inline: 1.5rem;
+        }
+        @media (min-width: 1024px) {
+          .work-shell { padding-inline: 2.5rem; }
+        }
+        .work-header {
+          max-width: 40rem;
+          margin-bottom: 3.5rem;
+        }
+        .work-header h1 {
+          margin-top: 0.75rem;
+          font-size: clamp(2.4rem, 5vw, 3.6rem);
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1.05;
+          color: #fff;
+        }
+        .work-header p {
+          margin-top: 1rem;
+          max-width: 34rem;
+          font-size: 0.95rem;
+          line-height: 1.65;
+          color: rgba(255,255,255,0.62);
+        }
+        .work-list {
+          display: flex;
+          flex-direction: column;
+          gap: clamp(2.75rem, 6vw, 4.5rem);
+        }
+        .work-row-link {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          text-decoration: none;
+          color: inherit;
+          align-items: stretch;
+        }
+        @media (min-width: 900px) {
+          .work-row-link {
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: 2rem;
+            align-items: center;
+          }
+          .work-row--text-first .work-row-media { order: 2; }
+          .work-row--text-first .work-row-panel { order: 1; }
+        }
+        .work-browser {
+          border-radius: 16px;
+          overflow: hidden;
+          background: #141414;
+          border: 1px solid rgba(255,255,255,0.08);
+          box-shadow: 0 32px 70px rgba(0,0,0,0.55);
+          transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .work-row-link:hover .work-browser {
+          transform: translateY(-3px);
+          border-color: rgb(var(--brand-gold-rgb) / 0.35);
+        }
+        .work-browser-bar {
+          height: 36px;
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          padding: 0 14px;
+          background: #1f1f1f;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .work-browser-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 999px;
+        }
+        .work-browser-shot {
+          position: relative;
+          aspect-ratio: 16 / 10;
+          background: #0a0a0a;
+        }
+        .work-stat-overlay {
+          position: absolute;
+          left: 1rem;
+          bottom: 1rem;
+          max-width: min(15rem, 70%);
+          padding: 0.85rem 1rem;
+          border-radius: 12px;
+          background: rgba(10, 10, 10, 0.88);
+          border: 1px solid rgba(255,255,255,0.12);
+          pointer-events: none;
+        }
+        .work-stat-value {
+          font-size: clamp(1.5rem, 3vw, 2rem);
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1;
+          color: #fff;
+        }
+        .work-stat-label {
+          margin-top: 0.35rem;
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.7);
+        }
+        .work-row-panel {
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: linear-gradient(165deg, rgba(255,255,255,0.05), rgba(10,10,10,0.92));
+          padding: clamp(1.4rem, 3vw, 2.25rem);
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .work-row-tag {
+          display: inline-flex;
+          width: fit-content;
+          align-items: center;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.05);
+          padding: 0.3rem 0.7rem;
+          font-family: 'DM Mono', monospace;
+          font-size: 0.65rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.65);
+        }
+        .work-row-tag--sample {
+          border-color: rgb(var(--brand-gold-rgb) / 0.45);
+          background: rgb(var(--brand-gold-rgb) / 0.12);
+          color: var(--brand-gold);
+        }
+        .work-row-title {
+          margin-top: 1rem;
+          font-size: clamp(1.9rem, 3.5vw, 2.75rem);
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1.05;
+          color: #fff;
+        }
+        .work-row-tagline {
+          margin-top: 0.75rem;
+          font-size: 1rem;
+          font-weight: 600;
+          line-height: 1.45;
+          color: rgba(255,255,255,0.82);
+        }
+        .work-row-desc {
+          margin-top: 0.65rem;
+          font-size: 0.9rem;
+          line-height: 1.65;
+          color: rgba(255,255,255,0.58);
+          max-width: 28rem;
+        }
+        .work-row-cta {
+          margin-top: 1.35rem;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--brand-gold);
+        }
+        .work-row-link:hover .work-row-cta {
+          color: #fff;
+        }
+        .work-footnote {
+          margin-top: 4rem;
+          text-align: center;
+          font-size: 0.875rem;
+          color: rgba(255,255,255,0.5);
+        }
+        .work-footnote-rule {
+          margin: 1rem auto 0;
+          height: 1px;
+          width: 6rem;
+          background: linear-gradient(to right, transparent, rgb(var(--brand-gold-rgb) / 0.35), transparent);
+        }
+        .work-glow {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(circle at 20% 12%, rgb(var(--brand-gold-rgb) / 0.05), transparent 42%),
+            radial-gradient(circle at 85% 70%, rgb(var(--brand-gold-rgb) / 0.03), transparent 40%);
+        }
+      `}</style>
+
+      <div className="work-glow" aria-hidden />
+
+      <div className="work-shell">
+        <header className="work-header">
+          <SectionEyebrow variant="pillMono">Portfolio</SectionEyebrow>
+          <h1 id="work-heading">
+            Real projects.
+            <br />
+            Real results.
+          </h1>
+          <p>
+            Every project on this page is live — click through and see it running, not a
+            mockup.
+          </p>
+        </header>
+
+        <div className="work-list">
+          {PROJECTS.map((project, index) => (
+            <ProjectRow
+              key={project.id}
+              project={project}
+              index={index}
+              reduceMotion={prefersReducedMotion}
+            />
+          ))}
+        </div>
+
+        <p className="work-footnote">
+          Sample builds are labeled clearly. Client work is live on the open web.
+          <span className="work-footnote-rule" aria-hidden />
+        </p>
+      </div>
+    </section>
+  )
+}
+
+export default memo(WorkListing)
