@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Mail, Linkedin, Instagram, Facebook, X as XIcon } from 'lucide-react'
+import { useSectionInView } from '@/hooks/useSectionInView'
+import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 type ConnectKind = 'email' | 'linkedin' | 'instagram' | 'facebook' | 'x'
 
@@ -68,9 +71,25 @@ function ConnectIcon({ kind }: { kind: ConnectKind }) {
   return <XIcon {...common} />
 }
 
-function ConnectCardItem({ card, className }: { card: ConnectCard; className?: string }) {
+function ConnectCardItem({
+  card,
+  className,
+  glitterEnabled,
+}: {
+  card: ConnectCard
+  className?: string
+  glitterEnabled: boolean
+}) {
   const [hovered, setHovered] = useState(false)
   const [pos, setPos] = useState({ x: 0, y: 0 })
+
+  const glitterClasses = [
+    'connect-glitter',
+    glitterEnabled ? 'is-animated' : '',
+    hovered && glitterEnabled ? 'is-on' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <a
@@ -87,7 +106,7 @@ function ConnectCardItem({ card, className }: { card: ConnectCard; className?: s
         setPos({ x: e.clientX - r.left, y: e.clientY - r.top })
       }}
     >
-      <div className={`connect-glitter ${hovered ? 'is-on' : ''}`} aria-hidden />
+      <div className={glitterClasses} aria-hidden />
       <div
         className={`connect-bubble ${hovered ? 'is-on' : ''}`}
         aria-hidden
@@ -103,11 +122,27 @@ function ConnectCardItem({ card, className }: { card: ConnectCard; className?: s
 }
 
 export function Connect() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const inView = useSectionInView(sectionRef)
+  const preferReducedEffects = usePreferReducedEffects()
+  const glitterEnabled = !preferReducedEffects && inView
+
+  useEffect(() => {
+    if (preferReducedEffects || !inView) {
+      setPerfDebugLoop('connectGlitter', 'paused')
+      return
+    }
+    setPerfDebugLoop('connectGlitter', 'active')
+  }, [inView, preferReducedEffects])
+
   const email = CONNECT_CARDS.find((c) => c.kind === 'email')!
   const socials = CONNECT_CARDS.filter((c) => c.kind !== 'email')
 
   return (
-    <section className="w-full bg-page py-16 sm:py-20 lg:py-24">
+    <section
+      ref={sectionRef}
+      className={`connect-section w-full bg-page py-16 sm:py-20 lg:py-24${inView ? '' : ' is-offscreen'}`}
+    >
       <style>{`
         .connect-shell{
           max-width: 1200px;
@@ -156,7 +191,7 @@ export function Connect() {
           border-radius: 22px;
           border: 1px solid rgba(255,255,255,0.08);
           background: rgba(255,255,255,0.03);
-          box-shadow: 0 30px 90px rgba(0,0,0,0.75);
+          box-shadow: 0 22px 56px rgba(0,0,0,0.68);
           overflow: hidden;
           backface-visibility: hidden;
           min-height: 190px;
@@ -190,7 +225,6 @@ export function Connect() {
           height: 68px;
         }
 
-        /* Glitter overlay — tinted per card */
         .connect-glitter{
           position:absolute;
           inset:-40%;
@@ -204,15 +238,23 @@ export function Connect() {
             repeating-radial-gradient(circle at 20% 40%, rgba(255,255,255,0.18) 0 1px, transparent 1px 10px);
           filter: blur(0.2px);
           transition: opacity .22s ease;
-          animation: glitterDrift 1.6s linear infinite;
         }
-        .connect-glitter.is-on{ opacity:0.85; }
+        .connect-glitter.is-animated{
+          animation: glitterDrift 1.6s linear infinite;
+          animation-play-state: paused;
+        }
+        .connect-glitter.is-animated.is-on{
+          opacity:0.85;
+          animation-play-state: running;
+        }
+        .connect-section.is-offscreen .connect-glitter.is-animated{
+          animation-play-state: paused;
+        }
         @keyframes glitterDrift{
           0%{ transform: translate3d(-6%, -4%, 0) rotate(12deg); }
           100%{ transform: translate3d(6%, 4%, 0) rotate(12deg); }
         }
 
-        /* Cursor bubble */
         .connect-bubble{
           position:absolute;
           z-index:3;
@@ -236,6 +278,12 @@ export function Connect() {
           transform: translate3d(-50%, -50%, 0) scale(1);
         }
 
+        @media (prefers-reduced-motion: reduce) {
+          .connect-glitter.is-animated {
+            animation: none;
+          }
+        }
+
         @media (max-width: 900px){
           .connect-grid{ grid-template-columns: 1fr; }
           .connect-card.connect-big{ min-height: 280px; }
@@ -255,10 +303,10 @@ export function Connect() {
         </div>
 
         <div className="connect-grid">
-          <ConnectCardItem card={email} className="connect-big" />
+          <ConnectCardItem card={email} className="connect-big" glitterEnabled={glitterEnabled} />
           <div className="connect-socials">
             {socials.map((c) => (
-              <ConnectCardItem key={c.kind} card={c} />
+              <ConnectCardItem key={c.kind} card={c} glitterEnabled={glitterEnabled} />
             ))}
           </div>
         </div>
@@ -268,4 +316,3 @@ export function Connect() {
 }
 
 export default Connect
-

@@ -659,6 +659,77 @@ html {
   }
 }
 
+/*
+ * Footer ambient — gold wash via radial-gradient (no filter:blur).
+ * Sized to approximate prior 400px / 300px discs + blur(80px) footprint.
+ */
+.footer-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+}
+.footer-glow--1 {
+  width: 400px;
+  height: 400px;
+  top: 80px;
+  left: -100px;
+  background: radial-gradient(
+    circle,
+    rgb(var(--brand-gold-rgb) / 0.07) 0%,
+    rgb(var(--brand-gold-rgb) / 0.045) 28%,
+    rgb(var(--brand-gold-rgb) / 0.018) 48%,
+    rgb(var(--brand-gold-rgb) / 0.006) 62%,
+    transparent 78%
+  );
+}
+.footer-glow--2 {
+  width: 300px;
+  height: 300px;
+  top: 40px;
+  right: -60px;
+  background: radial-gradient(
+    circle,
+    rgb(var(--brand-gold-rgb) / 0.07) 0%,
+    rgb(var(--brand-gold-rgb) / 0.042) 30%,
+    rgb(var(--brand-gold-rgb) / 0.016) 50%,
+    rgb(var(--brand-gold-rgb) / 0.005) 64%,
+    transparent 78%
+  );
+}
+.footer-glow--1.is-animated {
+  animation: footer-glow-drift-1 14s ease-in-out infinite;
+  will-change: transform;
+}
+.footer-glow--2.is-animated {
+  animation: footer-glow-drift-2 18s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes footer-glow-drift-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(15px, 20px, 0);
+  }
+}
+@keyframes footer-glow-drift-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-10px, -25px, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-glow--1.is-animated,
+  .footer-glow--2.is-animated {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* One-shot settle pulse when a Highlights stat count completes. */
 @keyframes count-up-settle {
   0% {

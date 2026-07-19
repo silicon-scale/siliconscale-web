@@ -11,6 +11,7 @@ import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
 import { detectPreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
 import {
   CheckCircle2,
   Clock,
@@ -267,6 +268,15 @@ const FinalCTA = () => {
     () => detectPreferReducedEffects(prefersReducedMotion),
     [prefersReducedMotion],
   )
+
+  useEffect(() => {
+    setPerfDebugLoop('finalCtaAmbient', preferReducedEffects ? 'paused' : 'active')
+  }, [preferReducedEffects])
+
+  useEffect(() => {
+    const rotatingActive = !preferReducedEffects && !prefersReducedMotion
+    setPerfDebugLoop('finalCtaRotatingWord', rotatingActive ? 'active' : 'paused')
+  }, [preferReducedEffects, prefersReducedMotion])
 
   const set = (key: keyof FinalCTAFormData) => (v: string) =>
     setForm((p) => ({ ...p, [key]: v }))

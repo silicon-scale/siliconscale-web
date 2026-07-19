@@ -1,158 +1,168 @@
-import { memo } from 'react'
+'use client'
+
+import { memo, useEffect, useRef, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { Instagram, Linkedin, Mail } from 'lucide-react'
+import { useSectionInView } from '@/hooks/useSectionInView'
+import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import { setPerfDebugLoop } from '@/utils/perfDebug'
+
+/** Static wave shapes — path geometry never animated (transform-only motion). */
+const FOOTER_WAVE_LAYERS = [
+  {
+    d: 'M0,55 C200,30 400,80 600,55 C800,30 1000,80 1200,55 L1200,120 L0,120 Z',
+    fill: 'rgba(0,0,0,0.025)',
+    duration: '18s',
+    reverse: false,
+  },
+  {
+    d: 'M0,65 C200,90 400,40 600,65 C800,90 1000,40 1200,65 L1200,120 L0,120 Z',
+    fill: 'rgba(0,0,0,0.04)',
+    duration: '24s',
+    reverse: true,
+  },
+  {
+    d: 'M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z',
+    fill: 'var(--brand-black)',
+    duration: '14s',
+    reverse: false,
+  },
+] as const
+
+function FooterWaveSvg({ d, fill }: { d: string; fill: string }) {
+  return (
+    <svg
+      className="footer-wave-svg"
+      viewBox="0 0 1200 120"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path d={d} fill={fill} />
+    </svg>
+  )
+}
 
 function FooterComponent() {
+  const visibilityRef = useRef<HTMLDivElement>(null)
+  const inView = useSectionInView(visibilityRef)
+  const preferReducedEffects = usePreferReducedEffects()
+
+  const motionEnabled = !preferReducedEffects
+  const motionActive = motionEnabled && inView
+
+  useEffect(() => {
+    if (!motionEnabled) {
+      setPerfDebugLoop('footerWaves', 'paused')
+      return
+    }
+    setPerfDebugLoop('footerWaves', inView ? 'active' : 'paused')
+  }, [inView, motionEnabled])
+
+  const waveShellClass = [
+    'footer-waves',
+    motionEnabled ? 'footer-waves--motion' : 'footer-waves--static',
+    motionEnabled && !inView ? 'footer-waves--paused' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <footer className="footer-root">
-      <style>{`
+      {/* Sentinel covers wave overlap above footer (translateY -98%) for IO gating */}
+      <div ref={visibilityRef} className="footer-vis-sentinel" aria-hidden />
 
+      <style>{`
         .footer-root {
           position: relative;
-          /* Match site section background to avoid seams */
           background: var(--brand-black);
           color: #fff;
           font-family: 'Open Sans', sans-serif;
           overflow: visible;
-          /* Prevent any SVG/absolute layers from widening the page on iPad */
           overflow-x: clip;
         }
 
-        /* Ultra-smooth CSS wave animations */
-        .wave-layer-1 {
-          animation: waveGlide1 12s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-2 {
-          animation: waveGlide2 16s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-3 {
-          animation: waveGlide3 20s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-4 {
-          animation: waveGlide4 18s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-5 {
-          animation: waveGlide5 22s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-6 {
-          animation: waveGlide6 24s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-7 {
-          animation: waveGlide7 26s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-        .wave-layer-8 {
-          animation: waveGlide8 28s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-          will-change: d;
-        }
-
-        @keyframes waveGlide1 {
-          0%, 100% {
-            d: path("M0,55 C200,30 400,80 600,55 C800,30 1000,80 1200,55 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,55 C200,80 400,30 600,55 C800,80 1000,30 1200,55 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide2 {
-          0%, 100% {
-            d: path("M0,65 C200,90 400,40 600,65 C800,90 1000,40 1200,65 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,65 C200,40 400,90 600,65 C800,40 1000,90 1200,65 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide3 {
-          0%, 100% {
-            d: path("M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,78 C200,50 400,105 600,78 C800,50 1000,105 1200,78 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide4 {
-          0%, 100% {
-            d: path("M0,65 C200,110 400,10 600,65 C800,110 1000,10 1200,65 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,65 C200,10 400,110 600,65 C800,10 1000,110 1200,65 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide5 {
-          0%, 100% {
-            d: path("M0,55 C200,130 400,-10 600,55 C800,130 1000,-10 1200,55 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,55 C200,-10 400,130 600,55 C800,-10 1000,130 1200,55 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide6 {
-          0%, 100% {
-            d: path("M0,65 C200,150 400,-30 600,65 C800,150 1000,-30 1200,65 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,65 C200,-30 400,150 600,65 C800,-30 1000,150 1200,65 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide7 {
-          0%, 100% {
-            d: path("M0,78 C200,165 400,-45 600,78 C800,165 1000,-45 1200,78 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,78 C200,-45 400,165 600,78 C800,-45 1000,165 1200,78 L1200,120 L0,120 Z");
-          }
-        }
-        @keyframes waveGlide8 {
-          0%, 100% {
-            d: path("M0,90 C200,180 400,-60 600,90 C800,180 1000,-60 1200,90 L1200,120 L0,120 Z");
-          }
-          50% {
-            d: path("M0,90 C200,-60 400,180 600,90 C800,-60 1000,180 1200,90 L1200,120 L0,120 Z");
-          }
-        }
-
-        .footer-wave-container {
-          position: relative;
+        .footer-vis-sentinel {
+          position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
           height: 120px;
-          overflow: hidden;
-          line-height: 0;
-          margin-top: -120px;
+          transform: translateY(-120px);
+          pointer-events: none;
+          visibility: hidden;
         }
 
-        .footer-orb {
+        .footer-waves {
           position: absolute;
-          border-radius: 50%;
+          top: 0;
+          left: 0;
+          width: 100%;
+          overflow: hidden;
+          line-height: 0;
           pointer-events: none;
-          filter: blur(80px);
-          opacity: 0.07;
+          transform: translateY(-98%);
         }
-        .footer-orb-1 {
-          width: 400px; height: 400px;
-          /* Avoid white bloom lines near section seams */
-          background: var(--brand-gold);
-          top: 80px; left: -100px;
-          animation: orbDrift1 14s ease-in-out infinite;
+        .footer-waves-inner {
+          position: relative;
+          width: 100%;
+          height: 80px;
         }
-        .footer-orb-2 {
-          width: 300px; height: 300px;
-          background: var(--brand-gold);
-          top: 40px; right: -60px;
-          animation: orbDrift2 18s ease-in-out infinite;
+        @media (min-width: 768px) {
+          .footer-waves-inner {
+            height: 120px;
+          }
         }
-        @keyframes orbDrift1 {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(20px) translateX(15px); }
+
+        .footer-wave-layer {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
         }
-        @keyframes orbDrift2 {
-          0%, 100% { transform: translateY(0) translateX(0); }
-          50% { transform: translateY(-25px) translateX(-10px); }
+
+        .footer-wave-track {
+          display: flex;
+          width: 200%;
+          height: 100%;
+          will-change: transform;
+        }
+        .footer-waves--static .footer-wave-track {
+          width: 100%;
+          will-change: auto;
+        }
+
+        .footer-wave-svg {
+          display: block;
+          flex: 0 0 50%;
+          width: 50%;
+          height: 100%;
+        }
+        .footer-waves--static .footer-wave-svg {
+          flex: 0 0 100%;
+          width: 100%;
+        }
+
+        .footer-waves--motion .footer-wave-track {
+          animation: footerWaveSlide var(--wave-duration, 16s) linear infinite;
+          animation-direction: var(--wave-direction, normal);
+        }
+        .footer-waves--motion.footer-waves--paused .footer-wave-track {
+          animation-play-state: paused;
+        }
+
+        @keyframes footerWaveSlide {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .footer-waves--motion .footer-wave-track {
+            animation: none;
+            will-change: auto;
+          }
         }
 
         .footer-body {
@@ -183,12 +193,10 @@ function FooterComponent() {
           display: flex;
           align-items: center;
           gap: 0.35rem;
-          /* Desktop/laptop: keep logo + watermark on one row */
           flex-wrap: nowrap;
         }
         @media (max-width: 1024px) {
           .footer-brand-head {
-            /* Tablet: allow wrapping so it never overflows */
             flex-wrap: wrap;
             align-items: flex-end;
             gap: 0.75rem;
@@ -346,22 +354,6 @@ function FooterComponent() {
           border-radius: 2px;
         }
 
-        .footer-services {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-        .footer-service-item {
-          font-size: 0.88rem;
-          color: rgba(255,255,255,0.55);
-        }
-
-        .footer-contact-note {
-          font-size: 0.82rem;
-          color: rgba(255,255,255,0.55);
-          margin: 0 0 0.6rem;
-        }
-
         .footer-bottom {
           position: relative;
           z-index: 2;
@@ -389,76 +381,53 @@ function FooterComponent() {
         }
       `}</style>
 
-      {/* ── LIQUID WAVE TOP BOUNDARY ── */}
-      <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0]" style={{ transform: 'translateY(-98%)', pointerEvents: 'none' }}>
-        <svg
-          className="relative block h-[80px] md:h-[120px]"
-          style={{ width: '100%' }}
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          {/* Layer 1: Subtle ghost wave */}
-          <path
-            className="wave-layer-1"
-            d="M0,55 C200,30 400,80 600,55 C800,30 1000,80 1200,55 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.025)"
-          />
-          {/* Layer 2: Mid transparency wave */}
-          <path
-            className="wave-layer-2"
-            d="M0,65 C200,90 400,40 600,65 C800,90 1000,40 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.04)"
-          />
-          {/* Layer 3: Solid black edge */}
-          <path
-            className="wave-layer-3"
-            d="M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z"
-            fill="var(--brand-black)"
-          />
-          {/* Layer 4: Additional flowing wave */}
-          <path
-            className="wave-layer-4"
-            d="M0,65 C200,110 400,10 600,65 C800,110 1000,10 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.02)"
-          />
-          {/* Layer 5: Deep flowing wave */}
-          <path
-            className="wave-layer-5"
-            d="M0,55 C200,130 400,-10 600,55 C800,130 1000,-10 1200,55 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.015)"
-          />
-          {/* Layer 6: Extra deep wave */}
-          <path
-            className="wave-layer-6"
-            d="M0,65 C200,150 400,-30 600,65 C800,150 1000,-30 1200,65 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.01)"
-          />
-          {/* Layer 7: Intense wave */}
-          <path
-            className="wave-layer-7"
-            d="M0,78 C200,165 400,-45 600,78 C800,165 1000,-45 1200,78 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.0075)"
-          />
-          {/* Layer 8: Extreme wave */}
-          <path
-            className="wave-layer-8"
-            d="M0,90 C200,180 400,-60 600,90 C800,180 1000,-60 1200,90 L1200,120 L0,120 Z"
-            fill="rgba(0,0,0,0.005)"
-          />
-        </svg>
+      {/* Transform-only wave boundary (static paths, tiled translateX slide) */}
+      <div className={waveShellClass} aria-hidden>
+        <div className="footer-waves-inner">
+          {FOOTER_WAVE_LAYERS.map((layer) => (
+            <div
+              key={layer.d}
+              className="footer-wave-layer"
+              style={
+                motionEnabled
+                  ? ({
+                      ['--wave-duration' as string]: layer.duration,
+                      ['--wave-direction' as string]: layer.reverse ? 'reverse' : 'normal',
+                    } as CSSProperties)
+                  : undefined
+              }
+            >
+              <div className="footer-wave-track">
+                <FooterWaveSvg d={layer.d} fill={layer.fill} />
+                {motionEnabled ? <FooterWaveSvg d={layer.d} fill={layer.fill} /> : null}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Ambient orbs */}
-      <div className="footer-orb footer-orb-1" />
-      <div className="footer-orb footer-orb-2" />
+      {/* Ambient glow — radial-gradient orbs, transform-only drift */}
+      <div
+        className={`footer-glow footer-glow--1${motionActive ? ' is-animated' : ''}`}
+        aria-hidden
+      />
+      <div
+        className={`footer-glow footer-glow--2${motionActive ? ' is-animated' : ''}`}
+        aria-hidden
+      />
 
-
-      {/* Main content */}
       <div className="footer-body">
-        {/* Brand: watermark + logo, tagline, big icons + email */}
         <div className="footer-brand">
           <div className="footer-brand-head">
-            <img src="/transparent-logo.svg" alt="SiliconScale" width="120" height="120" className="footer-logo" loading="lazy" decoding="async" />
+            <img
+              src="/transparent-logo.svg"
+              alt="SiliconScale"
+              width="120"
+              height="120"
+              className="footer-logo"
+              loading="lazy"
+              decoding="async"
+            />
             <span className="footer-watermark">SiliconScale</span>
           </div>
           <p className="footer-tagline">
@@ -494,49 +463,71 @@ function FooterComponent() {
           </div>
         </div>
 
-        {/* Grid */}
         <div className="footer-grid">
           <div>
             <h4 className="footer-col-title">Quick Links</h4>
             <div className="footer-links">
-              <Link to="/" className="footer-link">Home</Link>
-              <Link to="/services" className="footer-link">Services</Link>
-              <Link to="/tool-stack" className="footer-link">Tool Stack</Link>
-              <Link to="/contact" className="footer-link">Contact</Link>
-              <Link to="/about" className="footer-link">About</Link>
-              <Link to="/work" className="footer-link">Work</Link>
-              <Link to="/team" className="footer-link">Team</Link>
+              <Link to="/" className="footer-link">
+                Home
+              </Link>
+              <Link to="/services" className="footer-link">
+                Services
+              </Link>
+              <Link to="/tool-stack" className="footer-link">
+                Tool Stack
+              </Link>
+              <Link to="/contact" className="footer-link">
+                Contact
+              </Link>
+              <Link to="/about" className="footer-link">
+                About
+              </Link>
+              <Link to="/work" className="footer-link">
+                Work
+              </Link>
+              <Link to="/team" className="footer-link">
+                Team
+              </Link>
             </div>
           </div>
 
           <div>
             <h4 className="footer-col-title">Useful Links</h4>
             <div className="footer-links">
-              <Link to="/privacy" className="footer-link">Privacy Policy</Link>
-              <Link to="/terms" className="footer-link">Terms of Service</Link>
+              <Link to="/privacy" className="footer-link">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="footer-link">
+                Terms of Service
+              </Link>
             </div>
           </div>
 
           <div>
             <h4 className="footer-col-title">Services</h4>
             <nav className="footer-links">
-              <Link to="/services#development" className="footer-link">Custom Systems</Link>
-              <Link to="/services#shopify-headless" className="footer-link">Shopify Development</Link>
-              <Link to="/services#ai-agents" className="footer-link">AI & Automation</Link>
-              <Link to="/services#integrations" className="footer-link">Integrations</Link>
+              <Link to="/services#development" className="footer-link">
+                Custom Systems
+              </Link>
+              <Link to="/services#shopify-headless" className="footer-link">
+                Shopify Development
+              </Link>
+              <Link to="/services#ai-agents" className="footer-link">
+                AI & Automation
+              </Link>
+              <Link to="/services#integrations" className="footer-link">
+                Integrations
+              </Link>
             </nav>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar */}
       <div className="footer-bottom">
         <span className="footer-bottom-text">
           © {new Date().getFullYear()} SiliconScale. All rights reserved.
         </span>
-        <span className="footer-bottom-text">
-          Building scalable digital products.
-        </span>
+        <span className="footer-bottom-text">Building scalable digital products.</span>
       </div>
     </footer>
   )

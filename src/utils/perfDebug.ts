@@ -1,10 +1,21 @@
-export type PerfDebugLoopKey = 'hero' | 'testimonials' | 'servicesTicker'
+export type PerfDebugLoopKey =
+  | 'hero'
+  | 'testimonials'
+  | 'servicesTicker'
+  | 'finalCtaAmbient'
+  | 'finalCtaRotatingWord'
+  | 'footerWaves'
+  | 'connectGlitter'
 export type PerfDebugLoopStatus = 'active' | 'paused' | 'unknown'
 
 const loopState: Record<PerfDebugLoopKey, PerfDebugLoopStatus> = {
   hero: 'unknown',
   testimonials: 'unknown',
   servicesTicker: 'unknown',
+  finalCtaAmbient: 'unknown',
+  finalCtaRotatingWord: 'unknown',
+  footerWaves: 'unknown',
+  connectGlitter: 'unknown',
 }
 
 /** Stable snapshot for useSyncExternalStore — same reference until a loop changes. */

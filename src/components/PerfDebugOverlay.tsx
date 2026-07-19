@@ -44,6 +44,10 @@ export function PerfDebugOverlay() {
       <p>hero: {loops.hero}</p>
       <p>testimonials: {loops.testimonials}</p>
       <p>services ticker: {loops.servicesTicker}</p>
+      <p>finalCTA ambient: {loops.finalCtaAmbient}</p>
+      <p>finalCTA rotatingWord: {loops.finalCtaRotatingWord}</p>
+      <p>footer waves: {loops.footerWaves}</p>
+      <p>connect glitter: {loops.connectGlitter}</p>
     </div>
   )
 }
