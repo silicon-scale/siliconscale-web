@@ -4,13 +4,17 @@ import { useState, useSyncExternalStore } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { getPreferReducedEffectsDebugInfo } from '@/hooks/usePreferReducedEffects'
 import {
-  getPerfDebugLoops,
+  getPerfDebugSnapshot,
   isPerfDebugEnabled,
   subscribePerfDebug,
 } from '@/utils/perfDebug'
 
-function usePerfDebugLoops() {
-  return useSyncExternalStore(subscribePerfDebug, getPerfDebugLoops, getPerfDebugLoops)
+function usePerfDebugStore() {
+  return useSyncExternalStore(
+    subscribePerfDebug,
+    getPerfDebugSnapshot,
+    getPerfDebugSnapshot,
+  )
 }
 
 export function PerfDebugOverlay() {
@@ -18,7 +22,7 @@ export function PerfDebugOverlay() {
     typeof window !== 'undefined' ? isPerfDebugEnabled() : false,
   )
   const prefersReducedMotion = useReducedMotion()
-  const loops = usePerfDebugLoops()
+  const { loops, navbar } = usePerfDebugStore()
 
   if (!enabled) return null
 
@@ -48,6 +52,16 @@ export function PerfDebugOverlay() {
       <p>finalCTA rotatingWord: {loops.finalCtaRotatingWord}</p>
       <p>footer waves: {loops.footerWaves}</p>
       <p>connect glitter: {loops.connectGlitter}</p>
+      <p className="mt-1 border-t border-white/10 pt-1 text-white/70">navbar</p>
+      <p>approach: {navbar.approach}</p>
+      <p>blur radius: {navbar.blurRadiusPx}px</p>
+      <p>scrolled: {navbar.scrolled ? 'yes' : 'no'}</p>
+      <p>contain layout paint: {navbar.containLayoutPaint ? 'yes' : 'no'}</p>
+      <p>layer promotion (translateZ): {navbar.layerPromotion ? 'yes' : 'no'}</p>
+      <p>
+        will-change backdrop-filter:{' '}
+        {navbar.willChangeBackdropFilter ? 'yes' : 'no'}
+      </p>
     </div>
   )
 }

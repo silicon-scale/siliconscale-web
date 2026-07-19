@@ -12,7 +12,7 @@ import { MOBILE_BREAKPOINT } from '@/lib/breakpoints'
 import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
-import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import { NAVBAR_BLUR_RADIUS_PX, setNavbarDebug } from '@/utils/perfDebug'
 
 /** Mobile menu open/close — transform + opacity only; keep short but eased (no blur). */
 const MENU_DURATION = 0.22
@@ -31,7 +31,6 @@ function clearWillChange(e: TransitionEvent<HTMLElement>) {
 export function Navbar() {
   const { revealStarted } = useReveal()
   const prefersReducedMotion = useReducedMotion()
-  const preferReducedEffects = usePreferReducedEffects()
   const [isMobile, setIsMobile] = useState(
     () => (typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false),
   )
@@ -145,12 +144,30 @@ export function Navbar() {
 
   const navRevealClass = [
     'nav-reveal',
+    'nav-glass-root',
     'fixed top-0 left-0 w-full z-[200]',
     navRevealed ? 'is-revealed' : '',
     navRevealed && !prefersReducedMotion ? 'is-animating' : '',
   ]
     .filter(Boolean)
     .join(' ')
+
+  const navShellClass = isScrolled
+    ? prefersReducedMotion
+      ? 'transition-colors duration-500 border-b border-white/10 bg-[#0a0a0c]/78 shadow-2xl'
+      : 'nav-glass-shell transition-colors duration-500 border-b border-white/10 bg-black/68 shadow-2xl'
+    : 'transition-colors duration-500 bg-transparent'
+
+  useEffect(() => {
+    setNavbarDebug({
+      approach: 'isolated-layer-blur',
+      blurRadiusPx: NAVBAR_BLUR_RADIUS_PX,
+      scrolled: isScrolled,
+      containLayoutPaint: true,
+      layerPromotion: true,
+      willChangeBackdropFilter: isScrolled && !prefersReducedMotion,
+    })
+  }, [isScrolled, prefersReducedMotion])
 
   return (
     <>
@@ -159,15 +176,7 @@ export function Navbar() {
         aria-label="Primary"
         onTransitionEnd={clearWillChange}
       >
-        <div
-          className={`transition-colors duration-500 ${
-            isScrolled
-              ? preferReducedEffects
-                ? 'border-b border-white/10 bg-[#0a0a0c]/88 shadow-2xl'
-                : 'border-b border-white/10 bg-black/60 shadow-2xl backdrop-blur-2xl'
-              : 'bg-transparent'
-          }`}
-        >
+        <div className={navShellClass}>
           <div className="max-w-[1600px] mx-auto flex items-center justify-between px-6 sm:px-10 lg:px-16 py-4 md:py-6">
             <Link
               to="/"

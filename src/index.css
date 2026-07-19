@@ -826,6 +826,26 @@ html {
   transform: translate3d(0, 0, 0);
 }
 
+/*
+ * Navbar frosted glass — isolated compositor layer on the fixed bar only
+ * (content height, not full viewport). Blur samples stay cheap vs page scroll.
+ */
+.nav-glass-root {
+  contain: layout paint;
+}
+.nav-glass-shell {
+  will-change: backdrop-filter;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-glass-shell {
+    will-change: auto;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 .nav-link-reveal {
   opacity: 0;
   transform: translate3d(0, -20px, 0);
