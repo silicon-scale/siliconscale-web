@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { FounderCard, type Founder } from './FounderCard'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import maniPhoto from '../assets/jhaneswar.webp'
 import pavanPhoto from '../assets/tillu.webp'
 import abdulPhoto from '../assets/abdul.webp'
@@ -284,7 +285,7 @@ export default function Team() {
 
       {/* Changed max-w-6xl -> max-w-7xl */}
       <div className="relative z-10 mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-12">
-        <div className="pt-20 text-center md:pt-24">
+        <ScrollReveal className="pt-20 text-center md:pt-24">
           <h1
             id="team-heading"
             className="my-8 leading-[1.2]"
@@ -297,16 +298,14 @@ export default function Team() {
             <br />
             <em>Building SiliconScale</em>
           </h1>
-        </div>
+        </ScrollReveal>
 
         {/* Slightly smaller gap = wider cards */}
         <div className="mt-12 mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-8">
           {FOUNDERS.map((founder, i) => (
-            <FounderCard
-              key={founder.name}
-              founder={founder}
-              featuredOnMd={i === 2}
-            />
+            <ScrollReveal key={founder.name} staggerIndex={i + 1}>
+              <FounderCard founder={founder} featuredOnMd={i === 2} />
+            </ScrollReveal>
           ))}
         </div>
       </div>

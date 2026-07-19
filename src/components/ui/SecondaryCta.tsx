@@ -28,10 +28,10 @@ export type SecondaryCtaProps = SecondaryCtaButtonProps | SecondaryCtaLinkProps
 const VARIANT_CLASS: Record<SecondaryCtaVariant, string> = {
   /** White filled — AboutSection / ServicesPage */
   solid:
-    'inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90',
+    'inline-flex items-center gap-2 rounded-button bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90',
   /** Bordered with gold hover — Highlights */
   outline:
-    'group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:border-brand-gold/60 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black hover:shadow-[0_0_24px_rgb(var(--brand-gold-rgb)/0.25)]',
+    'group inline-flex items-center gap-2 rounded-button border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-all duration-300 hover:border-brand-gold/60 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black hover:shadow-[0_0_24px_rgb(var(--brand-gold-rgb)/0.25)]',
   /** Compact text link — section headers (Services home, etc.) */
   textLink:
     'group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-white/70 transition-colors duration-200 hover:text-white focus-visible:text-white',

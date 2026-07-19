@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 /* ─── Data ───────────────────────────────────────────────── */
 const PRINCIPLES = [
@@ -59,28 +60,6 @@ const PRINCIPLES = [
 		desc: "Clean code, tested before it's handed off, explained in plain language — not a black box you're afraid to touch after we leave.",
 	},
 ];
-
-/* ─── useInView ──────────────────────────────────────────── */
-function useInView<T extends HTMLElement>(threshold = 0.12) {
-	const ref = useRef<T>(null);
-	const [visible, setVisible] = useState(false);
-	useEffect(() => {
-		const el = ref.current;
-		if (!el) return;
-		const obs = new IntersectionObserver(
-			([e]) => {
-				if (e.isIntersecting) {
-					setVisible(true);
-					obs.disconnect();
-				}
-			},
-			{ threshold }
-		);
-		obs.observe(el);
-		return () => obs.disconnect();
-	}, [threshold]);
-	return { ref, visible };
-}
 
 /* ─── Light Beam ─────────────────────────────────────────── */
 function LightBeam() {
@@ -171,11 +150,6 @@ function SectionLabel({ text }: { text: string }) {
 
 /* ─── Page ───────────────────────────────────────────────── */
 export default function AboutPage() {
-	const missionRef = useInView<HTMLSectionElement>(0.05);
-	const statsRef = useInView<HTMLDivElement>(0.1);
-	const principlesRef = useInView<HTMLSectionElement>(0.1);
-	const ctaRef = useInView<HTMLSectionElement>(0.1);
-
 	useEffect(() => {
 		window.scrollTo(0, 0);
 	}, []);
@@ -193,20 +167,10 @@ export default function AboutPage() {
 			<style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .rv {
-          opacity: 0; transform: translateY(28px);
-          transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1);
-        }
-        .rv.in { opacity: 1; transform: none; }
-        .rv.d1 { transition-delay: 0.08s; }
-        .rv.d2 { transition-delay: 0.18s; }
-        .rv.d3 { transition-delay: 0.28s; }
-        .rv.d4 { transition-delay: 0.38s; }
-
         .join-btn {
           display: inline-flex; align-items: center; gap: 8px;
           border: 1px solid rgba(255,255,255,0.28);
-          padding: 12px 24px; border-radius: 100px;
+          padding: 12px 24px; border-radius: 8px;
           font-family: 'DM Mono',monospace; font-size: 11px;
           letter-spacing: 0.14em; text-transform: uppercase;
           color: #fff; background: transparent; cursor: pointer;
@@ -221,7 +185,7 @@ export default function AboutPage() {
         .ghost-btn {
           display: inline-flex; align-items: center; gap: 8px;
           border: 1px solid rgba(255,255,255,0.2);
-          padding: 12px 24px; border-radius: 100px;
+          padding: 12px 24px; border-radius: 8px;
           font-family: 'DM Mono',monospace; font-size: 11px;
           letter-spacing: 0.14em; text-transform: uppercase;
           color: rgba(255,255,255,0.6); background: transparent;
@@ -336,21 +300,16 @@ export default function AboutPage() {
       `}</style>
 
 			{/* ════ HERO / MISSION ════ */}
-			<section
-				ref={missionRef.ref}
-				className="mission-section"
-			>
+			<section className="mission-section">
 				<LightBeam />
 
-				<div
-					className={`rv ${missionRef.visible ? "in" : ""}`}
-					style={{ position: "relative", zIndex: 2 }}
-				>
+				<ScrollReveal style={{ position: "relative", zIndex: 2 }}>
 					<SectionLabel text="OUR MISSION" />
-				</div>
+				</ScrollReveal>
 
-				<h1
-					className={`rv d1 ${missionRef.visible ? "in" : ""}`}
+				<ScrollReveal
+					as="h1"
+					delay={0.08}
 					style={{
 						position: "relative",
 						zIndex: 2,
@@ -359,17 +318,15 @@ export default function AboutPage() {
 						lineHeight: 1.0,
 						letterSpacing: "-0.035em",
 						maxWidth: 800,
-						// Mirror xAI: first words dim, key word bright
 						color: "rgba(255,255,255,0.22)",
 					}}
 				>
 					Design.{" "}
 					<span style={{ color: "rgba(255,255,255,0.55)" }}>Build.</span>{" "}
 					<span style={{ color: "rgba(255,255,255,0.82)" }}>Grow.</span>
-				</h1>
+				</ScrollReveal>
 
-				{/* bottom row */}
-				<div className="bottom-row">
+				<ScrollReveal delay={0.16} className="bottom-row">
 					<div
 						style={{
 							display: "flex",
@@ -398,11 +355,11 @@ export default function AboutPage() {
 					<Link to="/contact" className="join-btn">
 						Start a project
 					</Link>
-				</div>
+				</ScrollReveal>
 			</section>
 
 			{/* ════ STATS ════ */}
-			<div ref={statsRef.ref as React.RefCallback<HTMLDivElement>} className="stats-section">
+			<div className="stats-section">
 				<div className="stat-row">
 					{[
 						{ n: "12+", l: "Real Projects Delivered" },
@@ -410,10 +367,7 @@ export default function AboutPage() {
 						{ n: "95%", l: "Client Retention" },
 						{ n: "6+", l: "Businesses Served" },
 					].map((s, i) => (
-						<div
-							key={s.l}
-							className={`stat-cell rv d${i + 1} ${statsRef.visible ? "in" : ""}`}
-						>
+						<ScrollReveal key={s.l} staggerIndex={i + 1} className="stat-cell">
 							<p
 								style={{
 									fontSize: "clamp(30px,4vw,52px)",
@@ -435,16 +389,16 @@ export default function AboutPage() {
 							>
 								{s.l}
 							</p>
-						</div>
+						</ScrollReveal>
 					))}
 				</div>
 			</div>
 
 			{/* ════ PRINCIPLES ════ */}
-			<section ref={principlesRef.ref} className="principles-section">
-				<div className={`rv ${principlesRef.visible ? "in" : ""}`}>
+			<section className="principles-section">
+				<ScrollReveal>
 					<SectionLabel text="OUR PRINCIPLES" />
-				</div>
+				</ScrollReveal>
 
 				<div
 					style={{
@@ -456,8 +410,9 @@ export default function AboutPage() {
 						gap: 24,
 					}}
 				>
-					<h2
-						className={`rv d1 ${principlesRef.visible ? "in" : ""}`}
+					<ScrollReveal
+						as="h2"
+						delay={0.08}
 						style={{
 							fontSize: "clamp(38px,5.5vw,76px)",
 							fontWeight: 700,
@@ -466,9 +421,10 @@ export default function AboutPage() {
 						}}
 					>
 						What we actually believe
-					</h2>
-					<p
-						className={`rv d2 ${principlesRef.visible ? "in" : ""}`}
+					</ScrollReveal>
+					<ScrollReveal
+						as="p"
+						delay={0.16}
 						style={{
 							fontFamily: "'DM Mono',monospace",
 							fontSize: 14,
@@ -481,15 +437,12 @@ export default function AboutPage() {
 						A remote team spread across India, working like we&apos;re in the next
 						room — you deal directly with the people building your system, not a
 						layer of account management.
-					</p>
+					</ScrollReveal>
 				</div>
 
 				<div className="principles-wrap" style={{ display: "flex" }}>
 					{PRINCIPLES.map((p, i) => (
-						<div
-							key={p.title}
-							className={`pc rv d${i + 2} ${principlesRef.visible ? "in" : ""}`}
-						>
+						<ScrollReveal key={p.title} staggerIndex={i + 1} className="pc">
 							<div
 								style={{
 									color: "rgba(255,255,255,0.55)",
@@ -520,16 +473,13 @@ export default function AboutPage() {
 							>
 								{p.desc}
 							</p>
-						</div>
+						</ScrollReveal>
 					))}
 				</div>
 			</section>
 
 			{/* ════ CTA ════ */}
-			<section
-				ref={ctaRef.ref}
-				className="cta-section"
-			>
+			<section className="cta-section">
 				<div
 					style={{
 						position: "absolute",
@@ -543,11 +493,12 @@ export default function AboutPage() {
 						transform: "translate(-50%,-50%)",
 					}}
 				/>
-				<div className={`rv ${ctaRef.visible ? "in" : ""}`}>
+				<ScrollReveal>
 					<SectionLabel text="WORK WITH US" />
-				</div>
-				<h2
-					className={`rv d1 ${ctaRef.visible ? "in" : ""}`}
+				</ScrollReveal>
+				<ScrollReveal
+					as="h2"
+					delay={0.08}
 					style={{
 						fontSize: "clamp(46px,8vw,112px)",
 						fontWeight: 700,
@@ -561,9 +512,9 @@ export default function AboutPage() {
 					<br />
 					worth{" "}
 					<span style={{ color: "rgba(255,255,255,0.25)" }}>building?</span>
-				</h2>
-				<div
-					className={`rv d2 ${ctaRef.visible ? "in" : ""}`}
+				</ScrollReveal>
+				<ScrollReveal
+					delay={0.16}
 					style={{ display: "flex", gap: 16, flexWrap: "wrap" }}
 				>
 					<Link
@@ -573,7 +524,7 @@ export default function AboutPage() {
 					>
 						Talk to us
 					</Link>
-				</div>
+				</ScrollReveal>
 			</section>
 		</div>
 	);

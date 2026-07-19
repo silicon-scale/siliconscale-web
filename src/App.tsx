@@ -24,6 +24,7 @@ import ServicesPage from "./components/ServicesPage"
 import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
 import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
+import { LenisProvider, useLenis } from "./providers/LenisProvider"
 
 function scheduleIdle(cb: () => void, timeout = 400): () => void {
   const ric = (window as Window & {
@@ -96,11 +97,16 @@ function DeferredFooter() {
 
 function AppContent() {
   const location = useLocation()
+  const lenis = useLenis()
 
   useEffect(() => {
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true })
+      return
+    }
     const id = requestAnimationFrame(() => window.scrollTo(0, 0))
     return () => cancelAnimationFrame(id)
-  }, [location.pathname])
+  }, [location.pathname, lenis])
 
   useEffect(() => {
     if (!import.meta.env.PROD) return
@@ -188,20 +194,22 @@ export default function App() {
 
   return (
     <Router>
-      {loaderMounted && (
-        <IntroLoader
-          visible={loaderVisible}
-          onExitComplete={() => {
-            // Unmount loader first — then stage 1 → (double rAF) → reveal stage 2.
-            setLoaderVisible(false)
-            setLoaderMounted(false)
-            setMountStage(1)
-          }}
-        />
-      )}
-      <RevealProvider mountStage={mountStage}>
-        <AppContent />
-      </RevealProvider>
+      <LenisProvider>
+        {loaderMounted && (
+          <IntroLoader
+            visible={loaderVisible}
+            onExitComplete={() => {
+              // Unmount loader first — then stage 1 → (double rAF) → reveal stage 2.
+              setLoaderVisible(false)
+              setLoaderMounted(false)
+              setMountStage(1)
+            }}
+          />
+        )}
+        <RevealProvider mountStage={mountStage}>
+          <AppContent />
+        </RevealProvider>
+      </LenisProvider>
     </Router>
   )
 }

@@ -9,6 +9,7 @@ import { useReducedMotion } from 'framer-motion'
 import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta } from '@/components/ui/SecondaryCta'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 export function AboutSection() {
   const navigate = useNavigate()
@@ -44,7 +45,7 @@ export function AboutSection() {
           className="[--pattern-scales:rgba(255,255,255,0.10)]"
         >
           <div className="flex flex-col gap-10 p-8 sm:p-10 lg:p-14">
-            <div className="flex flex-wrap items-end justify-between gap-6">
+            <ScrollReveal className="flex flex-wrap items-end justify-between gap-6">
               <div className="space-y-5">
                 <SectionEyebrow>About Us</SectionEyebrow>
                 <h2
@@ -70,7 +71,7 @@ export function AboutSection() {
                 See how we work
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </SecondaryCta>
-            </div>
+            </ScrollReveal>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -78,9 +79,10 @@ export function AboutSection() {
                 { k: 'You Talk to the Builder', v: 'No middleman between you and the work.' },
                 { k: 'Fast, Not Rushed', v: 'Tight timelines, without cut corners.' },
                 { k: 'Production-Ready', v: "Code we'd be comfortable running ourselves." },
-              ].map((item) => (
-                <div
+              ].map((item, index) => (
+                <ScrollReveal
                   key={item.k}
+                  staggerIndex={index + 1}
                   className="rounded-2xl border border-white/12 bg-black/55 p-5 backdrop-blur-md"
                 >
                   <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
@@ -89,7 +91,7 @@ export function AboutSection() {
                   <div className="mt-2 text-sm leading-relaxed text-white/55">
                     {item.v}
                   </div>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>

@@ -137,10 +137,10 @@ export function Navbar() {
   }, [isMobileMenuOpen, closeMobileMenu])
 
   const bookCallClassName =
-    `inline-flex items-center justify-center border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-full uppercase tracking-[0.18em] lg:tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
+    `inline-flex items-center justify-center border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-button uppercase tracking-[0.18em] lg:tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
   const mobileBookCallClassName =
-    `inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-full uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
+    `inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-button uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
   const navRevealClass = [
     'nav-reveal',
@@ -249,7 +249,7 @@ export function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsMobileMenuOpen((open) => !open)}
-                className={`md:hidden text-white p-2 rounded-full bg-white/10 ${FOCUS_RING}`}
+                className={`md:hidden text-white p-2 rounded-button bg-white/10 ${FOCUS_RING}`}
                 layout={false}
                 aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
                 aria-expanded={isMobileMenuOpen}

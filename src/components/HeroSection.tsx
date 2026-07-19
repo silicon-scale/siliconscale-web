@@ -15,6 +15,15 @@ import { ENTRANCE_SETTLE_MS } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
+const HERO_CANVAS_COLORS = [
+  'rgba(255,255,255,0.85)',
+  'rgba(200,215,235,0.75)',
+  'rgba(143,171,212,0.65)',
+  brandGoldAlpha(0.85),
+  brandGoldAlpha(0.55),
+  'rgba(255,255,255,0.45)',
+] as const
+
 const PULSE_DOTS = [
   {
     style: { top: '30%', left: '26%' },
@@ -198,14 +207,7 @@ function HeroSectionComponent() {
                 <CanvasText
                   text="Systems"
                   backgroundClassName="bg-brand-gold"
-                  colors={[
-                    'rgba(255,255,255,0.75)',
-                    'rgba(255,246,230,0.65)',
-                    'rgba(255,232,190,0.55)',
-                    brandGoldAlpha(0.75),
-                    brandGoldAlpha(0.45),
-                    'rgba(255,255,255,0.35)',
-                  ]}
+                  colors={[...HERO_CANVAS_COLORS]}
                   lineGap={5}
                   animationDuration={16}
                   curveIntensity={54}
@@ -228,14 +230,7 @@ function HeroSectionComponent() {
                 <CanvasText
                   text="Grow"
                   backgroundClassName="bg-brand-gold"
-                  colors={[
-                    'rgba(255,255,255,0.75)',
-                    'rgba(255,246,230,0.65)',
-                    'rgba(255,232,190,0.55)',
-                    brandGoldAlpha(0.75),
-                    brandGoldAlpha(0.45),
-                    'rgba(255,255,255,0.35)',
-                  ]}
+                  colors={[...HERO_CANVAS_COLORS]}
                   lineGap={5}
                   animationDuration={16}
                   curveIntensity={54}
@@ -246,7 +241,7 @@ function HeroSectionComponent() {
                 <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
                   Grow
                 </span>
-              )}{" "}
+              )}{' '}
               Your Business
             </span>
           </h1>
@@ -266,7 +261,7 @@ function HeroSectionComponent() {
             <div className="flex flex-wrap justify-center gap-4">
               <HoverBorderGradient
                 onClick={goToContact}
-                containerClassName="rounded-full"
+                containerClassName="rounded-button"
                 as="button"
                 animateActive={pulseLoopsActive}
                 className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
@@ -275,7 +270,7 @@ function HeroSectionComponent() {
               </HoverBorderGradient>
               <MagneticButton
                 onClick={goToWork}
-                className="rounded-full border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
+                className="rounded-button border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
               >
                 See Our Work
               </MagneticButton>

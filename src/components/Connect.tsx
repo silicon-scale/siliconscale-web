@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Mail, Linkedin, Instagram, Facebook, X as XIcon } from 'lucide-react'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 type ConnectKind = 'email' | 'linkedin' | 'instagram' | 'facebook' | 'x'
@@ -297,16 +298,20 @@ export function Connect() {
       `}</style>
 
       <div className="connect-shell">
-        <div className="connect-head">
+        <ScrollReveal className="connect-head">
           <span className="connect-pill">LET&apos;S CONNECT</span>
           <h2 className="connect-title">We&apos;re here for ideas, feedback, or a friendly hello!</h2>
-        </div>
+        </ScrollReveal>
 
         <div className="connect-grid">
-          <ConnectCardItem card={email} className="connect-big" glitterEnabled={glitterEnabled} />
+          <ScrollReveal>
+            <ConnectCardItem card={email} className="connect-big" glitterEnabled={glitterEnabled} />
+          </ScrollReveal>
           <div className="connect-socials">
-            {socials.map((c) => (
-              <ConnectCardItem key={c.kind} card={c} glitterEnabled={glitterEnabled} />
+            {socials.map((c, i) => (
+              <ScrollReveal key={c.kind} staggerIndex={i + 1}>
+                <ConnectCardItem card={c} glitterEnabled={glitterEnabled} />
+              </ScrollReveal>
             ))}
           </div>
         </div>

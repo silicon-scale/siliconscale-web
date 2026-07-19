@@ -1,0 +1,41 @@
+{
+  "url": "http://127.0.0.1:5173/",
+  "preScroll": {
+    "ioConstructCount": 2,
+    "scrollRevealElements": 23,
+    "withWillChange": 0,
+    "withVisible": 0,
+    "pageHeight": 8307
+  },
+  "postScroll": {
+    "ioConstructCount": 2,
+    "scrollRevealElements": 23,
+    "concurrentAnimating": 0,
+    "withWillChange": 0,
+    "visibleCount": 15,
+    "sectionCounts": {
+      "#awards": {
+        "total": 2,
+        "animating": 0,
+        "visible": 2
+      }
+    }
+  },
+  "frameStats": {
+    "frames": 828,
+    "avgMs": 8.325603864735198,
+    "avgFps": 120.11140768247515,
+    "p95Ms": 9.100000000000364,
+    "p95Fps": 109.89010989010549,
+    "worstMs": 9.399999999999636,
+    "worstFps": 106.38297872340837,
+    "pctUnder50Fps": 0,
+    "longTasks": 0,
+    "longTaskMaxMs": 0
+  },
+  "cdpPerformance": {
+    "layoutCount": 239,
+    "recalcStyleCount": 1333,
+    "nodes": 910
+  }
+}

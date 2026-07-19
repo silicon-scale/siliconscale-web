@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { ToolIcon } from '@/components/toolIcons'
 import { REVEAL_EASE } from '@/lib/motion'
 import { FOCUS_RING } from '@/lib/focus'
@@ -239,26 +240,22 @@ function CategorySection({
   category: StackCategory
   index: number
 }) {
-  const prefersReducedMotion = useReducedMotion()
-
   return (
-    <motion.section
-      className="tool-category"
-      aria-labelledby={`stack-cat-${category.title}`}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 22 }}
-      whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.7, ease: REVEAL_EASE, delay: index * 0.06 }}
-    >
+    <section className="tool-category" aria-labelledby={`stack-cat-${category.title}`}>
       <h2 id={`stack-cat-${category.title}`} className="tool-category-title">
         {category.title}
       </h2>
       <div className="tool-grid">
-        {category.tools.map((tool) => (
-          <ToolCard key={tool.name} tool={tool} category={category.title} />
+        {category.tools.map((tool, toolIndex) => (
+          <ScrollReveal
+            key={tool.name}
+            staggerIndex={index * 3 + toolIndex + 1}
+          >
+            <ToolCard tool={tool} category={category.title} />
+          </ScrollReveal>
         ))}
       </div>
-    </motion.section>
+    </section>
   )
 }
 
@@ -313,7 +310,7 @@ export default function ToolStack() {
         .tool-chevron {
           width: 36px;
           height: 36px;
-          border-radius: 999px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.14);
           background: rgba(255,255,255,0.04);
           color: rgba(255,255,255,0.7);
@@ -404,7 +401,7 @@ export default function ToolStack() {
           align-items: center;
           gap: clamp(1rem, 2.5vw, 1.6rem);
           padding: clamp(0.85rem, 1.8vw, 1.35rem) clamp(1.5rem, 3.5vw, 2.75rem) clamp(0.85rem, 1.8vw, 1.35rem) clamp(0.85rem, 1.8vw, 1.35rem);
-          border-radius: 999px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.10);
           background: #1a1a1a;
           color: #fff;
@@ -462,7 +459,7 @@ export default function ToolStack() {
       />
 
       <div className="tool-stack-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
-        <header className="mb-6 max-w-3xl">
+        <ScrollReveal className="mb-6 max-w-3xl">
           <SectionEyebrow variant="pillMono">Our Stack</SectionEyebrow>
           <h1
             id="tool-stack-heading"
@@ -474,13 +471,13 @@ export default function ToolStack() {
             Design, development, animation, AI, and ops — the tools we actually reach for on
             client work, not a laundry list of every logo on the internet.
           </p>
-        </header>
+        </ScrollReveal>
 
         {STACK.map((category, index) => (
           <CategorySection key={category.title} category={category} index={index} />
         ))}
 
-        <div className="tool-finale">
+        <ScrollReveal className="tool-finale">
           <button
             type="button"
             className={cn('tool-finale-pill', FOCUS_RING)}
@@ -492,7 +489,7 @@ export default function ToolStack() {
             </span>
             Let&apos;s get started
           </button>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   )

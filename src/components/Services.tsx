@@ -3,12 +3,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
+import ScrollReveal from '@/components/ui/ScrollReveal'
+import { ScrollRevealGroup } from '@/components/ui/ScrollRevealGroup'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 export function Services() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const inView = useSectionInView(sectionRef)
 
@@ -68,11 +69,6 @@ export function Services() {
     },
   ] as const
 
-  useEffect(() => {
-    const t = setTimeout(() => setIsVisible(true), 200)
-    return () => clearTimeout(t)
-  }, [])
-
   return (
     <>
       <style>{`
@@ -81,8 +77,8 @@ export function Services() {
           100% { transform: translateX(-25%); }
         }
         @keyframes reveal-up {
-          from { opacity: 0; transform: translateY(32px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translate3d(0, 32px, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
         @keyframes line-expand {
           from { transform: scaleX(0); }
@@ -244,8 +240,6 @@ export function Services() {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
-        .reveal { opacity: 0; }
-        .reveal.visible { animation: reveal-up 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
       `}</style>
 
       <section
@@ -285,7 +279,7 @@ export function Services() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(24px, 5vw, 64px)' }}>
 
           {/* ── HEADER ── */}
-          <div className={`reveal ${isVisible ? 'visible' : ''}`} style={{ marginBottom: '2.5rem' }}>
+          <ScrollReveal style={{ marginBottom: '2.5rem' }}>
             <p
               style={{
                 fontSize: '11px',
@@ -338,20 +332,19 @@ export function Services() {
                 <ArrowRight className={SECTION_ARROW_ICON_CLASS} aria-hidden />
               </SecondaryCta>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* ── SERVICES LIST ── */}
-          <div className={`reveal ${isVisible ? 'visible' : ''}`} style={{ animationDelay: '0.3s' }}>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              {services.map((service, index) => (
-                <div
-                  key={service.number}
-                  className={`service-row${'locked' in service && service.locked ? ' locked' : ''}`}
-                  onMouseEnter={() => {
-                    if (!('locked' in service && service.locked)) setActiveIndex(index)
-                  }}
-                  onMouseLeave={() => setActiveIndex(null)}
-                >
+          <ScrollRevealGroup style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            {services.map((service, index) => (
+              <div
+                key={service.number}
+                className={`scroll-reveal-item service-row${'locked' in service && service.locked ? ' locked' : ''}`}
+                onMouseEnter={() => {
+                  if (!('locked' in service && service.locked)) setActiveIndex(index)
+                }}
+                onMouseLeave={() => setActiveIndex(null)}
+              >
                   {/* Accent bar on left */}
                   <div style={{
                     position: 'absolute', left: 0, top: 0, bottom: 0, width: '2px',
@@ -376,15 +369,22 @@ export function Services() {
 
                 </div>
               ))}
-            </div>
-          </div>
+          </ScrollRevealGroup>
 
           {/* ── BOTTOM CTA STRIP ── */}
-          <div className={`reveal ${isVisible ? 'visible' : ''}`}
-               style={{ animationDelay: '0.45s', marginTop: '5rem', display: 'flex',
-                         alignItems: 'center', justifyContent: 'space-between',
-                         flexWrap: 'wrap', gap: '24px',
-                         borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '40px' }}>
+          <ScrollReveal
+            delay={0.15}
+            style={{
+              marginTop: '5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '24px',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+              paddingTop: '40px',
+            }}
+          >
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               SiliconScale — built for the businesses that need it to work, not just look good.
             </p>
@@ -397,7 +397,7 @@ export function Services() {
                 }} />
               ))}
             </div>
-          </div>
+          </ScrollReveal>
 
         </div>
       </section>

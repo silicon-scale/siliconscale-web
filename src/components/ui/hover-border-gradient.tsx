@@ -66,7 +66,7 @@ export function HoverBorderGradient({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        'group relative inline-flex rounded-full p-px',
+        'group relative inline-flex rounded-button p-px',
         'bg-black/20 hover:bg-black/10 transition-colors duration-300',
         'border border-white/10',
         'shadow-[0_18px_60px_rgba(0,0,0,0.55)]',

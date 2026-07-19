@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { BrandButton } from '@/components/ui/BrandButton'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 const NotFound = () => {
   const location = useLocation()
@@ -18,7 +19,7 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-page px-6 text-white">
-      <div className="text-center">
+      <ScrollReveal className="text-center">
         <SectionEyebrow className="mb-3 bg-white/[0.04] text-[10px] tracking-[0.22em] text-white/55">
           Not Found
         </SectionEyebrow>
@@ -29,7 +30,7 @@ const NotFound = () => {
         <BrandButton type="button" onClick={() => navigate('/')}>
           Return Home
         </BrandButton>
-      </div>
+      </ScrollReveal>
     </div>
   )
 }

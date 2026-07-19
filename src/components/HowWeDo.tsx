@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 import { FOCUS_RING } from '@/lib/focus'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 const CARDS = [
   {
@@ -124,13 +125,7 @@ function StepIcon({ type }: { type: (typeof CARDS)[number]['icon'] }) {
 
 export function HowWeDo() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isVisible, setIsVisible] = useState(false)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsVisible(true), 200)
-    return () => clearTimeout(t)
-  }, [])
 
   const goPrev = () =>
     setCurrentIndex((i) => (i - 1 + CARDS.length) % CARDS.length)
@@ -143,11 +138,9 @@ export function HowWeDo() {
     <>
       <style>{`
         @keyframes reveal-up {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translate3d(0, 24px, 0); }
+          to   { opacity: 1; transform: translate3d(0, 0, 0); }
         }
-        .how-we-do-reveal { opacity: 0; }
-        .how-we-do-reveal.visible { animation: reveal-up 0.6s cubic-bezier(0.22,1,0.36,1) forwards; }
         .how-we-do-dot-grid {
           background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0);
           background-size: 24px 24px;
@@ -158,7 +151,7 @@ export function HowWeDo() {
         }
         .arrow-btn-how {
           width: 56px; height: 56px;
-          border-radius: 50%;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.18);
           background: rgba(255,255,255,0.06);
           display: flex; align-items: center; justify-content: center;
@@ -187,7 +180,7 @@ export function HowWeDo() {
 
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-20">
           {/* Header */}
-          <div className={`how-we-do-reveal ${isVisible ? 'visible' : ''} flex flex-wrap items-end justify-between gap-8 mb-14 lg:mb-20`}>
+          <ScrollReveal className="flex flex-wrap items-end justify-between gap-8 mb-14 lg:mb-20">
             <div>
               <span
                 className="inline-block mb-4 text-xs font-bold tracking-[0.22em] uppercase text-white/55"
@@ -205,15 +198,15 @@ export function HowWeDo() {
             <button
               type="button"
               onClick={() => navigate('/services')}
-              className={`inline-flex items-center gap-2 rounded-full bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors ${FOCUS_RING}`}
+              className={`inline-flex items-center gap-2 rounded-button bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors ${FOCUS_RING}`}
             >
               See our process
               <ArrowUpRight className="w-5 h-5" aria-hidden />
             </button>
-          </div>
+          </ScrollReveal>
 
           {/* Card carousel */}
-          <div className={`how-we-do-reveal ${isVisible ? 'visible' : ''}`} style={{ animationDelay: '0.15s' }}>
+          <ScrollReveal delay={0.1}>
             <div
               className="relative rounded-3xl border border-white/10 bg-black/60 overflow-hidden min-h-[380px] sm:min-h-[420px] lg:min-h-[460px]"
               style={{ background: 'rgba(10,10,10,0.85)' }}
@@ -225,7 +218,7 @@ export function HowWeDo() {
                 <button
                   type="button"
                   onClick={() => navigate('/services')}
-                  className={`absolute top-6 right-6 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors z-10 ${FOCUS_RING}`}
+                  className={`absolute top-6 right-6 w-12 h-12 rounded-button bg-white text-black flex items-center justify-center hover:bg-white/90 transition-colors z-10 ${FOCUS_RING}`}
                   aria-label="See our process"
                 >
                   <ArrowUpRight className="w-5 h-5" />
@@ -292,7 +285,7 @@ export function HowWeDo() {
                 <ChevronRight className="w-6 h-6 text-white/75" />
               </button>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
     </>

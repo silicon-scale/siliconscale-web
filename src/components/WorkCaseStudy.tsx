@@ -2,35 +2,32 @@
 
 import type { ReactNode } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, CheckCircle2, Flag, Layers } from 'lucide-react'
 import { OptimizedImage } from '@/components/OptimizedImage'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { getProjectBySlug, type Project } from '@/data/projects'
-import { REVEAL_EASE } from '@/lib/motion'
 import { trackEvent } from '@/utils/analytics'
 
 function RevealBlock({
   children,
   className,
   delay = 0,
+  staggerIndex,
 }: {
   children: ReactNode
   className?: string
   delay?: number
+  staggerIndex?: number
 }) {
-  const reduce = useReducedMotion()
   return (
-    <motion.div
+    <ScrollReveal
       className={className}
-      initial={reduce ? false : { opacity: 0, y: 22 }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.55, ease: REVEAL_EASE, delay }}
-      layout={false}
+      delay={delay}
+      staggerIndex={staggerIndex}
     >
       {children}
-    </motion.div>
+    </ScrollReveal>
   )
 }
 
@@ -137,7 +134,7 @@ function CaseStudyBody({ project }: { project: Project }) {
           align-items: center;
           gap: 0.5rem;
           align-self: flex-start;
-          border-radius: 999px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.14);
           background: rgba(255,255,255,0.06);
           padding: 0.75rem 1.15rem;

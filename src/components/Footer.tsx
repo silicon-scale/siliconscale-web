@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { Instagram, Linkedin, Mail } from 'lucide-react'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 /** Static wave shapes — path geometry never animated (transform-only motion). */
@@ -260,7 +261,7 @@ function FooterComponent() {
           width: 52px;
           height: 52px;
           flex-shrink: 0;
-          border-radius: 50%;
+          border-radius: 8px;
           color: rgba(255,255,255,0.6);
           transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
         }
@@ -417,7 +418,7 @@ function FooterComponent() {
       />
 
       <div className="footer-body">
-        <div className="footer-brand">
+        <ScrollReveal className="footer-brand">
           <div className="footer-brand-head">
             <img
               src="/transparent-logo.svg"
@@ -461,11 +462,12 @@ function FooterComponent() {
               contact@siliconscale.dev
             </a>
           </div>
-        </div>
+        </ScrollReveal>
 
         <div className="footer-grid">
-          <div>
-            <h4 className="footer-col-title">Quick Links</h4>
+          <ScrollReveal staggerIndex={1}>
+            <div>
+              <h4 className="footer-col-title">Quick Links</h4>
             <div className="footer-links">
               <Link to="/" className="footer-link">
                 Home
@@ -489,46 +491,51 @@ function FooterComponent() {
                 Team
               </Link>
             </div>
-          </div>
-
-          <div>
-            <h4 className="footer-col-title">Useful Links</h4>
-            <div className="footer-links">
-              <Link to="/privacy" className="footer-link">
-                Privacy Policy
-              </Link>
-              <Link to="/terms" className="footer-link">
-                Terms of Service
-              </Link>
             </div>
-          </div>
+          </ScrollReveal>
 
-          <div>
-            <h4 className="footer-col-title">Services</h4>
-            <nav className="footer-links">
-              <Link to="/services#development" className="footer-link">
-                Custom Systems
-              </Link>
-              <Link to="/services#shopify-headless" className="footer-link">
-                Shopify Development
-              </Link>
-              <Link to="/services#ai-agents" className="footer-link">
-                AI & Automation
-              </Link>
-              <Link to="/services#integrations" className="footer-link">
-                Integrations
-              </Link>
-            </nav>
-          </div>
+          <ScrollReveal staggerIndex={2}>
+            <div>
+              <h4 className="footer-col-title">Useful Links</h4>
+              <div className="footer-links">
+                <Link to="/privacy" className="footer-link">
+                  Privacy Policy
+                </Link>
+                <Link to="/terms" className="footer-link">
+                  Terms of Service
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal staggerIndex={3}>
+            <div>
+              <h4 className="footer-col-title">Services</h4>
+              <nav className="footer-links">
+                <Link to="/services#development" className="footer-link">
+                  Custom Systems
+                </Link>
+                <Link to="/services#shopify-headless" className="footer-link">
+                  Shopify Development
+                </Link>
+                <Link to="/services#ai-agents" className="footer-link">
+                  AI & Automation
+                </Link>
+                <Link to="/services#integrations" className="footer-link">
+                  Integrations
+                </Link>
+              </nav>
+            </div>
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="footer-bottom">
-        <span className="footer-bottom-text">
-          © {new Date().getFullYear()} SiliconScale. All rights reserved.
-        </span>
-        <span className="footer-bottom-text">Building scalable digital products.</span>
-      </div>
+        <ScrollReveal className="footer-bottom">
+          <span className="footer-bottom-text">
+            © {new Date().getFullYear()} SiliconScale. All rights reserved.
+          </span>
+          <span className="footer-bottom-text">Building scalable digital products.</span>
+        </ScrollReveal>
     </footer>
   )
 }

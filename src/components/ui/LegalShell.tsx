@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 type LegalShellProps = {
   title: string
@@ -18,7 +19,7 @@ export function LegalShell({ title, headingId, lastUpdated, children }: LegalShe
   return (
     <section className="min-h-screen bg-page text-white" aria-labelledby={headingId}>
       <div className="legal-shell mx-auto max-w-3xl px-6 py-24 lg:px-8 lg:py-32">
-        <header className="mb-10">
+        <ScrollReveal className="mb-10">
           <SectionEyebrow variant="plain">Legal</SectionEyebrow>
           <h1
             id={headingId}
@@ -27,8 +28,10 @@ export function LegalShell({ title, headingId, lastUpdated, children }: LegalShe
             {title}
           </h1>
           <p className="mt-3 text-sm text-white/55">Last updated: {lastUpdated}</p>
-        </header>
-        <div>{children}</div>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
+          <div>{children}</div>
+        </ScrollReveal>
       </div>
     </section>
   )

@@ -20,7 +20,7 @@ export function BrandButton({ size = 'md', className, disabled, ...props }: Bran
     <button
       disabled={disabled}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-full font-extrabold uppercase tracking-[0.18em]',
+        'inline-flex items-center justify-center gap-2 rounded-button font-extrabold uppercase tracking-[0.18em]',
         'transition-transform duration-200',
         disabled ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-[1px]',
         FOCUS_RING,

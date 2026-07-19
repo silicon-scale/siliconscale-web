@@ -18,8 +18,8 @@ import { usePreferSimpleServicesReel } from '@/hooks/usePreferSimpleServicesReel
 import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta } from '@/components/ui/SecondaryCta'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { ToolPhysicsPlayground } from '@/components/ToolPhysicsPlayground'
-import { REVEAL_EASE } from '@/lib/motion'
 
 type ServiceCard = {
   id: string
@@ -655,29 +655,22 @@ function ScrollRevealServiceList({
   return (
     <div className="reel-static" data-services-layout="simple">
       {cards.map((card, i) => (
-        <motion.article
+        <ScrollReveal
+          as="article"
           key={card.id}
           id={card.id}
+          staggerIndex={i}
           className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
           style={{
             ['--accent' as string]: card.accent,
             backgroundColor: '#0a0a0a',
             backgroundImage: card.bg,
           }}
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.22, margin: '0px 0px -8% 0px' }}
-          transition={{
-            duration: 0.55,
-            ease: REVEAL_EASE,
-            delay: Math.min(i * 0.045, 0.18),
-          }}
-          layout={false}
         >
           <div className="stack-inner">
             <ServiceCardBody card={card} onCta={onCta} titleStyle={TITLE_MOBILE} />
           </div>
-        </motion.article>
+        </ScrollReveal>
       ))}
     </div>
   )
@@ -865,7 +858,7 @@ export default function ServicesPage() {
           align-items: center;
           gap: 10px;
           padding: 10px 14px;
-          border-radius: 12px;
+          border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.14);
           background: rgba(255,255,255,0.08);
           color: rgba(0,0,0,0.9);
@@ -992,7 +985,7 @@ export default function ServicesPage() {
       </div>
 
       <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
-        <header className="mb-14">
+        <ScrollReveal className="mb-14">
           <SectionEyebrow variant="pillMono">What we do</SectionEyebrow>
           <h1
             id="services-heading"
@@ -1004,7 +997,7 @@ export default function ServicesPage() {
             Seven ways we help — pick the one that matches what you&apos;re building, or tell us
             the problem and we&apos;ll point you to the right one.
           </p>
-        </header>
+        </ScrollReveal>
 
         {servicesLayout === 'static' ? (
           <StaticServiceList cards={cards} onCta={onCta} />
@@ -1016,7 +1009,7 @@ export default function ServicesPage() {
 
         <ToolPhysicsPlayground />
 
-        <section className="mt-28 border-t border-white/10 pt-16">
+        <ScrollReveal as="section" className="mt-28 border-t border-white/10 pt-16">
           <div className="flex flex-wrap items-end justify-between gap-8">
             <div className="max-w-2xl">
               <SectionEyebrow variant="plain">Next step</SectionEyebrow>
@@ -1033,7 +1026,7 @@ export default function ServicesPage() {
               Talk to us
             </SecondaryCta>
           </div>
-        </section>
+        </ScrollReveal>
       </div>
     </section>
   )

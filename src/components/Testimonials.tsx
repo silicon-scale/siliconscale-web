@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react'
 import { useSectionInView } from '@/hooks/useSectionInView'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 type Testimonial = {
@@ -246,7 +247,7 @@ export function Testimonials() {
       `}</style>
 
       <div className="ss-test-shell">
-        <div className="ss-test-head">
+        <ScrollReveal className="ss-test-head">
           <div>
             <span className="ss-test-pill">TESTIMONIALS</span>
             <h2 id="testimonials-heading" className="ss-test-title">
@@ -256,7 +257,7 @@ export function Testimonials() {
           <p className="ss-test-sub">
             Real clients. Real projects. Here&apos;s what they said after we shipped.
           </p>
-        </div>
+        </ScrollReveal>
 
         <div
           className={`ss-marquee${inView ? '' : ' is-offscreen'}`}

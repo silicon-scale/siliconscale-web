@@ -5,6 +5,8 @@ import { ArrowRight } from 'lucide-react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
+import ScrollReveal from '@/components/ui/ScrollReveal'
+import { observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
 import { cn } from '@/lib/utils'
 
 const STATS = [
@@ -37,19 +39,7 @@ export function Highlights() {
   useEffect(() => {
     const el = gridRef.current
     if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatsInView(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.25, rootMargin: '0px' },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
+    return observeScrollRevealOnce(el, () => setStatsInView(true))
   }, [])
 
   return (
@@ -59,7 +49,7 @@ export function Highlights() {
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 sm:px-8 lg:px-10">
         {/* Header — eyebrow + compact link (matches Services textLink pattern) */}
-        <div className="space-y-5">
+        <ScrollReveal className="space-y-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <SectionEyebrow className="border-white/10 bg-transparent font-medium text-white/55">
               By the Numbers
@@ -76,7 +66,7 @@ export function Highlights() {
           >
             Numbers we can back up.
           </h2>
-        </div>
+        </ScrollReveal>
 
         {/* Stats grid — full-width top rule + center column divider */}
         <div ref={gridRef} className="relative border-t border-white/8 pt-12">
@@ -86,8 +76,9 @@ export function Highlights() {
           />
           <div className="grid gap-10 sm:grid-cols-2 sm:gap-x-0 sm:gap-y-12 lg:gap-y-14">
             {STATS.map((stat, index) => (
-              <div
+              <ScrollReveal
                 key={stat.label}
+                staggerIndex={index + 1}
                 className={cn(
                   'flex flex-col gap-3',
                   index % 2 === 0 ? 'sm:pr-10 lg:pr-14' : 'sm:pl-10 lg:pl-14',
@@ -109,7 +100,7 @@ export function Highlights() {
                 </div>
                 <div className="text-lg font-medium text-white/90 sm:text-xl">{stat.label}</div>
                 <div className="text-[0.78rem] text-white/60 sm:text-xs">{stat.sub}</div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>

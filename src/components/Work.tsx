@@ -2,12 +2,11 @@
 
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { OptimizedImage } from './OptimizedImage'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { PROJECTS, type Project } from '@/data/projects'
-import { REVEAL_EASE } from '@/lib/motion'
 import { trackEvent } from '@/utils/analytics'
 import { cn } from '@/lib/utils'
 
@@ -53,22 +52,17 @@ function BrowserMockup({
 function ProjectRow({
   project,
   index,
-  reduceMotion,
 }: {
   project: Project
   index: number
-  reduceMotion: boolean | null
 }) {
   const imageFirst = index % 2 === 0
 
   return (
-    <motion.article
+    <ScrollReveal
+      as="article"
+      staggerIndex={index}
       className={cn('work-row', imageFirst ? 'work-row--image-first' : 'work-row--text-first')}
-      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.55, ease: REVEAL_EASE, delay: Math.min(index * 0.04, 0.16) }}
-      layout={false}
     >
       <Link
         to={`/work/${project.slug}`}
@@ -93,13 +87,11 @@ function ProjectRow({
           </span>
         </div>
       </Link>
-    </motion.article>
+    </ScrollReveal>
   )
 }
 
 function WorkListing() {
-  const prefersReducedMotion = useReducedMotion()
-
   return (
     <section
       id="work"
@@ -309,34 +301,25 @@ function WorkListing() {
       <div className="work-glow" aria-hidden />
 
       <div className="work-shell">
-        <header className="work-header">
+        <ScrollReveal className="work-header">
           <SectionEyebrow variant="pillMono">Portfolio</SectionEyebrow>
-          <h1 id="work-heading">
-            Real projects.
-            <br />
-            Real results.
-          </h1>
+          <h1 id="work-heading">Results you can measure.</h1>
           <p>
             Every project on this page is live — click through and see it running, not a
             mockup.
           </p>
-        </header>
+        </ScrollReveal>
 
         <div className="work-list">
           {PROJECTS.map((project, index) => (
-            <ProjectRow
-              key={project.id}
-              project={project}
-              index={index}
-              reduceMotion={prefersReducedMotion}
-            />
+            <ProjectRow key={project.id} project={project} index={index} />
           ))}
         </div>
 
-        <p className="work-footnote">
+        <ScrollReveal className="work-footnote">
           Sample builds are labeled clearly. Client work is live on the open web.
           <span className="work-footnote-rule" aria-hidden />
-        </p>
+        </ScrollReveal>
       </div>
     </section>
   )

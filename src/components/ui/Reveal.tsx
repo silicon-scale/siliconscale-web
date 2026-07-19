@@ -1,31 +1,27 @@
 'use client'
 
-import React from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import { useReveal } from '@/context/RevealContext'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 
 type RevealProps = React.PropsWithChildren<{
   delay?: number
   className?: string
+  staggerIndex?: number
 }>
 
-export default function Reveal({ delay = 0, className, children }: RevealProps) {
-  const prefersReducedMotion = useReducedMotion()
-  const { mountStage, revealStarted } = useReveal()
-
+/** Back-compat wrapper — IO + CSS scroll reveal (no Framer whileInView). */
+export default function Reveal({
+  delay = 0,
+  className,
+  staggerIndex,
+  children,
+}: RevealProps) {
   return (
-    <motion.div
+    <ScrollReveal
+      delay={delay}
+      staggerIndex={staggerIndex}
       className={className}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
-      whileInView={
-        prefersReducedMotion || mountStage < 2 || !revealStarted ? undefined : { opacity: 1, y: 0 }
-      }
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
-      layout={false}
     >
       {children}
-    </motion.div>
+    </ScrollReveal>
   )
 }
-
