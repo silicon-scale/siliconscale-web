@@ -58,11 +58,23 @@ export type Project = {
   imageAlt: string
   year: string
   isSample?: boolean
+  /** When true, listing card links to `/work/:slug` and the case study page is available. */
+  caseStudy?: boolean
   gallery: string[]
   challenge: { heading: string; body: string[] }
   solution: { heading: string; body: string[] }
   results: ProjectResult[]
   testimonial?: ProjectTestimonial
+  /** Case study intro — bold one-liner above overview paragraphs. */
+  introHeadline?: string
+  /** Case study overview copy (1–2 paragraphs). */
+  introBody?: string[]
+  /** Full-bleed hero on case study page (falls back to `image`). */
+  heroImage?: string
+  /** Two-up image row below Challenges (falls back to first gallery shots). */
+  challengeImages?: string[]
+  /** Results section heading (falls back to generic default in template). */
+  resultsHeading?: string
 }
 
 const PH = (project: string, field: string) =>
@@ -129,6 +141,65 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    id: 'plaam',
+    slug: 'plaam',
+    title: 'PLAAM',
+    description: 'Curated jewellery-making and craft essentials.',
+    image: plaamImage,
+    imageAlt: 'PLAAM craft and jewellery storefront',
+    link: 'https://www.plaam.in/',
+    websiteUrl: 'https://www.plaam.in/',
+    tag: 'Craft & Jewellery Store',
+    year: '2026',
+    services: 'BRANDING · DESIGN · DEVELOPMENT',
+    tagline: 'Where Creativity Finds Its Supplies',
+    statOverlay: { value: '13.87%', label: 'Conversion Rate' },
+    caseStudy: true,
+    introHeadline: 'From WhatsApp Orders to a Storefront That Never Sleeps',
+    introBody: [
+      "PLAAM started as a small business selling jewellery-making and craft materials — silk threads, kundans, clip stones, and everything in between — with every order coming through WhatsApp. As the customer base grew, so did the messages, and PLAAM's team simply couldn't keep up. Replies were delayed, orders were missed, and there was no real way to browse the full catalog without asking.",
+      "They needed a proper online store, but as a small business, a fully custom-built platform with its own servers, databases, and ongoing infrastructure costs wasn't realistic — or necessary.",
+    ],
+    gallery: galleryFrom(plaamImage),
+    challenge: {
+      heading: 'Challenges',
+      body: [
+        "PLAAM's biggest bottleneck wasn't demand — it was capacity. Every order, every product question, every \"do you have this in stock\" came through WhatsApp, and there was no way to scale a conversation-based sales process without losing customers along the way.",
+        "A standard e-commerce solution seemed like the obvious fix, but PLAAM's catalog didn't fit neatly into any off-the-shelf Shopify template. Their product structure — spanning silk thread materials, jewellery-making components, glossy kundans, white & gold kundans, and clip stones — needed a browsing experience built specifically around how their customers actually shop, not a generic theme retrofitted to work.",
+      ],
+    },
+    solution: {
+      heading: 'Solutions',
+      body: [
+        "We recommended Shopify as the commerce backbone — giving PLAAM enterprise-grade infrastructure, payments, and order management without the overhead of managing servers, databases, or hosting themselves. As a small business, that meant zero infrastructure costs and zero technical maintenance burden going forward.",
+        "But no existing Shopify theme could handle PLAAM's catalog the way it needed to be presented. So instead of forcing a template to fit, we built a fully custom headless storefront on Shopify's Storefront API — giving PLAAM a completely bespoke browsing and shopping experience, while Shopify quietly handled everything running underneath it.",
+      ],
+    },
+    results: [
+      {
+        value: '₹2.5L+',
+        label: 'Revenue Generated',
+        description: 'Live storefront revenue attributed to the shipped PLAAM experience.',
+      },
+      {
+        value: '300+',
+        label: 'Orders Processed',
+        description: 'Orders fulfilled through the craft & jewellery storefront.',
+      },
+      {
+        value: '13.87%',
+        label: 'Conversion Rate',
+        description: 'Measured conversion on the launched storefront.',
+      },
+      {
+        value: '1,500+',
+        label: 'Site Sessions',
+        description:
+          'Organic and returning traffic the storefront now handles independently — visibility PLAAM never had through WhatsApp alone.',
+      },
+    ],
+  },
+  {
     id: 'micronano',
     slug: 'micronano',
     title: 'MICRONANO',
@@ -168,46 +239,6 @@ export const PROJECTS: Project[] = [
     challenge: placeholderChallenge('RDC'),
     solution: placeholderSolution('RDC'),
     results: placeholderResults('RDC'),
-  },
-  {
-    id: 'plaam',
-    slug: 'plaam',
-    title: 'PLAAM',
-    description: 'Curated jewellery-making and craft essentials.',
-    image: plaamImage,
-    imageAlt: 'PLAAM craft and jewellery storefront',
-    link: 'https://www.plaam.in/',
-    websiteUrl: 'https://www.plaam.in/',
-    tag: 'Craft & Jewellery Store',
-    year: '2026',
-    services: 'BRANDING · DESIGN · DEVELOPMENT',
-    tagline: 'Where Creativity Finds Its Supplies',
-    statOverlay: { value: '13.87%', label: 'Conversion Rate' },
-    gallery: galleryFrom(plaamImage),
-    challenge: placeholderChallenge('PLAAM'),
-    solution: placeholderSolution('PLAAM'),
-    results: [
-      {
-        value: '₹1.3L+',
-        label: 'Revenue Generated',
-        description: 'Live storefront revenue attributed to the shipped PLAAM experience.',
-      },
-      {
-        value: '150+',
-        label: 'Orders Processed',
-        description: 'Orders fulfilled through the craft & jewellery storefront.',
-      },
-      {
-        value: '13.87%',
-        label: 'Conversion Rate',
-        description: 'Measured conversion on the launched storefront.',
-      },
-      {
-        value: '—',
-        label: PH('PLAAM', 'result 4 label'),
-        description: PH('PLAAM', 'result 4 description'),
-      },
-    ],
   },
   {
     id: 'lavvi',
@@ -253,4 +284,8 @@ export const PROJECTS: Project[] = [
 
 export function getProjectBySlug(slug: string): Project | undefined {
   return PROJECTS.find((p) => p.slug === slug)
+}
+
+export function projectHasCaseStudy(project: Project): boolean {
+  return project.caseStudy === true
 }
