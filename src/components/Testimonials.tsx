@@ -30,12 +30,6 @@ const TESTIMONIALS: Testimonial[] = [
     name: 'Prathysha',
     role: 'Founder, Plaam.in',
   },
-  {
-    quote:
-      'Strong engineering and a clean delivery. The foundation is scalable and the execution is solid.',
-    name: 'Uday Nagesh',
-    role: 'CTO, Zero Prime',
-  },
 ] as const
 
 function initials(name: string) {
@@ -73,7 +67,7 @@ export function Testimonials() {
   }, [inView])
 
   const rowA = [...TESTIMONIALS.slice(0, 2), ...TESTIMONIALS.slice(0, 2)]
-  const rowB = [...TESTIMONIALS.slice(2, 4), ...TESTIMONIALS.slice(2, 4)]
+  const rowB = [...TESTIMONIALS.slice(1, 3), ...TESTIMONIALS.slice(1, 3)]
 
   return (
     <section
@@ -255,7 +249,7 @@ export function Testimonials() {
             </h2>
           </div>
           <p className="ss-test-sub">
-            Real clients. Real projects. Here&apos;s what they said after we shipped.
+            Shipped. Then they told us how it went.
           </p>
         </ScrollReveal>
 
