@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Instagram, Linkedin, Menu, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState, type TransitionEvent } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/SiliconScaleLogo.png'
@@ -9,14 +9,29 @@ import { useReveal } from '../context/RevealContext'
 import { trackEvent } from '@/utils/analytics'
 import { useScrollThreshold } from '@/hooks/useScrollThreshold'
 import { MOBILE_BREAKPOINT } from '@/lib/breakpoints'
-import { REVEAL_EASE } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
 import { NAVBAR_BLUR_RADIUS_PX, setNavbarDebug } from '@/utils/perfDebug'
 
-/** Mobile menu open/close — transform + opacity only; keep short but eased (no blur). */
-const MENU_DURATION = 0.22
-const MENU_TRANSITION = { duration: MENU_DURATION, ease: REVEAL_EASE }
+const MOBILE_MENU_EASE = [0.16, 1, 0.3, 1] as const
+const MOBILE_LINK_DURATION = 0.45
+const MOBILE_LINK_STAGGER_S = 0.07
+const MOBILE_LINK_OFFSET_Y = 26
+
+const MOBILE_MENU_SOCIALS = [
+  {
+    name: 'Instagram',
+    abbr: 'IG',
+    href: 'https://www.instagram.com/siliconscale',
+    ariaLabel: 'Instagram',
+  },
+  {
+    name: 'LinkedIn',
+    abbr: 'IN',
+    href: 'https://www.linkedin.com/company/siliconscale',
+    ariaLabel: 'LinkedIn',
+  },
+] as const
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -55,6 +70,10 @@ export function Navbar() {
     { name: 'About', path: '/about' },
     { name: 'Services', path: '/services' },
   ]
+
+  const mobileNavLinks = [{ name: 'Home', path: '/' }, ...navLinks]
+
+  const mobileMenuCta = { name: 'Book Call', path: '/contact' }
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false)
@@ -122,8 +141,8 @@ export function Navbar() {
 
     const lockRaf = requestAnimationFrame(lockOverflow)
     const focusTimer = window.setTimeout(() => {
-      getFocusable()[0]?.focus({ preventScroll: true })
-    }, Math.round(MENU_DURATION * 1000) + 16)
+      menuPanelRef.current?.querySelector<HTMLElement>('.mobile-menu-close')?.focus({ preventScroll: true })
+    }, prefersReducedMotion ? 16 : 80)
 
     document.addEventListener('keydown', onKeyDown)
 
@@ -134,13 +153,41 @@ export function Navbar() {
       document.body.style.overflow = prevOverflow
       toggleRef.current?.focus({ preventScroll: true })
     }
-  }, [isMobileMenuOpen, closeMobileMenu])
+  }, [isMobileMenuOpen, closeMobileMenu, prefersReducedMotion])
 
   const bookCallClassName =
     `inline-flex items-center justify-center border border-white/20 text-white px-5 py-2 text-xs lg:px-8 lg:py-3 lg:text-sm rounded-button uppercase tracking-[0.18em] lg:tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
 
-  const mobileBookCallClassName =
-    `inline-flex items-center justify-center border border-white/20 text-white px-8 py-3 rounded-button uppercase tracking-[0.25em] transition-all duration-300 hover:bg-gradient-to-r hover:from-brand-gold hover:to-brand-gold/80 hover:text-black ${FOCUS_RING}`
+  const mobileMenuLinkMotion = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.2 },
+      }
+    : {
+        initial: { opacity: 0, y: MOBILE_LINK_OFFSET_Y },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 10 },
+        transition: {
+          duration: MOBILE_LINK_DURATION,
+          ease: MOBILE_MENU_EASE,
+        },
+      }
+
+  const mobileMenuShellMotion = prefersReducedMotion
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.2 },
+      }
+    : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.18, ease: MOBILE_MENU_EASE },
+      }
 
   const navRevealClass = [
     'nav-reveal',
@@ -263,91 +310,312 @@ export function Navbar() {
       </nav>
 
       <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/*
-              Solid dim instead of backdrop-blur-xl — full-viewport backdrop-filter
-              was the #1 Android open hitch (cold composite on first tap frame).
-              Opacity-only tween keeps the fade without filter cost.
-            */}
-            <motion.button
-              type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={MENU_TRANSITION}
-              style={{ willChange: 'opacity' }}
-              className="fixed inset-0 z-[180] cursor-default bg-black/75"
-              onClick={closeMobileMenu}
-              aria-label="Close navigation menu"
-              tabIndex={-1}
-            />
+        {isMobileMenuOpen ? (
+          <motion.div
+            key="mobile-menu"
+            ref={menuPanelRef}
+            id={menuId}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            className="mobile-menu fixed inset-0 z-[250] grid bg-[#0a0a0a] text-white"
+            style={{ height: '100dvh', willChange: 'opacity', gridTemplateRows: 'auto 1fr auto' }}
+            {...mobileMenuShellMotion}
+          >
+            <style>{`
+              .mobile-menu {
+                font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                padding-inline: clamp(1.25rem, 5vw, 1.75rem);
+              }
+              .mobile-menu-top {
+                display: flex;
+                align-items: center;
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-bottom: 0.5rem;
+              }
+              .mobile-menu-close {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.75rem;
+                height: 2.75rem;
+                margin-left: -0.35rem;
+                border-radius: 999px;
+                background: rgba(255,255,255,0.06);
+                color: rgba(255,255,255,0.88);
+                border: none;
+                cursor: pointer;
+                transition: background 0.2s ease, color 0.2s ease;
+                flex-shrink: 0;
+              }
+              .mobile-menu-close:hover {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+              }
+              .mobile-menu-close:focus-visible {
+                outline: 2px solid var(--focus-ring);
+                outline-offset: 3px;
+              }
+              .mobile-menu-main {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 0;
+                width: 100%;
+                padding-block: clamp(1rem, 3vh, 2rem);
+              }
+              .mobile-menu-nav {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: clamp(0.35rem, 1.5vh, 0.65rem);
+                width: 100%;
+                max-width: 22rem;
+              }
+              .mobile-menu-link-item {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+              }
+              .mobile-menu-link-row {
+                display: flex;
+                align-items: center;
+                gap: 0.85rem;
+                padding-block: 0.2rem;
+                text-decoration: none;
+                color: inherit;
+              }
+              .mobile-menu-index {
+                font-family: 'DM Mono', monospace;
+                font-size: 0.68rem;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                line-height: 1;
+                color: rgba(255,255,255,0.22);
+                font-variant-numeric: tabular-nums;
+                width: 1.35rem;
+                flex-shrink: 0;
+                text-align: right;
+                user-select: none;
+              }
+              .mobile-menu-link-text {
+                position: relative;
+                display: block;
+                font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                font-size: clamp(2rem, 7vw, 2.65rem);
+                font-weight: 900;
+                letter-spacing: -0.025em;
+                line-height: 1;
+                color: #fff;
+                transition: color 0.2s ease;
+              }
+              .mobile-menu-link-text::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: -0.12em;
+                width: 0;
+                height: 1px;
+                background: #47C2FF;
+                transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+              }
+              .mobile-menu-link-row:hover .mobile-menu-link-text,
+              .mobile-menu-link-row:focus-visible .mobile-menu-link-text {
+                color: rgba(255,255,255,0.88);
+              }
+              .mobile-menu-link-row:hover .mobile-menu-link-text::after,
+              .mobile-menu-link-row:focus-visible .mobile-menu-link-text::after {
+                width: 100%;
+              }
+              .mobile-menu-link-row:focus-visible {
+                outline: none;
+              }
+              .mobile-menu-link-row:focus-visible .mobile-menu-link-text {
+                outline: 2px solid var(--focus-ring);
+                outline-offset: 4px;
+                border-radius: 2px;
+              }
+              .mobile-menu-cta-wrap {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                max-width: 22rem;
+                margin-top: clamp(1.75rem, 5vh, 2.75rem);
+                padding-top: clamp(1.35rem, 3.5vh, 2rem);
+                border-top: 1px solid rgba(255,255,255,0.08);
+              }
+              .mobile-menu-cta {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 11rem;
+                padding: 0.9rem 1.85rem;
+                border-radius: 8px;
+                background: #47C2FF;
+                color: #0a0a0a;
+                font-family: 'Sora', system-ui, sans-serif;
+                font-size: 0.72rem;
+                font-weight: 700;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                text-decoration: none;
+                transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+                box-shadow: 0 0 0 rgba(71, 194, 255, 0);
+              }
+              .mobile-menu-cta:hover {
+                background: #5eccff;
+                box-shadow: 0 0 28px rgba(71, 194, 255, 0.28);
+              }
+              .mobile-menu-cta:focus-visible {
+                outline: 2px solid var(--focus-ring);
+                outline-offset: 3px;
+              }
+              .mobile-menu-footer {
+                display: flex;
+                justify-content: center;
+                padding-top: clamp(1rem, 3vh, 1.5rem);
+                padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+              }
+              .mobile-menu-socials {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: clamp(1.25rem, 5vw, 2rem);
+              }
+              .mobile-menu-social {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                font-family: 'DM Mono', monospace;
+                font-size: 0.68rem;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.42);
+                text-decoration: none;
+                transition: color 0.2s ease;
+              }
+              .mobile-menu-social:hover {
+                color: rgba(255,255,255,0.78);
+              }
+              .mobile-menu-social:focus-visible {
+                outline: 2px solid var(--focus-ring);
+                outline-offset: 3px;
+                border-radius: 4px;
+              }
+              .mobile-menu-social svg {
+                width: 0.95rem;
+                height: 0.95rem;
+                opacity: 0.75;
+              }
+            `}</style>
 
-            <motion.div
-              role="presentation"
-              initial={{ opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.985 }}
-              transition={MENU_TRANSITION}
-              style={{ willChange: 'transform, opacity' }}
-              className="fixed inset-0 z-[190] flex items-center justify-center pointer-events-none"
-            >
-              {/*
-                Opaque panel paint replaces backdrop-blur-2xl — same frosted look
-                over a dark site without a second live blur sample.
-              */}
-              <div
-                ref={menuPanelRef}
-                id={menuId}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Navigation menu"
-                className="pointer-events-auto w-full max-w-sm rounded-3xl border border-white/10 bg-gradient-to-br from-[#0a0a0c] to-[#16161a] p-8 mx-4 shadow-2xl"
+            <div className="mobile-menu-top">
+              <button
+                type="button"
+                className="mobile-menu-close"
+                onClick={closeMobileMenu}
+                aria-label="Close navigation menu"
               >
-                <div className="flex flex-col items-center space-y-8">
-                  <img
-                    src={logo}
-                    alt=""
-                    className="h-12 w-auto"
-                    loading="eager"
-                    decoding="async"
-                    aria-hidden
-                  />
+                <X size={22} strokeWidth={1.75} aria-hidden />
+              </button>
+            </div>
 
-                  <nav className="flex flex-col items-center space-y-6" aria-label="Mobile">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.name}
-                        to={link.path}
-                        onClick={closeMobileMenu}
-                        className={`text-white text-xl uppercase tracking-[0.25em] hover:text-brand-gold transition-colors duration-200 relative group rounded-sm ${FOCUS_RING}`}
-                      >
-                        {link.name}
-                        <span className="absolute left-1/2 -translate-x-1/2 -bottom-2 h-[1px] w-0 bg-brand-gold transition-all duration-300 group-hover:w-full" />
-                      </Link>
-                    ))}
-                  </nav>
-
+            <div className="mobile-menu-main">
+              <nav className="mobile-menu-nav" aria-label="Mobile">
+                {mobileNavLinks.map((link, index) => (
                   <motion.div
-                    whileHover={{ scale: 1.03, boxShadow: `0 0 16px ${brandGoldAlpha(0.3)}` }}
-                    whileTap={{ scale: 0.97 }}
+                    key={link.path}
+                    className="mobile-menu-link-item"
+                    initial={mobileMenuLinkMotion.initial}
+                    animate={mobileMenuLinkMotion.animate}
+                    exit={mobileMenuLinkMotion.exit}
+                    transition={{
+                      ...mobileMenuLinkMotion.transition,
+                      delay: prefersReducedMotion ? 0 : index * MOBILE_LINK_STAGGER_S,
+                    }}
+                    style={{ willChange: prefersReducedMotion ? 'opacity' : 'transform, opacity' }}
                   >
                     <Link
-                      to="/contact"
+                      to={link.path}
                       onClick={() => {
-                        trackEvent('nav_click', { destination: 'contact' })
+                        trackEvent('nav_click', { destination: link.path.replace('/', '') || 'home' })
                         closeMobileMenu()
                       }}
-                      className={mobileBookCallClassName}
+                      className="mobile-menu-link-row"
                     >
-                      Book Call
+                      <span className="mobile-menu-index" aria-hidden>
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span className="mobile-menu-link-text">{link.name}</span>
                     </Link>
                   </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
+                ))}
+
+                <motion.div
+                  className="mobile-menu-cta-wrap"
+                  initial={mobileMenuLinkMotion.initial}
+                  animate={mobileMenuLinkMotion.animate}
+                  exit={mobileMenuLinkMotion.exit}
+                  transition={{
+                    ...mobileMenuLinkMotion.transition,
+                    delay: prefersReducedMotion
+                      ? 0
+                      : mobileNavLinks.length * MOBILE_LINK_STAGGER_S,
+                  }}
+                  style={{ willChange: prefersReducedMotion ? 'opacity' : 'transform, opacity' }}
+                >
+                  <Link
+                    to={mobileMenuCta.path}
+                    onClick={() => {
+                      trackEvent('nav_click', { destination: 'contact' })
+                      closeMobileMenu()
+                    }}
+                    className="mobile-menu-cta"
+                  >
+                    {mobileMenuCta.name}
+                  </Link>
+                </motion.div>
+              </nav>
+            </div>
+
+            <div className="mobile-menu-footer">
+              <motion.div
+                className="mobile-menu-socials"
+                initial={mobileMenuLinkMotion.initial}
+                animate={mobileMenuLinkMotion.animate}
+                exit={mobileMenuLinkMotion.exit}
+                transition={{
+                  ...mobileMenuLinkMotion.transition,
+                  delay: prefersReducedMotion
+                    ? 0
+                    : (mobileNavLinks.length + 1) * MOBILE_LINK_STAGGER_S + 0.04,
+                }}
+                style={{ willChange: prefersReducedMotion ? 'opacity' : 'transform, opacity' }}
+              >
+              {MOBILE_MENU_SOCIALS.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="mobile-menu-social"
+                  aria-label={social.ariaLabel}
+                  onClick={closeMobileMenu}
+                >
+                  {social.name === 'Instagram' ? (
+                    <Instagram aria-hidden />
+                  ) : (
+                    <Linkedin aria-hidden />
+                  )}
+                  <span>{social.abbr}</span>
+                </a>
+              ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        ) : null}
       </AnimatePresence>
     </>
   )
