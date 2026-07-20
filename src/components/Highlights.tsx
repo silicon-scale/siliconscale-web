@@ -32,13 +32,48 @@ const STATS = [
   },
 ] as const
 
-export function Highlights() {
+function HighlightStatRow({
+  stat,
+  index,
+}: {
+  stat: (typeof STATS)[number]
+  index: number
+}) {
   const prefersReducedMotion = useReducedMotion()
-  const { ref: gridRef, inView: statsInView } = useInViewOnce<HTMLDivElement>({
+  const { ref, inView } = useInViewOnce<HTMLDivElement>({
     disabled: !!prefersReducedMotion,
     variant: 'countUp',
   })
 
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'flex flex-col gap-3',
+        index % 2 === 0 ? 'sm:pr-10 lg:pr-14' : 'sm:pl-10 lg:pl-14',
+      )}
+    >
+      <div className="flex items-baseline gap-3">
+        <span
+          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-white/20 tabular-nums"
+          aria-hidden
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <CountUpNumber
+          value={stat.value}
+          animate={inView}
+          className="font-bagel leading-none tracking-tight text-white"
+          style={{ fontSize: 'clamp(3.5rem, 8vw, 6rem)' }}
+        />
+      </div>
+      <div className="text-lg font-medium text-white/90 sm:text-xl">{stat.label}</div>
+      <div className="text-[0.78rem] text-white/60 sm:text-xs">{stat.sub}</div>
+    </div>
+  )
+}
+
+export function Highlights() {
   return (
     <section
       aria-labelledby="highlights-heading"
@@ -66,38 +101,14 @@ export function Highlights() {
         </ScrollReveal>
 
         {/* Stats grid — full-width top rule + center column divider */}
-        <div ref={gridRef} className="relative border-t border-white/8 pt-12">
+        <div className="relative border-t border-white/8 pt-12">
           <div
             aria-hidden
             className="pointer-events-none absolute bottom-0 left-1/2 top-12 hidden w-px -translate-x-1/2 bg-white/6 sm:block"
           />
           <div className="grid gap-10 sm:grid-cols-2 sm:gap-x-0 sm:gap-y-12 lg:gap-y-14">
             {STATS.map((stat, index) => (
-              <ScrollReveal
-                key={stat.label}
-                staggerIndex={index + 1}
-                className={cn(
-                  'flex flex-col gap-3',
-                  index % 2 === 0 ? 'sm:pr-10 lg:pr-14' : 'sm:pl-10 lg:pl-14',
-                )}
-              >
-                <div className="flex items-baseline gap-3">
-                  <span
-                    className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-white/20 tabular-nums"
-                    aria-hidden
-                  >
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <CountUpNumber
-                    value={stat.value}
-                    animate={statsInView}
-                    className="font-bagel leading-none tracking-tight text-white"
-                    style={{ fontSize: 'clamp(3.5rem, 8vw, 6rem)' }}
-                  />
-                </div>
-                <div className="text-lg font-medium text-white/90 sm:text-xl">{stat.label}</div>
-                <div className="text-[0.78rem] text-white/60 sm:text-xs">{stat.sub}</div>
-              </ScrollReveal>
+              <HighlightStatRow key={stat.label} stat={stat} index={index} />
             ))}
           </div>
         </div>
