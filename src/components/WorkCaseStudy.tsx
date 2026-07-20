@@ -798,7 +798,7 @@ function CaseStudyBody({ project }: { project: Project }) {
           images={
             project.gallery.length > 0 ? (
               <ImageGrid
-                images={project.gallery}
+                images={project.gallery.slice(2)}
                 altPrefix={`${project.title} solution`}
                 columns="gallery"
               />
