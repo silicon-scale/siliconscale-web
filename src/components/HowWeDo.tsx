@@ -192,7 +192,7 @@ export function HowWeDo() {
                 className="text-white font-bold tracking-tight"
                 style={{ fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', lineHeight: 1.05, letterSpacing: '-0.04em' }}
               >
-                <span className="text-white/60">How</span> we bring ideas to life
+                <span className="text-white/60">How</span> we ship ideas that work
               </h2>
             </div>
             <button
