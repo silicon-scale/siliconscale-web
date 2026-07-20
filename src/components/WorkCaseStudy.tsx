@@ -724,11 +724,6 @@ function CaseStudyBody({ project }: { project: Project }) {
           @media (min-width: 1024px) {
             .cs-related-shell { padding-inline: 2.5rem; }
           }
-          .work-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-          }
 
         `}</style>
 

@@ -97,11 +97,23 @@ export function WorkProjectCardStyles() {
         position: relative;
         z-index: 0;
       }
+      .work-list {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.75rem, 6.5vw, 2.5rem);
+      }
       .work-card.scroll-reveal.is-visible {
         overflow: hidden;
       }
+      @media (max-width: 767px) {
+        .work-card-link {
+          border: 1px solid rgba(255,255,255,0.07);
+          box-shadow: 0 12px 32px rgba(0,0,0,0.28);
+        }
+      }
       @media (min-width: 768px) {
         .work-list {
+          gap: 0;
           scroll-snap-type: y proximity;
         }
         .work-card {

@@ -49,11 +49,6 @@ function WorkListing() {
           line-height: 1.65;
           color: rgba(255,255,255,0.62);
         }
-        .work-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0;
-        }
         .work-section-divider {
           margin: clamp(3.5rem, 7vw, 5rem) 0 clamp(3rem, 6vw, 4rem);
           border: 0;
