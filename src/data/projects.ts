@@ -15,6 +15,18 @@
  *   (sample project — keep labeled as non-client)
  */
 
+// PLAAM IMAGES
+import plaam2 from '@/assets/case-studies/plaam/2.webp'
+import plaam3 from '@/assets/case-studies/plaam/3.webp'
+import plaam4 from '@/assets/case-studies/plaam/4.webp'
+import plaam5 from '@/assets/case-studies/plaam/5.webp'
+import plaam6 from '@/assets/case-studies/plaam/6.webp'
+import plaam7 from '@/assets/case-studies/plaam/7.webp'
+import plaam8 from '@/assets/case-studies/plaam/8.webp'
+import plaam9 from '@/assets/case-studies/plaam/9.webp'
+
+
+
 import ddenImage from '@/assets/project-images/dden.webp'
 import mnrdcImage from '@/assets/project-images/mnrdc.webp'
 import rdcImage from '@/assets/project-images/rdc.webp'
@@ -108,8 +120,27 @@ function placeholderSolution(project: string) {
   }
 }
 
+const CASE_STUDY_GALLERIES = {
+  plaam: [
+    plaam2,
+    plaam3,
+    plaam4,
+    plaam5,
+    plaam6,
+    plaam7,
+    plaam8,
+    plaam9,
+  ],
+} as const
+
 /** Gallery uses the hero shot repeated until additional assets exist. */
-function galleryFrom(hero: string, count = 4): string[] {
+function galleryFrom(
+  hero: string,
+  gallery?: readonly string[],
+  count = 4,
+): string[] {
+  if (gallery?.length) return [...gallery]
+
   return Array.from({ length: count }, () => hero)
 }
 
@@ -160,7 +191,7 @@ export const PROJECTS: Project[] = [
       "PLAAM started as a small business selling jewellery-making and craft materials — silk threads, kundans, clip stones, and everything in between — with every order coming through WhatsApp. As the customer base grew, so did the messages, and PLAAM's team simply couldn't keep up. Replies were delayed, orders were missed, and there was no real way to browse the full catalog without asking.",
       "They needed a proper online store, but as a small business, a fully custom-built platform with its own servers, databases, and ongoing infrastructure costs wasn't realistic — or necessary.",
     ],
-    gallery: galleryFrom(plaamImage),
+    gallery: galleryFrom(plaamImage, CASE_STUDY_GALLERIES.plaam),
     challenge: {
       heading: 'Challenges',
       body: [
