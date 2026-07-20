@@ -8,6 +8,10 @@ import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
+/** Lucide icons in footer social row — keep size/stroke identical. */
+const FOOTER_SOCIAL_ICON_SIZE = 22
+const FOOTER_SOCIAL_ICON_STROKE = 1.75
+
 /** Static wave shapes — path geometry never animated (transform-only motion). */
 const FOOTER_WAVE_LAYERS = [
   {
@@ -240,63 +244,51 @@ function FooterComponent() {
         .footer-socials {
           display: flex;
           align-items: center;
-          gap: 1.25rem;
+          flex-wrap: nowrap;
+          gap: clamp(0.75rem, 3vw, 1.25rem);
           margin-top: 0.25rem;
-          flex-wrap: wrap;
+          max-width: 100%;
         }
-        @media (max-width: 768px) {
-          .footer-socials {
-            gap: 1rem;
-          }
-        }
-        .footer-social-link {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 52px;
-          height: 52px;
+        .footer-socials svg {
+          width: 1.375rem;
+          height: 1.375rem;
           flex-shrink: 0;
-          border-radius: 8px;
-          color: rgba(255,255,255,0.6);
-          transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
         }
-        .footer-social-link:hover {
-          color: #fff;
-          background: rgba(255,255,255,0.1);
-          transform: scale(1.05);
-        }
-        .footer-social-link:focus-visible {
-          outline: 2px solid var(--focus-ring);
-          outline-offset: 3px;
-        }
-        .footer-social-link svg {
-          width: 26px;
-          height: 26px;
-        }
+        .footer-social-link,
         .footer-email-link {
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
-          height: 52px;
-          padding: 0 0.25rem;
-          font-size: 1rem;
-          color: rgba(255,255,255,0.7);
-          text-decoration: none;
-          transition: color 0.2s ease;
+          justify-content: center;
           flex-shrink: 0;
+          min-width: 2.75rem;
+          min-height: 2.75rem;
+          padding: 0.625rem;
+          border-radius: 8px;
+          color: rgba(255,255,255,0.65);
+          text-decoration: none;
+          transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
         }
+        .footer-email-link {
+          justify-content: flex-start;
+          gap: 0.5rem;
+          min-width: 0;
+          flex-shrink: 1;
+          padding-right: 0.25rem;
+          font-size: clamp(0.72rem, 3.15vw, 1rem);
+          white-space: nowrap;
+        }
+        .footer-social-link:hover,
         .footer-email-link:hover {
           color: #fff;
+          background: rgba(255,255,255,0.08);
         }
+        .footer-social-link:hover {
+          transform: scale(1.05);
+        }
+        .footer-social-link:focus-visible,
         .footer-email-link:focus-visible {
           outline: 2px solid var(--focus-ring);
           outline-offset: 3px;
-          border-radius: 4px;
-        }
-        .footer-email-link svg {
-          width: 22px;
-          height: 22px;
-          flex-shrink: 0;
         }
 
         .footer-grid {
@@ -462,7 +454,11 @@ function FooterComponent() {
               className="footer-social-link"
               aria-label="Instagram"
             >
-              <Instagram />
+              <Instagram
+                size={FOOTER_SOCIAL_ICON_SIZE}
+                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
+                aria-hidden
+              />
             </a>
             <a
               href="https://www.linkedin.com/company/siliconscale"
@@ -471,14 +467,22 @@ function FooterComponent() {
               className="footer-social-link"
               aria-label="LinkedIn"
             >
-              <Linkedin />
+              <Linkedin
+                size={FOOTER_SOCIAL_ICON_SIZE}
+                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
+                aria-hidden
+              />
             </a>
             <a
               href="mailto:contact@siliconscale.dev"
               className="footer-email-link"
               aria-label="Email"
             >
-              <Mail />
+              <Mail
+                size={FOOTER_SOCIAL_ICON_SIZE}
+                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
+                aria-hidden
+              />
               contact@siliconscale.dev
             </a>
           </div>
