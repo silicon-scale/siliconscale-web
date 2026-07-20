@@ -11,6 +11,7 @@ import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import FinalCTA from '@/components/FinalCTA'
 import { WorkProjectCard, WorkProjectCardStyles } from '@/components/work/WorkProjectCard'
+import { PlaamParallaxShowcase } from '@/components/work/PlaamParallaxShowcase'
 import { PROJECT_SCREENSHOT_CONTAIN_CLASS } from '@/components/work/ProjectScreenshotContainment'
 import { getProjectBySlug, PROJECTS, projectHasCaseStudy, type Project, type ProjectResult } from '@/data/projects'
 import { trackEvent } from '@/utils/analytics'
@@ -195,18 +196,16 @@ function ResultsBadgeIcon() {
   )
 }
 
-function CenteredSectionBand({
+function CenteredTextBand({
   id,
   title,
   icon,
   children,
-  images,
 }: {
   id: string
   title: string
   icon: ReactNode
   children: ReactNode
-  images?: ReactNode
 }) {
   return (
     <section className="cs-section-band" aria-labelledby={id}>
@@ -220,7 +219,6 @@ function CenteredSectionBand({
             <div className="cs-section-body">{children}</div>
           </div>
         </RevealBlock>
-        {images ? <div className="cs-section-media">{images}</div> : null}
       </div>
     </section>
   )
@@ -431,6 +429,7 @@ function CaseStudyBody({ project }: { project: Project }) {
           /* 3 — Hero image */
           .cs-hero-outer {
             margin-top: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
             border-radius: 20px;
           }
           .cs-hero-image {
@@ -448,13 +447,10 @@ function CaseStudyBody({ project }: { project: Project }) {
             object-position: top center;
           }
 
-          /* 4 & 5 — Centered section bands */
+          /* 4 & 5 — Centered text bands (gray blocks) */
           .cs-section-band {
-            padding: clamp(4rem, 10vw, 10rem) clamp(1.5rem, 4vw, 2.5rem);
+            padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1.5rem, 4vw, 2.5rem) clamp(2.5rem, 5vw, 4rem);
             background: #1c1c1c;
-          }
-          .cs-section-band + .cs-section-band {
-            border-top: 1px solid rgba(255,255,255,0.04);
           }
           .cs-section-band-inner {
             max-width: 1080px;
@@ -493,8 +489,17 @@ function CaseStudyBody({ project }: { project: Project }) {
             transition: color 0.2s;
           }
           .cs-inline-link:hover { color: #fff; }
-          .cs-section-media {
-            margin-top: clamp(2rem, 4vw, 3rem);
+
+          /* Challenge / showcase images on page background */
+          .cs-media-strip {
+            padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.5rem) clamp(2.5rem, 5vw, 3.5rem);
+          }
+          @media (min-width: 1024px) {
+            .cs-media-strip { padding-inline: 2rem; }
+          }
+          .cs-media-strip-inner {
+            max-width: 1080px;
+            margin-inline: auto;
           }
 
           /* Image rows */
@@ -703,6 +708,7 @@ function CaseStudyBody({ project }: { project: Project }) {
             flex-direction: column;
             gap: 0;
           }
+
         `}</style>
 
         <WorkProjectCardStyles />
@@ -772,43 +778,42 @@ function CaseStudyBody({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* 4 — Challenges */}
-        <CenteredSectionBand
+        {/* 4 — Challenges (text) */}
+        <CenteredTextBand
           id="cs-challenges-heading"
           title="Challenges"
           icon={<ChallengesIcon />}
-          images={
-            <ImageGrid
-              images={challengeImages}
-              altPrefix={`${project.title} challenge`}
-              columns={2}
-            />
-          }
         >
           {project.challenge.body.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
-        </CenteredSectionBand>
+        </CenteredTextBand>
 
-        {/* 5 — Solutions */}
-        <CenteredSectionBand
+        {/* Challenge images on page background */}
+        <section className="cs-media-strip" aria-label={`${project.title} challenge visuals`}>
+          <div className="cs-media-strip-inner">
+            <RevealBlock delay={0.04}>
+              <ImageGrid
+                images={challengeImages}
+                altPrefix={`${project.title} challenge`}
+                columns={2}
+              />
+            </RevealBlock>
+          </div>
+        </section>
+
+        {/* 5 — Solutions (text) */}
+        <CenteredTextBand
           id="cs-solutions-heading"
           title="Solutions"
           icon={<SolutionsIcon />}
-          images={
-            project.gallery.length > 0 ? (
-              <ImageGrid
-                images={project.gallery.slice(2)}
-                altPrefix={`${project.title} solution`}
-                columns="gallery"
-              />
-            ) : undefined
-          }
         >
           {project.solution.body.map((paragraph) => (
             <p key={paragraph}>{renderRichText(paragraph)}</p>
           ))}
-        </CenteredSectionBand>
+        </CenteredTextBand>
+
+        {project.slug === 'plaam' ? <PlaamParallaxShowcase /> : null}
 
         {/* 6 — Results */}
         <CaseStudyResults heading={resultsHeading} results={project.results} />

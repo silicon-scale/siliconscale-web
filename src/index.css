@@ -15,6 +15,7 @@ body {
 .bg-page {
   background-color: var(--brand-black);
 }
+
 .bg-ink {
   background-color: var(--brand-ink);
 }
