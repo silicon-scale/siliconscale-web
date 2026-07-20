@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { SplashHoverButton } from "@/components/ui/SplashHoverButton";
 
 /* ─── Data ───────────────────────────────────────────────── */
 const PRINCIPLES = [
@@ -177,6 +178,7 @@ export default function AboutPage() {
           text-decoration: none; transition: background 0.25s, border-color 0.25s;
         }
         .join-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.55); }
+        .join-btn--splash:hover { background: transparent; border-color: rgba(255,255,255,0.28); }
         .join-btn:focus-visible {
           outline: 2px solid var(--focus-ring);
           outline-offset: 3px;
@@ -517,13 +519,14 @@ export default function AboutPage() {
 					delay={0.16}
 					style={{ display: "flex", gap: 16, flexWrap: "wrap" }}
 				>
-					<Link
+					<SplashHoverButton
 						to="/contact"
-						className="join-btn"
+						variant="outline"
+						className="join-btn join-btn--splash"
 						style={{ fontSize: 12 }}
 					>
 						Talk to us
-					</Link>
+					</SplashHoverButton>
 				</ScrollReveal>
 			</section>
 		</div>
