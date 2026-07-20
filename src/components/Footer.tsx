@@ -193,45 +193,40 @@ function FooterComponent() {
         .footer-brand-head {
           display: flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.45rem;
           flex-wrap: nowrap;
+          overflow: visible;
+          max-width: 100%;
         }
-        @media (max-width: 1024px) {
-          .footer-brand-head {
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 0.75rem;
-          }
+        .footer-logo-mark {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          line-height: 0;
         }
         .footer-watermark {
           font-family: 'Syne', sans-serif;
-          font-size: clamp(4rem, 14vw, 10rem);
+          font-size: clamp(1.35rem, 7.5vw, 2.75rem);
           font-weight: 700;
-          color: rgba(255,255,255,0.12);
+          color: #fff;
           letter-spacing: -0.03em;
           line-height: 1;
+          margin: 0;
+          padding-inline-end: 0.1em;
           user-select: none;
           white-space: nowrap;
+          overflow: visible;
         }
-        @media (max-width: 1024px) {
-          .footer-watermark {
-            font-size: clamp(3rem, 9vw, 7rem);
-          }
-        }
-        @media (max-width: 768px) {
-          .footer-watermark {
-            font-size: clamp(2rem, 10vw, 6rem);
-          }
+        .footer-wordmark-dot {
+          letter-spacing: 0;
+          margin-inline-start: 0.04em;
         }
         .footer-logo {
-          height: clamp(4rem, 14vw, 10rem);
+          display: block;
+          height: clamp(1.75rem, 9vw, 3rem);
           width: auto;
           object-fit: contain;
-        }
-        @media (max-width: 768px) {
-          .footer-logo {
-            height: clamp(2rem, 10vw, 6rem);
-          }
         }
         .footer-tagline {
           font-family: 'Syne', sans-serif;
@@ -312,11 +307,28 @@ function FooterComponent() {
         @media (max-width: 900px) {
           .footer-grid { grid-template-columns: 1fr 1fr; }
         }
-        @media (max-width: 480px) {
-          .footer-grid { grid-template-columns: 1fr; }
-        }
         @media (max-width: 768px) {
           .footer-grid { gap: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+          .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            column-gap: clamp(1.25rem, 5vw, 1.75rem);
+            row-gap: 2.25rem;
+          }
+          .footer-grid > :nth-child(1) {
+            grid-column: 1;
+            grid-row: 1;
+          }
+          .footer-grid > :nth-child(2) {
+            grid-column: 1;
+            grid-row: 2;
+          }
+          .footer-grid > :nth-child(3) {
+            grid-column: 2;
+            grid-row: 1;
+            align-self: start;
+          }
         }
 
         .footer-col-title {
@@ -420,16 +432,24 @@ function FooterComponent() {
       <div className="footer-body">
         <ScrollReveal className="footer-brand">
           <div className="footer-brand-head">
-            <img
-              src="/transparent-logo.svg"
-              alt="SiliconScale"
-              width="120"
-              height="120"
-              className="footer-logo"
-              loading="lazy"
-              decoding="async"
-            />
-            <span className="footer-watermark">SiliconScale</span>
+            <div className="footer-logo-mark">
+              <img
+                src="/transparent-logo.svg"
+                alt=""
+                width="120"
+                height="120"
+                className="footer-logo"
+                loading="lazy"
+                decoding="async"
+                aria-hidden
+              />
+            </div>
+            <span className="footer-watermark">
+              SiliconScale Tech
+              <span className="footer-wordmark-dot" aria-hidden="true">
+                .
+              </span>
+            </span>
           </div>
           <p className="footer-tagline">
             Custom systems, Shopify stores, and AI agents for businesses that need it to work.
@@ -532,7 +552,7 @@ function FooterComponent() {
 
         <ScrollReveal className="footer-bottom">
           <span className="footer-bottom-text">
-            © {new Date().getFullYear()} SiliconScale. All rights reserved.
+            © {new Date().getFullYear()} SiliconScale Tech. All rights reserved.
           </span>
           <span className="footer-bottom-text">Building scalable digital products.</span>
         </ScrollReveal>
