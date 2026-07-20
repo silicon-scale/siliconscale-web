@@ -25,7 +25,14 @@ import plaam7 from '@/assets/case-studies/plaam/7.webp'
 import plaam8 from '@/assets/case-studies/plaam/8.webp'
 import plaam9 from '@/assets/case-studies/plaam/9.webp'
 
+// DDEN IMAGES
 
+
+
+// LAVVI IMAGES
+
+
+// 
 
 import ddenImage from '@/assets/project-images/dden.webp'
 import mnrdcImage from '@/assets/project-images/mnrdc.webp'
