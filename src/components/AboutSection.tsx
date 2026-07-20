@@ -8,7 +8,8 @@ import { useIsMobile } from '@/hooks/useIsMobile'
 import { useReducedMotion } from 'framer-motion'
 import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
-import { SecondaryCta } from '@/components/ui/SecondaryCta'
+import { FOCUS_RING } from '@/lib/focus'
+import { SplashHoverButton } from '@/components/ui/SplashHoverButton'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 
 export function AboutSection() {
@@ -63,14 +64,16 @@ export function AboutSection() {
                 </p>
               </div>
 
-              <SecondaryCta
-                variant="solid"
-                className="group"
+              <SplashHoverButton
                 onClick={() => navigate('/about')}
+                className={`group px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] ${FOCUS_RING}`}
               >
                 See how we work
-                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </SecondaryCta>
+                <ArrowUpRight
+                  className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  aria-hidden
+                />
+              </SplashHoverButton>
             </ScrollReveal>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

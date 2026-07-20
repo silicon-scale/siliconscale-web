@@ -9,8 +9,9 @@ import { useReveal } from '../context/RevealContext'
 import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { useSectionInView } from '@/hooks/useSectionInView'
-import { HoverBorderGradient } from '@/components/ui/hover-border-gradient'
+import { SplashHoverButton } from '@/components/ui/SplashHoverButton'
 import { trackEvent } from '@/utils/analytics'
+import { FOCUS_RING } from '@/lib/focus'
 import { ENTRANCE_SETTLE_MS } from '@/lib/motion'
 import { brandGoldAlpha } from '@/lib/brand'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
@@ -192,8 +193,21 @@ function HeroSectionComponent() {
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-4xl text-center" aria-hidden={!shouldReveal}>
+          <div
+            className={itemClass(0, 'mb-5 flex items-center justify-center gap-3 sm:gap-4')}
+            onTransitionEnd={clearWillChange}
+          >
+            <span
+              className="h-px w-10 shrink-0 bg-brand-gold sm:w-14"
+              aria-hidden
+            />
+            <p className="text-xs font-medium tracking-[0.12em] text-white/70 sm:text-sm sm:tracking-[0.14em]">
+              We just don&apos;t build websites
+            </p>
+          </div>
+
           <h1
-            className={itemClass(0, 'reveal-h1 mt-6 font-black leading-[1.02] tracking-tight text-white')}
+            className={itemClass(1, 'reveal-h1 font-black leading-[1.02] tracking-tight text-white')}
             style={{ fontSize: 'clamp(2.15rem, 7.2vw, 4.8rem)', textWrap: 'balance' }}
             onTransitionEnd={clearWillChange}
           >
@@ -247,7 +261,7 @@ function HeroSectionComponent() {
           </h1>
 
           <p
-            className={itemClass(1, 'mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto')}
+            className={itemClass(2, 'mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto')}
             onTransitionEnd={clearWillChange}
           >
             Custom software, headless Shopify stores, and AI agents — built to save you hours every week
@@ -255,19 +269,16 @@ function HeroSectionComponent() {
           </p>
 
           <div
-            className={itemClass(2, 'mt-10 flex flex-col items-center gap-4')}
+            className={itemClass(3, 'mt-10 flex flex-col items-center gap-4')}
             onTransitionEnd={clearWillChange}
           >
             <div className="flex flex-wrap justify-center gap-4">
-              <HoverBorderGradient
+              <SplashHoverButton
                 onClick={goToContact}
-                containerClassName="rounded-button"
-                as="button"
-                animateActive={pulseLoopsActive}
-                className="px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
+                className={`px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] ${FOCUS_RING}`}
               >
                 Start Your Project
-              </HoverBorderGradient>
+              </SplashHoverButton>
               <MagneticButton
                 onClick={goToWork}
                 className="rounded-button border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"

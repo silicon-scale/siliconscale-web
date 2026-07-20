@@ -797,6 +797,9 @@ html {
 .reveal-item--2 {
   transition-delay: 0.28s;
 }
+.reveal-item--3 {
+  transition-delay: 0.42s;
+}
 .reveal-item.is-animating {
   will-change: transform, opacity;
 }

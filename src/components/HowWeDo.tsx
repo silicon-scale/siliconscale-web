@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 import { FOCUS_RING } from '@/lib/focus'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { SplashHoverButton } from '@/components/ui/SplashHoverButton'
 
 const CARDS = [
   {
@@ -195,14 +196,13 @@ export function HowWeDo() {
                 <span className="text-white/60">How</span> we ship ideas that work
               </h2>
             </div>
-            <button
-              type="button"
+            <SplashHoverButton
               onClick={() => navigate('/services')}
-              className={`inline-flex items-center gap-2 rounded-button bg-white text-black px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-white/90 transition-colors ${FOCUS_RING}`}
+              className={`px-6 py-3 text-sm font-semibold uppercase tracking-wider ${FOCUS_RING}`}
             >
               See our process
               <ArrowUpRight className="w-5 h-5" aria-hidden />
-            </button>
+            </SplashHoverButton>
           </ScrollReveal>
 
           {/* Card carousel */}
