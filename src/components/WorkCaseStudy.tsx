@@ -1,7 +1,6 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useReducedMotion } from 'framer-motion'
 import { ArrowUpRight, CheckCircle2 } from 'lucide-react'
@@ -22,7 +21,7 @@ import {
   type ProjectResult,
 } from '@/data/projects'
 import { trackEvent } from '@/utils/analytics'
-import { observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { cn } from '@/lib/utils'
 
 const INTRO_BODY_FALLBACK = [
@@ -243,22 +242,12 @@ function CaseStudyResults({
   heading: string
   results: ProjectResult[]
 }) {
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [statsInView, setStatsInView] = useState(false)
   const prefersReducedMotion = useReducedMotion()
+  const { ref: gridRef, inView: statsInView } = useInViewOnce<HTMLDivElement>({
+    disabled: !!prefersReducedMotion,
+    variant: 'countUp',
+  })
   const { muted, bright } = splitResultsHeading(heading)
-
-  useEffect(() => {
-    const el = gridRef.current
-    if (!el) return
-
-    if (prefersReducedMotion) {
-      setStatsInView(true)
-      return
-    }
-
-    return observeScrollRevealOnce(el, () => setStatsInView(true))
-  }, [prefersReducedMotion])
 
   return (
     <section className="cs-results-band" aria-labelledby="cs-results-heading">

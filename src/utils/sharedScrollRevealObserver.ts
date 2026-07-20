@@ -1,4 +1,6 @@
 import {
+  COUNT_UP_IN_VIEW_ROOT_MARGIN,
+  COUNT_UP_IN_VIEW_THRESHOLD,
   SCROLL_REVEAL_ROOT_MARGIN,
   SCROLL_REVEAL_THRESHOLD,
 } from '@/lib/scrollReveal'
@@ -7,13 +9,39 @@ type RevealRegistration = {
   onReveal: () => void
 }
 
-let sharedObserver: IntersectionObserver | null = null
+type ObserverKind = 'scrollReveal' | 'countUp'
+
+let scrollRevealObserver: IntersectionObserver | null = null
+let countUpObserver: IntersectionObserver | null = null
 const registrations = new Map<Element, RevealRegistration>()
 
-function ensureObserver(): IntersectionObserver {
-  if (sharedObserver) return sharedObserver
+function ensureObserver(kind: ObserverKind): IntersectionObserver {
+  if (kind === 'countUp') {
+    if (countUpObserver) return countUpObserver
 
-  sharedObserver = new IntersectionObserver(
+    countUpObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          const reg = registrations.get(entry.target)
+          if (!reg) continue
+          reg.onReveal()
+          registrations.delete(entry.target)
+          countUpObserver?.unobserve(entry.target)
+        }
+      },
+      {
+        threshold: COUNT_UP_IN_VIEW_THRESHOLD,
+        rootMargin: COUNT_UP_IN_VIEW_ROOT_MARGIN,
+      },
+    )
+
+    return countUpObserver
+  }
+
+  if (scrollRevealObserver) return scrollRevealObserver
+
+  scrollRevealObserver = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue
@@ -21,7 +49,7 @@ function ensureObserver(): IntersectionObserver {
         if (!reg) continue
         reg.onReveal()
         registrations.delete(entry.target)
-        sharedObserver?.unobserve(entry.target)
+        scrollRevealObserver?.unobserve(entry.target)
       }
     },
     {
@@ -30,19 +58,24 @@ function ensureObserver(): IntersectionObserver {
     },
   )
 
-  return sharedObserver
+  return scrollRevealObserver
 }
 
 function teardownIfEmpty() {
-  if (registrations.size === 0 && sharedObserver) {
-    sharedObserver.disconnect()
-    sharedObserver = null
+  if (registrations.size === 0) {
+    scrollRevealObserver?.disconnect()
+    countUpObserver?.disconnect()
+    scrollRevealObserver = null
+    countUpObserver = null
   }
 }
 
-/** One shared IO for all scroll-reveal elements — fires once per element, then unobserves. */
-export function observeScrollRevealOnce(el: Element, onReveal: () => void): () => void {
-  const obs = ensureObserver()
+function observeOnce(
+  el: Element,
+  onReveal: () => void,
+  kind: ObserverKind,
+): () => void {
+  const obs = ensureObserver(kind)
   registrations.set(el, { onReveal })
   obs.observe(el)
 
@@ -55,4 +88,14 @@ export function observeScrollRevealOnce(el: Element, onReveal: () => void): () =
     }
     teardownIfEmpty()
   }
+}
+
+/** One shared IO for scroll-reveal elements — fires once per element, then unobserves. */
+export function observeScrollRevealOnce(el: Element, onReveal: () => void): () => void {
+  return observeOnce(el, onReveal, 'scrollReveal')
+}
+
+/** Looser IO tuned for count-up stat blocks on narrow / mobile viewports. */
+export function observeCountUpInViewOnce(el: Element, onReveal: () => void): () => void {
+  return observeOnce(el, onReveal, 'countUp')
 }

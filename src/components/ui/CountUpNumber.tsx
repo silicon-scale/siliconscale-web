@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, type CSSProperties } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { detectPreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import { COUNT_UP_DURATION_S, easeRevealProgress } from '@/lib/motion'
 
 export type ParsedStatValue = {
@@ -120,10 +119,7 @@ export function CountUpNumber({
   const spanRef = useRef<HTMLSpanElement>(null)
   const parsed = useMemo(() => parseStatDisplayValue(value), [value])
   const prefersReducedMotion = useReducedMotion()
-  const skipAnimation = useMemo(
-    () => detectPreferReducedEffects(prefersReducedMotion),
-    [prefersReducedMotion],
-  )
+  const skipAnimation = prefersReducedMotion === true
 
   useEffect(() => {
     const el = spanRef.current

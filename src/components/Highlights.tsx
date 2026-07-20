@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
-import { observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { cn } from '@/lib/utils'
 
 const STATS = [
@@ -33,14 +33,11 @@ const STATS = [
 ] as const
 
 export function Highlights() {
-  const gridRef = useRef<HTMLDivElement>(null)
-  const [statsInView, setStatsInView] = useState(false)
-
-  useEffect(() => {
-    const el = gridRef.current
-    if (!el) return
-    return observeScrollRevealOnce(el, () => setStatsInView(true))
-  }, [])
+  const prefersReducedMotion = useReducedMotion()
+  const { ref: gridRef, inView: statsInView } = useInViewOnce<HTMLDivElement>({
+    disabled: !!prefersReducedMotion,
+    variant: 'countUp',
+  })
 
   return (
     <section

@@ -18,6 +18,11 @@ export const SCROLL_REVEAL_THRESHOLD = 0.2
 
 export const SCROLL_REVEAL_ROOT_MARGIN = '0px 0px -5% 0px'
 
+/** Looser IO for large stat blocks — triggers reliably on mobile viewports. */
+export const COUNT_UP_IN_VIEW_THRESHOLD = 0.08
+
+export const COUNT_UP_IN_VIEW_ROOT_MARGIN = '0px 0px 8% 0px'
+
 export function scrollRevealDelayMs(
   staggerIndex = 0,
   extraDelayMs = 0,

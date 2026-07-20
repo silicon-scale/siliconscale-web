@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
-import { observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
+import { observeCountUpInViewOnce, observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
 
 export type UseInViewOnceOptions = {
   /** When true, element is treated as immediately visible (e.g. reduced motion). */
   disabled?: boolean
+  /** Looser intersection settings for large stat / count-up blocks on mobile. */
+  variant?: 'default' | 'countUp'
+}
+
+function isAlreadyInViewport(el: Element) {
+  const rect = el.getBoundingClientRect()
+  const vh = window.innerHeight
+  return rect.top < vh * 0.94 && rect.bottom > vh * 0.06
 }
 
 /**
@@ -13,7 +21,7 @@ export type UseInViewOnceOptions = {
 export function useInViewOnce<T extends Element = HTMLElement>(
   options: UseInViewOnceOptions = {},
 ) {
-  const { disabled = false } = options
+  const { disabled = false, variant = 'default' } = options
   const ref = useRef<T>(null)
   const [inView, setInView] = useState(disabled)
 
@@ -26,14 +34,16 @@ export function useInViewOnce<T extends Element = HTMLElement>(
     const el = ref.current
     if (!el) return
 
-    const rect = el.getBoundingClientRect()
-    if (rect.top < window.innerHeight * 0.92 && rect.bottom > window.innerHeight * 0.08) {
+    if (isAlreadyInViewport(el)) {
       setInView(true)
       return
     }
 
-    return observeScrollRevealOnce(el, () => setInView(true))
-  }, [disabled])
+    const observe =
+      variant === 'countUp' ? observeCountUpInViewOnce : observeScrollRevealOnce
+
+    return observe(el, () => setInView(true))
+  }, [disabled, variant])
 
   return { ref, inView }
 }
