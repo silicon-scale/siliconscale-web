@@ -5,9 +5,8 @@
  * - All projects: challenge.heading/body, solution.heading/body,
  *   results (4× value/label/description except where noted),
  *   testimonial (optional), gallery (extra shots beyond hero image)
- * - DDEN: challenge, solution, results×4, testimonial, gallery extras
- * - MICRONANO: challenge, solution, results×4, testimonial, gallery extras
- * - RDC: challenge, solution, results×4, testimonial, gallery extras
+ * - DDEN: results×4 (placeholders), gallery extras, testimonial, hero assets
+ * - MICRONANO R&D / RDC: independent work only (INDEPENDENT_PROJECTS)
  * - PLAAM: challenge, solution, result #4, testimonial, gallery extras
  *   (results 1–3 reuse existing live metrics: revenue / orders / conversion)
  * - LAVVI: challenge, solution, results×4, testimonial, gallery extras
@@ -50,6 +49,8 @@ export type ProjectResult = {
   value: string
   label: string
   description: string
+  /** When true, render value as static text (no count-up). */
+  skipCountUp?: boolean
 }
 
 export type ProjectTestimonial = {
@@ -77,6 +78,8 @@ export type Project = {
   imageAlt: string
   year: string
   isSample?: boolean
+  /** Solo / personal builds — not agency client engagements. */
+  isIndependent?: boolean
   /** When true, listing card links to `/work/:slug` and the case study page is available. */
   caseStudy?: boolean
   gallery: string[]
@@ -156,27 +159,64 @@ export const PROJECTS: Project[] = [
     id: 'dden',
     slug: 'dden',
     title: 'DDEN',
+    tag: 'Fashion-Tech Platform',
+    services: 'UI/UX · BACKEND · DEVELOPMENT',
     description:
-      'A digital platform for a designer fashion marketplace — built for browsing, discovery, and a smooth path to purchase.',
+      'A LinkedIn-style platform where fashion designers showcase their work and get discovered by recruiters and brands.',
     image: ddenImage,
-    imageAlt: 'DDEN fashion marketplace homepage',
+    imageAlt: PH('DDEN', 'listing / hero image alt'),
     link: 'https://www.dden.in/',
     websiteUrl: 'https://www.dden.in/',
-    tag: 'Fashion-Tech Platform',
-    year: '2024',
-    services: 'BRANDING · DESIGN · DEVELOPMENT',
-    tagline: 'Browse, discover, and buy designer fashion.',
-    stat: '+120%',
-    statOverlay: { value: '+120%', label: 'User Engagement' },
+    year: PH('DDEN', 'year'),
+    tagline: PH('DDEN', 'tagline'),
+    caseStudy: true,
+    introHeadline: 'A LinkedIn for Fashion Designers — Built From Nothing but an Idea',
+    introBody: [
+      'DDEN started as a vision from a group of student founders: a platform where fashion designers could showcase their work the way developers showcase code — a portfolio, a feed, a professional identity — and where recruiters and brands could discover real talent through real work, not just a resume.',
+      "Siliconscale built DDEN from the ground up — UI/UX, architecture, and full backend — with no existing product to reference, no template to adapt. Just a founder's vision and a blank canvas.",
+    ],
     gallery: galleryFrom(ddenImage),
-    challenge: placeholderChallenge('DDEN'),
-    solution: placeholderSolution('DDEN'),
-    results: placeholderResults('DDEN'),
-    testimonial: {
-      quote: PH('DDEN', 'testimonial quote'),
-      name: PH('DDEN', 'testimonial name'),
-      role: PH('DDEN', 'testimonial role'),
+    challenge: {
+      heading: 'Challenges',
+      body: [
+        'There was no reference application to model DDEN after. We had to plan the entire product architecture from scratch — three distinct portals with three distinct user journeys: a client portal for designers and recruiters, an admin portal for internal operations, and a merchant portal for manufacturers fulfilling stitch orders. Every workflow between them had to be designed before a single line of code made sense.',
+        'The hardest technical problem was performance at scale. Designers upload 3D garment designs that regularly exceed 100MB per file. Storing and — more critically — fetching those files fast enough for a smooth browsing feed was a serious bottleneck, especially running on a single AWS S3 bucket and a single render server with no infrastructure budget for scaling horizontally.',
+      ],
     },
+    solution: {
+      heading: 'Solutions',
+      body: [
+        'We designed and built all three portals as a connected system: users and recruiters browse and hire through the client portal, admins onboard and manage merchants and monitor platform health through the admin portal, and merchants — invited via email registration sent from the admin panel — manage incoming stitch orders through their own dedicated portal. When a stitch order comes in, our system routes it to the best-matched merchant based on our internal assignment logic.',
+        "To solve the 3D file performance problem, we identified which designs were being fetched most frequently and tagged them for aggressive caching — storing them client-side in IndexedDB on compatible devices for near-instant reloads. For devices that couldn't handle full-resolution files, we served compressed, lower-fidelity 3D models instead. Combined with Gzip and Brotli compression across the pipeline, this cut load times dramatically without needing to scale infrastructure spend.",
+      ],
+    },
+    results: [
+      {
+        value: '1,000+',
+        label: 'Students Onboarded',
+        description:
+          'Fashion design students actively using DDEN to build portfolios and get discovered by recruiters.',
+      },
+      {
+        value: '3',
+        label: 'Integrated Portals',
+        description:
+          'A unified system connecting designers, admins, and manufacturing partners in one workflow.',
+      },
+      {
+        value: '100MB+',
+        label: '3D Files Handled Per Design',
+        description:
+          'Optimized delivery of large-scale 3D garment files without compromising load speed.',
+      },
+      {
+        value: '0 → 1',
+        label: 'Built From Scratch',
+        description:
+          'No existing product to model — architecture, UI/UX, and backend designed and shipped from a blank slate.',
+        skipCountUp: true,
+      },
+    ],
   },
   {
     id: 'plaam',
@@ -238,47 +278,6 @@ export const PROJECTS: Project[] = [
     ],
   },
   {
-    id: 'micronano',
-    slug: 'micronano',
-    title: 'MICRONANO',
-    description:
-      'Advanced micro and nano technology application platform for research and development.',
-    image: mnrdcImage,
-    imageAlt: 'MICRONANO resource booking system interface',
-    link: 'https://app.micronano.paruluniversity.ac.in/',
-    websiteUrl: 'https://app.micronano.paruluniversity.ac.in/',
-    tag: 'Resource Booking System',
-    year: '2024',
-    services: 'UI/UX · ENGINEERING · RESEARCH',
-    tagline: 'Precision at the Nanoscale',
-    stat: '+89%',
-    statOverlay: { value: '+89%', label: 'Traffic Growth' },
-    gallery: galleryFrom(mnrdcImage),
-    challenge: placeholderChallenge('MICRONANO'),
-    solution: placeholderSolution('MICRONANO'),
-    results: placeholderResults('MICRONANO'),
-  },
-  {
-    id: 'rdc',
-    slug: 'rdc',
-    title: 'RDC',
-    description:
-      'Research and Development Center fostering innovation and technological advancement.',
-    image: rdcImage,
-    imageAlt: 'RDC research website homepage',
-    link: 'https://rdc.paruluniversity.ac.in/',
-    websiteUrl: 'https://rdc.paruluniversity.ac.in/',
-    tag: 'Research Website',
-    year: '2023',
-    services: 'STRATEGY · DESIGN · DEVELOPMENT',
-    tagline: 'From Research to Real-World Impact',
-    stat: '+74%',
-    gallery: galleryFrom(rdcImage),
-    challenge: placeholderChallenge('RDC'),
-    solution: placeholderSolution('RDC'),
-    results: placeholderResults('RDC'),
-  },
-  {
     id: 'lavvi',
     slug: 'lavvi',
     title: 'LavviStore',
@@ -320,8 +319,102 @@ export const PROJECTS: Project[] = [
   },
 ]
 
+export const INDEPENDENT_PROJECTS: Project[] = [
+  {
+    id: 'micronano-rnd',
+    slug: 'micronano-rnd',
+    title: 'Micro-Nano R&D Booking Platform',
+    tag: 'Booking Management Platform',
+    services: 'BACKEND · DEVOPS · FULL-STACK',
+    description:
+      'A complete booking, payment, and invoicing system built solo for Parul University\'s Micro-Nano R&D Center.',
+    isIndependent: true,
+    caseStudy: true,
+    image: mnrdcImage,
+    imageAlt: PH('MICRONANO R&D', 'listing / hero image alt'),
+    link: PH('MICRONANO R&D', 'link'),
+    websiteUrl: PH('MICRONANO R&D', 'website URL'),
+    year: PH('MICRONANO R&D', 'year'),
+    gallery: galleryFrom(mnrdcImage),
+    introHeadline: 'A Full Booking Platform, Built Solo — From Server to UI',
+    introBody: [
+      'Micro-Nano R&D Center at Parul University previously had a static website — just information about the center, its equipment, and its services. There was no way to actually book resources, manage requests, or process payments online.',
+      'As an intern, I designed and built the entire booking system from scratch — solo, end-to-end — from the database architecture and payment integration to server deployment and the admin interface used to manage it all.',
+    ],
+    challenge: {
+      heading: 'Challenges',
+      body: [
+        'The university had its own infrastructure with no cloud budget for managed services — meaning there was no AWS, no managed database, no third-party file storage to lean on. Everything from the server to file storage had to be self-hosted and self-managed on a Linux box I configured myself.',
+        'Beyond infrastructure, the system had to handle real operational complexity: secure authentication for university users, role-based access for different staff levels, safe payment processing, and — critically — booking requests that could never double-book a resource, even under concurrent load.',
+      ],
+    },
+    solution: {
+      heading: 'Solutions',
+      body: [
+        'I built the backend on Node.js and Express with PostgreSQL, using Google OAuth for authentication and a full role-based access control (RBAC) system to separate what students, staff, and admins could each see and do. Every booking request runs through database transactions with locking to guarantee ACID compliance — so two people can never accidentally book the same slot — and every request is idempotent with automatic retry handling to stay resilient under network failures.',
+        'I integrated Easebuzz for payments, and built automatic PDF invoice generation for every successful booking, delivered instantly via automated email using custom Pug templates. On the infrastructure side, I configured the Linux server myself — Nginx as the reverse proxy, Certbot for SSL, and local file storage for invoices instead of paying for external services like S3. I also rebuilt the admin dashboard UI from scratch in React, giving staff a clean way to manage bookings, and redesigned the public-facing portal UI.',
+      ],
+    },
+    results: [
+      {
+        value: '₹6.7Cr+',
+        label: 'Equipment Value Managed',
+        description:
+          'Real institutional lab and research equipment scheduled and tracked through the platform.',
+        skipCountUp: true,
+      },
+      {
+        value: 'Zero',
+        label: 'Double-Booking Incidents',
+        description:
+          'Transaction-level locking and ACID-compliant booking logic ensure no resource is ever booked twice.',
+        skipCountUp: true,
+      },
+      {
+        value: 'End-to-End',
+        label: 'Solo-Built System',
+        description:
+          'From server provisioning to UI — architecture, backend, frontend, and infrastructure all built and deployed independently.',
+        skipCountUp: true,
+      },
+      {
+        value: 'Self-Hosted',
+        label: 'Zero Third-Party Infrastructure',
+        description:
+          'No AWS, no managed database, no external file storage — a fully self-configured Linux server handling everything from SSL to invoice storage.',
+        skipCountUp: true,
+      },
+    ],
+    resultsHeading: 'Built to run in production',
+  },
+  {
+    id: 'rdc',
+    slug: 'rdc',
+    title: 'RDC',
+    description:
+      'Research and Development Center fostering innovation and technological advancement.',
+    image: rdcImage,
+    imageAlt: 'RDC research website homepage',
+    link: 'https://rdc.paruluniversity.ac.in/',
+    websiteUrl: 'https://rdc.paruluniversity.ac.in/',
+    tag: 'Research Website',
+    year: '2023',
+    services: 'STRATEGY · DESIGN · DEVELOPMENT',
+    tagline: 'From Research to Real-World Impact',
+    isIndependent: true,
+    stat: '+74%',
+    gallery: galleryFrom(rdcImage),
+    challenge: placeholderChallenge('RDC'),
+    solution: placeholderSolution('RDC'),
+    results: placeholderResults('RDC'),
+  },
+]
+
+/** Client + independent listings (deduped by slug). */
+export const ALL_PROJECTS: Project[] = [...PROJECTS, ...INDEPENDENT_PROJECTS]
+
 export function getProjectBySlug(slug: string): Project | undefined {
-  return PROJECTS.find((p) => p.slug === slug)
+  return ALL_PROJECTS.find((p) => p.slug === slug)
 }
 
 export function projectHasCaseStudy(project: Project): boolean {

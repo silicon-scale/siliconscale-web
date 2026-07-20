@@ -37,6 +37,24 @@ export function parseStatDisplayValue(raw: string): ParsedStatValue {
     }
   }
 
+  const unitSuffix = trimmed.match(/^([\d,]+(?:\.\d+)?)([A-Za-z]+\+)$/)
+  if (unitSuffix) {
+    const [, numStr, suffix] = unitSuffix
+    const cleaned = numStr.replace(/,/g, '')
+    const target = Number.parseFloat(cleaned)
+    const decimals = cleaned.includes('.') ? cleaned.split('.')[1].length : 0
+
+    return {
+      prefix: '',
+      target,
+      decimals,
+      suffix,
+      finalText: trimmed,
+      useGrouping: numStr.includes(','),
+      animatable: !Number.isNaN(target),
+    }
+  }
+
   const simple = trimmed.match(/^(\d+(?:\.\d+)?)(\+|%)?$/)
   if (!simple) {
     return {

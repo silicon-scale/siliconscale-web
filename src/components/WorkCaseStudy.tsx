@@ -11,9 +11,16 @@ import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import FinalCTA from '@/components/FinalCTA'
 import { WorkProjectCard, WorkProjectCardStyles } from '@/components/work/WorkProjectCard'
-import { PlaamParallaxShowcase } from '@/components/work/PlaamParallaxShowcase'
+import { CaseStudyParallaxShowcase } from '@/components/work/CaseStudyParallaxShowcase'
+import { parallaxConfigForSlug } from '@/data/caseStudyParallax'
 import { PROJECT_SCREENSHOT_CONTAIN_CLASS } from '@/components/work/ProjectScreenshotContainment'
-import { getProjectBySlug, PROJECTS, projectHasCaseStudy, type Project, type ProjectResult } from '@/data/projects'
+import {
+  ALL_PROJECTS,
+  getProjectBySlug,
+  projectHasCaseStudy,
+  type Project,
+  type ProjectResult,
+} from '@/data/projects'
 import { trackEvent } from '@/utils/analytics'
 import { observeScrollRevealOnce } from '@/utils/sharedScrollRevealObserver'
 import { cn } from '@/lib/utils'
@@ -126,11 +133,16 @@ function challengeImagesFor(project: Project) {
 }
 
 function resultsHeadingFor(project: Project) {
-  return project.resultsHeading ?? 'Measurable business impact'
+  if (project.resultsHeading) return project.resultsHeading
+  if (project.isIndependent) return 'Built to run in production'
+  return 'Measurable business impact'
 }
 
 function otherProjects(currentSlug: string, limit = 6) {
-  return PROJECTS.filter((p) => p.slug !== currentSlug && projectHasCaseStudy(p)).slice(0, limit)
+  return ALL_PROJECTS.filter((p) => p.slug !== currentSlug && projectHasCaseStudy(p)).slice(
+    0,
+    limit,
+  )
 }
 
 function splitResultsHeading(heading: string) {
@@ -274,13 +286,22 @@ function CaseStudyResults({
               className="cs-result-card"
               data-index={index}
             >
-              <CountUpNumber
-                value={result.value}
-                animate={statsInView}
-                durationMs={2000}
-                className="cs-result-value font-bagel leading-none tracking-tight text-white"
-                style={{ fontSize: 'clamp(2.75rem, 6vw, 5rem)' }}
-              />
+              {result.skipCountUp ? (
+                <span
+                  className="cs-result-value font-bagel leading-none tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2.75rem, 6vw, 5rem)' }}
+                >
+                  {result.value}
+                </span>
+              ) : (
+                <CountUpNumber
+                  value={result.value}
+                  animate={statsInView}
+                  durationMs={2000}
+                  className="cs-result-value font-bagel leading-none tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2.75rem, 6vw, 5rem)' }}
+                />
+              )}
               <p className="cs-result-label">{result.label}</p>
               <p className="cs-result-desc">{result.description}</p>
             </article>
@@ -726,7 +747,7 @@ function CaseStudyBody({ project }: { project: Project }) {
                 </h1>
                 <p className="cs-services">{project.services}</p>
               </div>
-              {visitUrl ? (
+              {visitUrl && !visitUrl.startsWith('PLACEHOLDER') ? (
                 <a
                   href={visitUrl}
                   target="_blank"
@@ -813,7 +834,9 @@ function CaseStudyBody({ project }: { project: Project }) {
           ))}
         </CenteredTextBand>
 
-        {project.slug === 'plaam' ? <PlaamParallaxShowcase /> : null}
+        {parallaxConfigForSlug(project.slug) ? (
+          <CaseStudyParallaxShowcase slug={project.slug} />
+        ) : null}
 
         {/* 6 — Results */}
         <CaseStudyResults heading={resultsHeading} results={project.results} />

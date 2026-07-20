@@ -11,12 +11,16 @@ import {
 
 export const HeroParallax = ({
   products,
+  heading,
+  subheading,
 }: {
   products: {
     title: string
     link: string
     thumbnail: string
   }[]
+  heading?: string
+  subheading?: string
 }) => {
   const firstRow = products.slice(0, 5)
   const secondRow = products.slice(5, 10)
@@ -58,7 +62,7 @@ export const HeroParallax = ({
       ref={ref}
       className="relative flex h-[300vh] flex-col self-auto overflow-hidden py-40 antialiased [perspective:1000px] [transform-style:preserve-3d]"
     >
-      <Header />
+      <Header heading={heading} subheading={subheading} />
       <motion.div
         style={{
           rotateX,
@@ -100,16 +104,17 @@ export const HeroParallax = ({
   )
 }
 
-export const Header = () => {
+export const Header = ({
+  heading = 'Every screen, every detail',
+  subheading = 'A closer look at PLAAM — from storefront browse to checkout, every screen of the custom headless Shopify experience we shipped.',
+}: {
+  heading?: string
+  subheading?: string
+}) => {
   return (
     <div className="relative top-0 left-0 mx-auto w-full max-w-7xl px-4 py-20 md:py-40">
-      <h1 className="text-2xl font-bold md:text-7xl dark:text-white">
-        Every screen, every detail
-      </h1>
-      <p className="mt-8 max-w-2xl text-base md:text-xl dark:text-neutral-200">
-        A closer look at PLAAM — from storefront browse to checkout, every screen
-        of the custom headless Shopify experience we shipped.
-      </p>
+      <h1 className="text-2xl font-bold md:text-7xl dark:text-white">{heading}</h1>
+      <p className="mt-8 max-w-2xl text-base md:text-xl dark:text-neutral-200">{subheading}</p>
     </div>
   )
 }

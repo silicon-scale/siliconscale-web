@@ -4,7 +4,7 @@ import { memo } from 'react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { WorkProjectCard, WorkProjectCardStyles } from '@/components/work/WorkProjectCard'
-import { PROJECTS } from '@/data/projects'
+import { INDEPENDENT_PROJECTS, PROJECTS } from '@/data/projects'
 
 function WorkListing() {
   return (
@@ -54,6 +54,29 @@ function WorkListing() {
           flex-direction: column;
           gap: 0;
         }
+        .work-section-divider {
+          margin: clamp(3.5rem, 7vw, 5rem) 0 clamp(3rem, 6vw, 4rem);
+          border: 0;
+          border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .work-subsection {
+          max-width: 40rem;
+          margin-bottom: 2.75rem;
+        }
+        .work-subsection h2 {
+          font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+          font-weight: 900;
+          letter-spacing: -0.03em;
+          line-height: 1.08;
+          color: #fff;
+        }
+        .work-subsection p {
+          margin-top: 0.85rem;
+          max-width: 34rem;
+          font-size: 0.95rem;
+          line-height: 1.65;
+          color: rgba(255,255,255,0.62);
+        }
         .work-footnote {
           margin-top: 4rem;
           text-align: center;
@@ -95,6 +118,31 @@ function WorkListing() {
             <WorkProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
+
+        {INDEPENDENT_PROJECTS.length > 0 ? (
+          <>
+            <div className="work-section-divider" role="separator" aria-hidden />
+
+            <ScrollReveal className="work-subsection">
+              <SectionEyebrow variant="pillMono">Independent Work</SectionEyebrow>
+              <h2 id="work-independent-heading">Built end-to-end, solo.</h2>
+              <p>
+                Beyond client work — projects built independently, from architecture to
+                deployment. A closer look at the depth of what we can handle on our own.
+              </p>
+            </ScrollReveal>
+
+            <div className="work-list" aria-labelledby="work-independent-heading">
+              {INDEPENDENT_PROJECTS.map((project, index) => (
+                <WorkProjectCard
+                  key={project.id}
+                  project={project}
+                  index={PROJECTS.length + index}
+                />
+              ))}
+            </div>
+          </>
+        ) : null}
 
         <ScrollReveal className="work-footnote">
           Sample builds are labeled clearly. Client work is live on the open web.
