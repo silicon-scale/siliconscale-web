@@ -37,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       token,
     })
 
-    if (!result) {
+    if (!result || result.statusCode !== 200 || !result.stream) {
       notFound(res, "Media not found")
       return
     }
@@ -54,14 +54,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return
     }
 
-    const stream = result.stream
-    if (!stream) {
-      notFound(res, "Media not found")
-      return
-    }
-
     res.status(200)
-    const reader = stream.getReader()
+    const reader = result.stream.getReader()
     const pump = async (): Promise<void> => {
       const { done, value } = await reader.read()
       if (done) {
