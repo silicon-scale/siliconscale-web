@@ -9,6 +9,7 @@ import {
   getRelatedPosts,
   listPublishedPosts,
 } from '@/lib/blog-api'
+import { applyBlogPostDocumentSeo } from '@/lib/document-seo'
 import { resolveMediaUrl } from '@/lib/media-url'
 import type { Post } from '@/types/post'
 
@@ -62,6 +63,11 @@ export default function BlogPost() {
       cancelled = true
     }
   }, [slug])
+
+  useEffect(() => {
+    if (!post) return
+    return applyBlogPostDocumentSeo(post)
+  }, [post])
 
   useEffect(() => {
     const onScroll = () => {

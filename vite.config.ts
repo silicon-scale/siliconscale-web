@@ -37,7 +37,6 @@ export default defineConfig({
         'android-chrome-512x512.png',
         'site.webmanifest',
         'robots.txt',
-        'sitemap.xml',
       ],
       manifest: {
         name: 'SiliconScale',
