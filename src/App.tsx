@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound"
 import AdminLogin from "./pages/admin/AdminLogin"
 import AdminPosts from "./pages/admin/AdminPosts"
 import AdminEditor from "./pages/admin/AdminEditor"
+import Blog from "./pages/Blog"
 import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
 import { LenisProvider, useLenis } from "./providers/LenisProvider"
 
@@ -162,6 +163,7 @@ function AppContent() {
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/tool-stack" element={<ToolStack />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminPosts />} />
               <Route path="/admin/new" element={<AdminEditor />} />
@@ -207,7 +209,12 @@ export default function App() {
   }, [mountStage])
 
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <LenisProvider>
         {loaderMounted && (
           <IntroLoader

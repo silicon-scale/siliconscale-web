@@ -519,6 +519,9 @@ function FooterComponent() {
               <Link to="/work" className="footer-link">
                 Work
               </Link>
+              <Link to="/blog" className="footer-link">
+                Blog
+              </Link>
               <Link to="/team" className="footer-link">
                 Team
               </Link>
