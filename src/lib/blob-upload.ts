@@ -1,9 +1,14 @@
-import { upload, type PutBlobResult } from "@vercel/blob/client"
-
 export interface UploadCoverImageOptions {
   pathname?: string
   onProgress?: (percentage: number) => void
   abortSignal?: AbortSignal
+}
+
+export interface UploadCoverImageResult {
+  url: string
+  pathname?: string
+  contentType?: string
+  downloadUrl?: string
 }
 
 function sanitizeUploadName(filename: string): string {
@@ -19,26 +24,74 @@ function sanitizeUploadName(filename: string): string {
   return `${name || "cover"}${ext || ".png"}`
 }
 
+function fileToBase64(file: File, onProgress?: (pct: number) => void): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onprogress = (event) => {
+      if (!onProgress || !event.lengthComputable) return
+      // Reading is half the perceived work; upload is the other half.
+      onProgress(Math.round((event.loaded / event.total) * 50))
+    }
+    reader.onload = () => {
+      const result = String(reader.result || "")
+      const comma = result.indexOf(",")
+      resolve(comma >= 0 ? result.slice(comma + 1) : result)
+    }
+    reader.onerror = () => reject(reader.error ?? new Error("Failed to read file"))
+    reader.readAsDataURL(file)
+  })
+}
+
 /**
- * Upload a cover image directly to Vercel Blob via the client-upload flow.
- * Requires a valid admin session cookie (Phase 2 login).
+ * Upload a cover image via our authenticated API (server → Vercel Blob put).
+ * Uses the Blob store without a browser PUT to vercel.com (avoids local CORS/400).
  */
 export async function uploadCoverImage(
   file: File,
   options: UploadCoverImageOptions = {},
-): Promise<PutBlobResult> {
-  const pathname = options.pathname ?? `blog/covers/${sanitizeUploadName(file.name)}`
+): Promise<UploadCoverImageResult> {
+  if (file.size > 4 * 1024 * 1024) {
+    throw new Error("Image is too large (max 4MB). Compress the image and try again.")
+  }
 
-  return upload(pathname, file, {
-    access: "public",
-    handleUploadUrl: "/api/upload-token",
-    clientPayload: JSON.stringify({ kind: "cover" }),
-    abortSignal: options.abortSignal,
-    multipart: file.size > 4 * 1024 * 1024,
-    onUploadProgress: options.onProgress
-      ? ({ percentage }) => options.onProgress?.(percentage)
-      : undefined,
+  options.onProgress?.(0)
+  const data = await fileToBase64(file, options.onProgress)
+  options.onProgress?.(55)
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    signal: options.abortSignal,
+    body: JSON.stringify({
+      filename: options.pathname?.split("/").pop() || sanitizeUploadName(file.name),
+      contentType: file.type || "application/octet-stream",
+      data,
+      access: "public",
+    }),
   })
+
+  options.onProgress?.(90)
+
+  const payload = (await res.json().catch(() => ({}))) as {
+    error?: string
+    url?: string
+    pathname?: string
+    contentType?: string
+    downloadUrl?: string
+  }
+
+  if (!res.ok || !payload.url) {
+    throw new Error(payload.error || `Upload failed (${res.status})`)
+  }
+
+  options.onProgress?.(100)
+  return {
+    url: payload.url,
+    pathname: payload.pathname,
+    contentType: payload.contentType,
+    downloadUrl: payload.downloadUrl,
+  }
 }
 
 export function isUploadAbortError(error: unknown): boolean {
