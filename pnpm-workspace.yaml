@@ -1,4 +1,11 @@
+# Project settings for pnpm 11 (reads these from workspace yaml, not only .npmrc)
+strictDepBuilds: false
+verifyDepsBeforeRun: false
+confirmModulesPurge: false
+
+# Build-script allowlist. puppeteer is screenshot tooling only.
 allowBuilds:
-  '@swc/core': false
-  esbuild: false
-  puppeteer: set this to true or false
+  esbuild: true
+  sharp: true
+  "@swc/core": true
+  puppeteer: false
