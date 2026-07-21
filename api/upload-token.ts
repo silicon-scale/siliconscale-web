@@ -12,12 +12,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!requireAdmin(req, res)) return
 
+  const token = process.env.BLOB_READ_WRITE_TOKEN
+  if (!token) {
+    json(res, 500, {
+      error:
+        "BLOB_READ_WRITE_TOKEN is not set. Add it to .env.local and restart vercel dev.",
+    })
+    return
+  }
+
   try {
-    const body = req.body as HandleUploadBody
+    const body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as HandleUploadBody
+
+    // Do NOT pass onUploadCompleted — local vercel dev cannot resolve callbackUrl.
     const jsonResponse = await handleUpload({
       body,
       request: req,
-      onBeforeGenerateToken: async (_pathname, _clientPayload, _multipart) => ({
+      token,
+      onBeforeGenerateToken: async () => ({
         allowedContentTypes: [
           "image/jpeg",
           "image/png",
