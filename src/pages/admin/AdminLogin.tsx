@@ -1,38 +1,45 @@
-import { FormEvent, useEffect, useState } from "react"
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom"
+import { FormEvent, useEffect, useRef, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { AdminApiError, adminLogin, checkAdminSession } from "@/lib/admin-api"
 
 export default function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
+  const rawFrom = (location.state as { from?: string } | null)?.from
   const from =
-    (location.state as { from?: string } | null)?.from &&
-    String((location.state as { from?: string }).from).startsWith("/admin")
-      ? (location.state as { from: string }).from
+    typeof rawFrom === "string" &&
+    rawFrom.startsWith("/admin") &&
+    rawFrom !== "/admin/login"
+      ? rawFrom
       : "/admin"
+  const fromRef = useRef(from)
+  fromRef.current = from
 
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [checking, setChecking] = useState(true)
-  const [alreadyAuthed, setAlreadyAuthed] = useState(false)
 
   useEffect(() => {
     let cancelled = false
+
     checkAdminSession()
       .then((ok) => {
-        if (!cancelled) {
-          setAlreadyAuthed(ok)
-          setChecking(false)
+        if (cancelled) return
+        if (ok) {
+          navigate(fromRef.current, { replace: true })
+          return
         }
+        setChecking(false)
       })
       .catch(() => {
         if (!cancelled) setChecking(false)
       })
+
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [navigate])
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -40,7 +47,7 @@ export default function AdminLogin() {
     setSubmitting(true)
     try {
       await adminLogin(password)
-      navigate(from, { replace: true })
+      navigate(fromRef.current, { replace: true })
     } catch (err) {
       const message =
         err instanceof AdminApiError ? err.message : "Login failed. Try again."
@@ -57,10 +64,6 @@ export default function AdminLogin() {
         </p>
       </div>
     )
-  }
-
-  if (alreadyAuthed) {
-    return <Navigate to="/admin" replace />
   }
 
   return (
@@ -105,7 +108,10 @@ export default function AdminLogin() {
           </div>
 
           {error ? (
-            <p className="rounded-button border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
+            <p
+              className="rounded-button border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-200"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}

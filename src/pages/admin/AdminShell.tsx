@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react"
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom"
+import { useEffect, useRef, useState, type ReactNode } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { adminLogout, checkAdminSession } from "@/lib/admin-api"
 
 interface AdminGateProps {
@@ -9,9 +9,12 @@ interface AdminGateProps {
 export function AdminGate({ children }: AdminGateProps) {
   const [state, setState] = useState<"loading" | "ok" | "denied">("loading")
   const location = useLocation()
+  const navigate = useNavigate()
+  const redirected = useRef(false)
 
   useEffect(() => {
     let cancelled = false
+
     checkAdminSession()
       .then((ok) => {
         if (!cancelled) setState(ok ? "ok" : "denied")
@@ -19,23 +22,29 @@ export function AdminGate({ children }: AdminGateProps) {
       .catch(() => {
         if (!cancelled) setState("denied")
       })
+
     return () => {
       cancelled = true
     }
-  }, [location.pathname])
+  }, [])
 
-  if (state === "loading") {
+  useEffect(() => {
+    if (state !== "denied" || redirected.current) return
+    redirected.current = true
+    navigate("/admin/login", {
+      replace: true,
+      state: { from: location.pathname },
+    })
+  }, [state, navigate, location.pathname])
+
+  if (state !== "ok") {
     return (
       <div className="admin-shell flex min-h-screen items-center justify-center">
         <p className="text-sm text-white/50" role="status">
-          Checking session…
+          {state === "denied" ? "Redirecting to login…" : "Checking session…"}
         </p>
       </div>
     )
-  }
-
-  if (state === "denied") {
-    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
   }
 
   return <>{children}</>
