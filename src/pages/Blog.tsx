@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { formatPostDate, listPublishedPosts } from '@/lib/blog-api'
+import { resolveMediaUrl } from '@/lib/media-url'
 import type { Post } from '@/types/post'
 
 export default function Blog() {
@@ -250,7 +251,7 @@ function BlogPostCard({ post }: { post: Post }) {
       <div className="blog-card-media">
         {post.cover_image_url ? (
           <img
-            src={post.cover_image_url}
+            src={resolveMediaUrl(post.cover_image_url)}
             alt=""
             loading="lazy"
             decoding="async"

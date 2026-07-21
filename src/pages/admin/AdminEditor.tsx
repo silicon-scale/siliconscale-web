@@ -17,6 +17,7 @@ import {
   updatePost,
 } from "@/lib/admin-api"
 import { uploadCoverImage, isUploadAbortError } from "@/lib/blob-upload"
+import { resolveMediaUrl } from "@/lib/media-url"
 import type { Post, PostStatus } from "@/types/post"
 import { AdminChrome, AdminGate } from "./AdminShell"
 
@@ -465,7 +466,7 @@ function AdminEditorInner() {
               >
                 {form.cover_image_url ? (
                   <img
-                    src={form.cover_image_url}
+                    src={resolveMediaUrl(form.cover_image_url)}
                     alt="Cover preview"
                     className="mx-auto mb-4 max-h-40 rounded-button object-cover"
                     width={320}
