@@ -16,7 +16,7 @@ import {
   slugifyTitle,
   updatePost,
 } from "@/lib/admin-api"
-import { uploadCoverImage } from "@/lib/blob-upload"
+import { uploadCoverImage, isUploadAbortError } from "@/lib/blob-upload"
 import type { Post, PostStatus } from "@/types/post"
 import { AdminChrome, AdminGate } from "./AdminShell"
 
@@ -107,6 +107,14 @@ function AdminEditorInner() {
   const dirtyRef = useRef(dirty)
   const postIdRef = useRef(postId)
   const savingRef = useRef(saving)
+  const uploadAbortRef = useRef<AbortController | null>(null)
+  const coverInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    return () => {
+      uploadAbortRef.current?.abort()
+    }
+  }, [])
 
   useEffect(() => {
     formRef.current = form
@@ -250,6 +258,19 @@ function AdminEditorInner() {
     return () => window.clearInterval(timer)
   }, [persist])
 
+  function cancelCoverUpload(showNotice = true) {
+    if (!uploadAbortRef.current) return
+    uploadAbortRef.current.abort()
+    uploadAbortRef.current = null
+    setUploading(false)
+    setUploadPct(0)
+    if (coverInputRef.current) coverInputRef.current.value = ""
+    if (showNotice) {
+      setError(null)
+      setNotice("Upload cancelled. You can choose another image.")
+    }
+  }
+
   async function handleCoverFile(file: File | null) {
     if (!file) return
     if (!file.type.startsWith("image/")) {
@@ -257,21 +278,47 @@ function AdminEditorInner() {
       return
     }
 
+    // Cancel any in-flight upload before starting a new one.
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort()
+      uploadAbortRef.current = null
+    }
+
+    const controller = new AbortController()
+    uploadAbortRef.current = controller
+
     setUploading(true)
     setUploadPct(0)
     setError(null)
     setNotice(null)
     try {
       const result = await uploadCoverImage(file, {
-        onProgress: (pct) => setUploadPct(Math.round(pct)),
+        abortSignal: controller.signal,
+        onProgress: (pct) => {
+          if (uploadAbortRef.current === controller) {
+            setUploadPct(Math.round(pct))
+          }
+        },
       })
+      if (controller.signal.aborted || uploadAbortRef.current !== controller) return
       updateField("cover_image_url", result.url)
       setNotice("Cover image uploaded.")
     } catch (err) {
+      if (isUploadAbortError(err) || controller.signal.aborted) {
+        // cancelCoverUpload / superseding upload already handled UI state
+        if (uploadAbortRef.current === controller) {
+          setNotice("Upload cancelled. You can choose another image.")
+        }
+        return
+      }
       setError(err instanceof Error ? err.message : "Upload failed")
     } finally {
-      setUploading(false)
-      setUploadPct(0)
+      if (uploadAbortRef.current === controller) {
+        uploadAbortRef.current = null
+        setUploading(false)
+        setUploadPct(0)
+        if (coverInputRef.current) coverInputRef.current.value = ""
+      }
     }
   }
 
@@ -430,25 +477,39 @@ function AdminEditorInner() {
                     ? `Uploading… ${uploadPct}%`
                     : "Drag & drop an image, or choose a file"}
                 </p>
-                <label className="mt-3 inline-flex min-h-11 cursor-pointer items-center rounded-button border border-white/15 px-4 text-sm text-white/80 hover:border-white/30">
-                  Choose file
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-                    className="sr-only"
-                    disabled={uploading}
-                    onChange={(e) => void handleCoverFile(e.target.files?.[0] ?? null)}
-                  />
-                </label>
-                {form.cover_image_url ? (
-                  <button
-                    type="button"
-                    className="ml-2 min-h-11 text-sm text-white/45 underline-offset-4 hover:text-white/70 hover:underline"
-                    onClick={() => updateField("cover_image_url", "")}
-                  >
-                    Remove
-                  </button>
-                ) : null}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  <label className="inline-flex min-h-11 cursor-pointer items-center rounded-button border border-white/15 px-4 text-sm text-white/80 hover:border-white/30">
+                    {uploading ? "Replace file" : "Choose file"}
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const next = e.target.files?.[0] ?? null
+                        void handleCoverFile(next)
+                      }}
+                    />
+                  </label>
+                  {uploading ? (
+                    <button
+                      type="button"
+                      className="rounded-button inline-flex min-h-11 items-center border border-red-400/30 px-4 text-sm text-red-200 transition-colors hover:border-red-400/50"
+                      onClick={() => cancelCoverUpload()}
+                    >
+                      Cancel upload
+                    </button>
+                  ) : null}
+                  {form.cover_image_url && !uploading ? (
+                    <button
+                      type="button"
+                      className="min-h-11 text-sm text-white/45 underline-offset-4 hover:text-white/70 hover:underline"
+                      onClick={() => updateField("cover_image_url", "")}
+                    >
+                      Remove
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </div>
 

@@ -3,6 +3,7 @@ import { upload, type PutBlobResult } from "@vercel/blob/client"
 export interface UploadCoverImageOptions {
   pathname?: string
   onProgress?: (percentage: number) => void
+  abortSignal?: AbortSignal
 }
 
 /**
@@ -19,8 +20,19 @@ export async function uploadCoverImage(
     access: "public",
     handleUploadUrl: "/api/upload-token",
     clientPayload: JSON.stringify({ kind: "cover" }),
+    abortSignal: options.abortSignal,
     onUploadProgress: options.onProgress
       ? ({ percentage }) => options.onProgress?.(percentage)
       : undefined,
   })
+}
+
+export function isUploadAbortError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false
+  const err = error as { name?: string; message?: string }
+  return (
+    err.name === "AbortError" ||
+    err.name === "BlobRequestAbortedError" ||
+    /abort(ed)?/i.test(err.message ?? "")
+  )
 }
