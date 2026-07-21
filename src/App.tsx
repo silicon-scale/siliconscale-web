@@ -27,6 +27,7 @@ import AdminLogin from "./pages/admin/AdminLogin"
 import AdminPosts from "./pages/admin/AdminPosts"
 import AdminEditor from "./pages/admin/AdminEditor"
 import Blog from "./pages/Blog"
+import BlogPost from "./pages/BlogPost"
 import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
 import { LenisProvider, useLenis } from "./providers/LenisProvider"
 
@@ -164,6 +165,7 @@ function AppContent() {
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/tool-stack" element={<ToolStack />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminPosts />} />
               <Route path="/admin/new" element={<AdminEditor />} />
