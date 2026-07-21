@@ -31,6 +31,7 @@ export default function BlogPost() {
   const [error, setError] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -62,7 +63,7 @@ export default function BlogPost() {
     return () => {
       cancelled = true
     }
-  }, [slug])
+  }, [slug, retryKey])
 
   useEffect(() => {
     if (!post) return
@@ -134,6 +135,13 @@ export default function BlogPost() {
           <p className="blog-post-error" role="alert">
             {error || 'Failed to load post'}
           </p>
+          <button
+            type="button"
+            className="blog-post-back"
+            onClick={() => setRetryKey((n) => n + 1)}
+          >
+            Try again
+          </button>
           <Link to="/blog" className="blog-post-back">
             ← Back to Blog
           </Link>

@@ -10,7 +10,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "db:migrate": "node --import tsx --env-file=.env scripts/migrate.ts"
+    "db:migrate": "node --import tsx --env-file=.env scripts/migrate.ts",
+    "test:blog-smoke": "node --import tsx --env-file=.env.local --env-file=.env scripts/phase6-smoke.ts"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

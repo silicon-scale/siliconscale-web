@@ -13,9 +13,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const adminPassword = process.env.ADMIN_PASSWORD
+    const adminPassword = process.env.ADMIN_PASSWORD?.trim()
     if (!adminPassword) {
-      serverError(res, new Error("ADMIN_PASSWORD is not configured"))
+      json(res, 500, {
+        error:
+          "ADMIN_PASSWORD is not configured. Add it to .env.local (and the Vercel dashboard), then restart vercel dev.",
+      })
       return
     }
 
@@ -28,7 +31,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!timingSafeCompare(password, adminPassword)) {
-      // Uniform delay-ish response shape; avoid leaking whether password was close.
       json(res, 401, { error: "Invalid password" })
       return
     }

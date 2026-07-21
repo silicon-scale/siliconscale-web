@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { isAdminRequest, requireAdmin } from "../lib/auth"
 import {
   deletePost,
+  getPostById,
   getPostBySlug,
   isUuid,
   updatePost,
@@ -20,7 +21,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === "GET") {
-      const post = await getPostBySlug(identifier)
+      const post = isUuid(identifier)
+        ? await getPostById(identifier)
+        : await getPostBySlug(identifier)
       if (!post) {
         notFound(res, "Post not found")
         return

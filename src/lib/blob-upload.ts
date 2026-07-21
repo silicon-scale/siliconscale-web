@@ -1,3 +1,5 @@
+import { ADMIN_UNAUTHORIZED_EVENT } from "@/lib/admin-api"
+
 export interface UploadCoverImageOptions {
   pathname?: string
   onProgress?: (percentage: number) => void
@@ -82,6 +84,10 @@ export async function uploadCoverImage(
   }
 
   if (!res.ok || !payload.url) {
+    if (res.status === 401 && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(ADMIN_UNAUTHORIZED_EVENT))
+      throw new Error("Your admin session expired. Please sign in again.")
+    }
     throw new Error(payload.error || `Upload failed (${res.status})`)
   }
 

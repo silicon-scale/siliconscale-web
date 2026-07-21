@@ -1,5 +1,7 @@
 import type { Post, PostInput, PostUpdateInput } from "@/types/post"
 
+export const ADMIN_UNAUTHORIZED_EVENT = "siliconscale:admin-unauthorized"
+
 export class AdminApiError extends Error {
   status: number
 
@@ -8,6 +10,15 @@ export class AdminApiError extends Error {
     this.name = "AdminApiError"
     this.status = status
   }
+}
+
+export function isUnauthorizedError(error: unknown): boolean {
+  return error instanceof AdminApiError && error.status === 401
+}
+
+function notifyUnauthorized(): void {
+  if (typeof window === "undefined") return
+  window.dispatchEvent(new CustomEvent(ADMIN_UNAUTHORIZED_EVENT))
 }
 
 async function parseJson(res: Response): Promise<Record<string, unknown>> {
@@ -22,18 +33,27 @@ async function request<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(path, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  })
+  let res: Response
+  try {
+    res = await fetch(path, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {}),
+      },
+      ...init,
+    })
+  } catch {
+    throw new AdminApiError("Network error. Check your connection and try again.", 0)
+  }
 
   const data = await parseJson(res)
 
   if (!res.ok) {
+    if (res.status === 401 && !path.includes("/api/admin/login")) {
+      notifyUnauthorized()
+      throw new AdminApiError("Your admin session expired. Please sign in again.", 401)
+    }
     const message =
       typeof data.error === "string" ? data.error : `Request failed (${res.status})`
     throw new AdminApiError(message, res.status)
@@ -43,8 +63,14 @@ async function request<T>(
 }
 
 export async function checkAdminSession(): Promise<boolean> {
-  const data = await request<{ authenticated: boolean }>("/api/admin/session")
-  return Boolean(data.authenticated)
+  try {
+    const data = await request<{ authenticated: boolean }>("/api/admin/session")
+    return Boolean(data.authenticated)
+  } catch (error) {
+    // Session probe should not trigger the global unauthorized redirect loop.
+    if (error instanceof AdminApiError && error.status === 0) throw error
+    return false
+  }
 }
 
 export async function adminLogin(password: string): Promise<void> {
@@ -63,9 +89,16 @@ export async function listAllPosts(): Promise<Post[]> {
   return data.posts ?? []
 }
 
-export async function getPostBySlug(slug: string): Promise<Post> {
-  const data = await request<{ post: Post }>(`/api/posts/${encodeURIComponent(slug)}`)
+export async function getAdminPost(idOrSlug: string): Promise<Post> {
+  const data = await request<{ post: Post }>(
+    `/api/posts/${encodeURIComponent(idOrSlug)}`,
+  )
   return data.post
+}
+
+/** @deprecated Prefer getAdminPost — kept for call-site clarity */
+export async function getPostBySlug(slug: string): Promise<Post> {
+  return getAdminPost(slug)
 }
 
 export async function createPost(input: PostInput): Promise<Post> {

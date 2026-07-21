@@ -12,7 +12,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
 import {
   AdminApiError,
   createPost,
-  listAllPosts,
+  getAdminPost,
   slugifyTitle,
   updatePost,
 } from "@/lib/admin-api"
@@ -137,9 +137,7 @@ function AdminEditorInner() {
       setLoading(true)
       setError(null)
       try {
-        const posts = await listAllPosts()
-        const found = posts.find((p) => p.id === id)
-        if (!found) throw new AdminApiError("Post not found", 404)
+        const found = await getAdminPost(id)
         if (!cancelled) {
           setForm(postToForm(found))
           setPostId(found.id)
@@ -235,7 +233,9 @@ function AdminEditorInner() {
         return saved
       } catch (err) {
         const message =
-          err instanceof AdminApiError ? err.message : "Save failed. Check your connection."
+          err instanceof AdminApiError
+            ? err.message
+            : "Save failed. Check your connection and try again."
         setError(message)
         return null
       } finally {

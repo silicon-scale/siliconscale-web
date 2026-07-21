@@ -1,11 +1,13 @@
 import { FormEvent, useEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
+import { Eye, EyeOff } from "lucide-react"
 import { AdminApiError, adminLogin, checkAdminSession } from "@/lib/admin-api"
 
 export default function AdminLogin() {
   const navigate = useNavigate()
   const location = useLocation()
-  const rawFrom = (location.state as { from?: string } | null)?.from
+  const locationState = location.state as { from?: string; reason?: string } | null
+  const rawFrom = locationState?.from
   const from =
     typeof rawFrom === "string" &&
     rawFrom.startsWith("/admin") &&
@@ -16,7 +18,12 @@ export default function AdminLogin() {
   fromRef.current = from
 
   const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(
+    locationState?.reason === "session"
+      ? "Your admin session expired. Please sign in again."
+      : null,
+  )
   const [submitting, setSubmitting] = useState(false)
   const [checking, setChecking] = useState(true)
 
@@ -93,18 +100,34 @@ export default function AdminLogin() {
             <label htmlFor="admin-password" className="mb-2 block text-sm text-white/70">
               Password
             </label>
-            <input
-              id="admin-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="min-h-11 w-full rounded-button border border-white/15 bg-white/[0.04] px-4 text-base text-white outline-none transition-colors placeholder:text-white/30 focus:border-brand-gold/60 focus:ring-2 focus:ring-brand-gold/25"
-              placeholder="••••••••"
-              disabled={submitting}
-            />
+            <div className="relative">
+              <input
+                id="admin-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="min-h-11 w-full rounded-button border border-white/15 bg-white/[0.04] py-2 pl-4 pr-12 text-base text-white outline-none transition-colors placeholder:text-white/30 focus:border-brand-gold/60 focus:ring-2 focus:ring-brand-gold/25"
+                placeholder="••••••••"
+                disabled={submitting}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex min-w-11 items-center justify-center text-white/45 transition-colors hover:text-white/80"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                disabled={submitting}
+              >
+                {showPassword ? (
+                  <EyeOff size={18} strokeWidth={1.75} aria-hidden />
+                ) : (
+                  <Eye size={18} strokeWidth={1.75} aria-hidden />
+                )}
+              </button>
+            </div>
           </div>
 
           {error ? (

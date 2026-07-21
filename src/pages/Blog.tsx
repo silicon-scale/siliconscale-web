@@ -12,9 +12,12 @@ export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
+    setError(null)
     listPublishedPosts()
       .then((data) => {
         if (!cancelled) setPosts(data)
@@ -30,7 +33,7 @@ export default function Blog() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [retryKey])
 
   return (
     <section className="blog-page relative bg-page text-white" aria-labelledby="blog-heading">
@@ -198,6 +201,23 @@ export default function Blog() {
         }
         .blog-error {
           color: rgb(252 165 165);
+          display: grid;
+          gap: 0.75rem;
+          justify-items: center;
+        }
+        .blog-retry {
+          min-height: 2.75rem;
+          padding: 0 1rem;
+          border-radius: 0.5rem;
+          border: 1px solid rgba(255,255,255,0.18);
+          background: transparent;
+          color: rgba(255,255,255,0.85);
+          font-size: 0.875rem;
+          cursor: pointer;
+        }
+        .blog-retry:hover {
+          border-color: rgba(255,255,255,0.35);
+          color: #fff;
         }
       `}</style>
 
@@ -216,9 +236,16 @@ export default function Blog() {
             Loading posts…
           </p>
         ) : error ? (
-          <p className="blog-error" role="alert">
-            {error}
-          </p>
+          <div className="blog-error" role="alert">
+            <p>{error}</p>
+            <button
+              type="button"
+              className="blog-retry"
+              onClick={() => setRetryKey((n) => n + 1)}
+            >
+              Try again
+            </button>
+          </div>
         ) : posts.length === 0 ? (
           <div className="blog-empty">
             <p>No published posts yet. Check back soon.</p>
