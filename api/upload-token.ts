@@ -1,8 +1,8 @@
 import type { HandleUploadBody } from "@vercel/blob/client"
 import { handleUpload } from "@vercel/blob/client"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { requireAdmin } from "../lib/auth"
-import { json, methodNotAllowed, serverError } from "../lib/response"
+import { requireAdmin } from "./lib/auth"
+import { json, methodNotAllowed, serverError } from "./lib/response"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
