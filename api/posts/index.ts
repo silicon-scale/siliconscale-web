@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { requireAdmin } from "../lib/auth"
+import { isAdminRequest, requireAdmin } from "../lib/auth"
 import { createPost, listPosts } from "../lib/posts"
 import { badRequest, json, methodNotAllowed, serverError } from "../lib/response"
 import type { PostInput, PostStatus } from "../lib/types"
@@ -10,6 +10,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const statusParam = typeof req.query.status === "string" ? req.query.status : undefined
       if (statusParam && statusParam !== "draft" && statusParam !== "published") {
         badRequest(res, "Invalid status filter. Use draft or published.")
+        return
+      }
+
+      // Public callers may only list published posts. Full / draft lists need admin.
+      if (statusParam !== "published" && !isAdminRequest(req)) {
+        res.status(401).json({ error: "Unauthorized" })
         return
       }
 

@@ -23,6 +23,9 @@ import TermsOfService from "./components/TermsOfService"
 import ServicesPage from "./components/ServicesPage"
 import ToolStack from "./components/ToolStack"
 import NotFound from "./pages/NotFound"
+import AdminLogin from "./pages/admin/AdminLogin"
+import AdminPosts from "./pages/admin/AdminPosts"
+import AdminEditor from "./pages/admin/AdminEditor"
 import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
 import { LenisProvider, useLenis } from "./providers/LenisProvider"
 
@@ -38,6 +41,10 @@ function scheduleIdle(cb: () => void, timeout = 400): () => void {
   }
   const t = window.setTimeout(cb, 100)
   return () => clearTimeout(t)
+}
+
+function isAdminPath(pathname: string): boolean {
+  return pathname === "/admin" || pathname.startsWith("/admin/")
 }
 
 const Home = memo(function Home() {
@@ -98,6 +105,7 @@ function DeferredFooter() {
 function AppContent() {
   const location = useLocation()
   const lenis = useLenis()
+  const admin = isAdminPath(location.pathname)
 
   useEffect(() => {
     if (lenis) {
@@ -130,19 +138,17 @@ function AppContent() {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-      <Navbar />
+      {!admin ? <Navbar /> : null}
 
       <main className="relative" role="main" id="main-content">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: admin ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: admin ? 0 : -20 }}
+            transition={{ duration: admin ? 0.15 : 0.4, ease: "easeInOut" }}
             className="min-h-screen"
-            // Avoid persistent transform/will-change — both create a containing
-            // block that breaks position:sticky (services card reel, etc.).
             layout={false}
           >
             <Routes location={location}>
@@ -156,25 +162,33 @@ function AppContent() {
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/tool-stack" element={<ToolStack />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminPosts />} />
+              <Route path="/admin/new" element={<AdminEditor />} />
+              <Route path="/admin/edit/:id" element={<AdminEditor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
       </main>
 
-      <DeferredFooter />
+      {!admin ? <DeferredFooter /> : null}
       <PerfDebugOverlay />
     </div>
   )
 }
 
 export default function App() {
-  const [loaderMounted, setLoaderMounted] = useState(true)
-  const [loaderVisible, setLoaderVisible] = useState(true)
-  const [mountStage, setMountStage] = useState<0 | 1 | 2 | 3>(0)
+  const [loaderMounted, setLoaderMounted] = useState(
+    () => !isAdminPath(window.location.pathname),
+  )
+  const [loaderVisible, setLoaderVisible] = useState(
+    () => !isAdminPath(window.location.pathname),
+  )
+  const [mountStage, setMountStage] = useState<0 | 1 | 2 | 3>(() =>
+    isAdminPath(window.location.pathname) ? 3 : 0,
+  )
 
-  // Stage 1 = loader exit finished & unmounted. Promote to reveal (2) only after
-  // two animation frames so the hero entrance never overlaps the loader zoom.
   useEffect(() => {
     if (mountStage !== 1) return
     let raf2 = 0
@@ -199,7 +213,6 @@ export default function App() {
           <IntroLoader
             visible={loaderVisible}
             onExitComplete={() => {
-              // Unmount loader first — then stage 1 → (double rAF) → reveal stage 2.
               setLoaderVisible(false)
               setLoaderMounted(false)
               setMountStage(1)

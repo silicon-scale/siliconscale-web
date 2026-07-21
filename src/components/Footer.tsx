@@ -358,6 +358,14 @@ function FooterComponent() {
           outline-offset: 3px;
           border-radius: 2px;
         }
+        .footer-link--muted {
+          font-size: 0.75rem;
+          color: rgba(255,255,255,0.32);
+        }
+        .footer-link--muted:hover {
+          color: rgba(255,255,255,0.55);
+          padding-left: 2px;
+        }
 
         .footer-bottom {
           position: relative;
@@ -527,6 +535,9 @@ function FooterComponent() {
                 </Link>
                 <Link to="/terms" className="footer-link">
                   Terms of Service
+                </Link>
+                <Link to="/admin" className="footer-link footer-link--muted">
+                  Admin
                 </Link>
               </div>
             </div>

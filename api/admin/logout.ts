@@ -1,0 +1,13 @@
+import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { buildClearSessionCookie } from "../lib/auth"
+import { json, methodNotAllowed } from "../lib/response"
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== "POST") {
+    methodNotAllowed(res, ["POST"])
+    return
+  }
+
+  res.setHeader("Set-Cookie", buildClearSessionCookie())
+  json(res, 200, { ok: true })
+}

@@ -1,4 +1,4 @@
-import { createHmac, randomBytes, timingSafeEqual } from "node:crypto"
+import { createHmac, timingSafeEqual } from "node:crypto"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 
 export const ADMIN_SESSION_COOKIE = "admin_session"
@@ -16,11 +16,15 @@ function signPayload(payload: string): string {
   return createHmac("sha256", getSessionSecret()).update(payload).digest("base64url")
 }
 
+/**
+ * Constant-time string compare via HMAC digests so length differences
+ * don't short-circuit and leak timing information.
+ */
 export function timingSafeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a)
-  const bufB = Buffer.from(b)
-  if (bufA.length !== bufB.length) return false
-  return timingSafeEqual(bufA, bufB)
+  const secret = getSessionSecret()
+  const digestA = createHmac("sha256", secret).update(a).digest()
+  const digestB = createHmac("sha256", secret).update(b).digest()
+  return timingSafeEqual(digestA, digestB)
 }
 
 export function createAdminSessionToken(): string {
@@ -37,7 +41,11 @@ export function verifyAdminSessionToken(token: string | undefined): boolean {
   if (!payload || !signature) return false
 
   const expected = signPayload(payload)
-  if (!timingSafeCompare(signature, expected)) return false
+  const sigBuf = Buffer.from(signature)
+  const expBuf = Buffer.from(expected)
+  if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
+    return false
+  }
 
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
@@ -70,14 +78,18 @@ export function isAdminRequest(req: VercelRequest): boolean {
   return verifyAdminSessionToken(getAdminSessionFromRequest(req))
 }
 
+function cookieSecureFlag(): string {
+  const isProd =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production"
+  return isProd ? "; Secure" : ""
+}
+
 export function buildSessionCookie(token: string): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : ""
-  return `${ADMIN_SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MAX_AGE_SECONDS}${secure}`
+  return `${ADMIN_SESSION_COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MAX_AGE_SECONDS}${cookieSecureFlag()}`
 }
 
 export function buildClearSessionCookie(): string {
-  const secure = process.env.NODE_ENV === "production" ? "; Secure" : ""
-  return `${ADMIN_SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`
+  return `${ADMIN_SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${cookieSecureFlag()}`
 }
 
 export function requireAdmin(
@@ -87,8 +99,4 @@ export function requireAdmin(
   if (isAdminRequest(req)) return true
   res.status(401).json({ error: "Unauthorized" })
   return false
-}
-
-export function generateCsrfToken(): string {
-  return randomBytes(32).toString("base64url")
 }
