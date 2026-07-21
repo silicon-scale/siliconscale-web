@@ -29,9 +29,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         addRandomSuffix: true,
         tokenPayload: JSON.stringify({ purpose: "blog-cover" }),
       }),
-      onUploadCompleted: async () => {
-        // Client receives the blob URL directly from the upload response.
-      },
     })
 
     json(res, 200, jsonResponse)
