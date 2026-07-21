@@ -886,6 +886,9 @@ html {
 .nav-link-reveal--3 {
   transition-delay: 0.15s;
 }
+.nav-link-reveal--4 {
+  transition-delay: 0.2s;
+}
 
 /* Below md, desktop link row is display:none — skip any entrance work. */
 @media (max-width: 767px) {
