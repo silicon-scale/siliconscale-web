@@ -10,10 +10,11 @@ import {
   listPublishedPosts,
 } from '@/lib/blog-api'
 import { applyBlogPostDocumentSeo } from '@/lib/document-seo'
+import { normalizeMarkdownContent } from '@/lib/normalize-markdown'
 import { resolveMediaUrl } from '@/lib/media-url'
 import type { Post } from '@/types/post'
 
-marked.setOptions({ gfm: true, breaks: true })
+marked.setOptions({ gfm: true, breaks: false })
 
 function rewriteMarkdownMedia(markdown: string): string {
   return markdown.replace(
@@ -94,9 +95,12 @@ export default function BlogPost() {
   const html = useMemo(() => {
     if (!post) return ''
     try {
-      return marked.parse(rewriteMarkdownMedia(post.content || ''), {
-        async: false,
-      }) as string
+      return marked.parse(
+        rewriteMarkdownMedia(normalizeMarkdownContent(post.content || '')),
+        {
+          async: false,
+        },
+      ) as string
     } catch {
       return '<p>Unable to render this post.</p>'
     }

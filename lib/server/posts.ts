@@ -1,5 +1,6 @@
 import { getSql } from "./db.js"
 import { computeReadingTimeMinutes } from "./reading-time.js"
+import { normalizeMarkdownContent } from "./normalize-markdown.js"
 import type { Post, PostInput, PostStatus, PostUpdateInput } from "./types.js"
 
 function rowToPost(row: Record<string, unknown>): Post {
@@ -78,7 +79,7 @@ export async function createPost(input: PostInput): Promise<Post> {
   if (!slug) throw new Error("Slug is required")
   if (!input.title?.trim()) throw new Error("Title is required")
 
-  const content = input.content ?? ""
+  const content = normalizeMarkdownContent(input.content ?? "")
   const status: PostStatus = input.status ?? "draft"
   const readingTime = computeReadingTimeMinutes(content)
   const publishedAt = status === "published" ? new Date().toISOString() : null
@@ -126,7 +127,10 @@ export async function updatePost(id: string, input: PostUpdateInput): Promise<Po
   const title = input.title !== undefined ? input.title.trim() : existing.title
   if (!title) throw new Error("Title is required")
 
-  const content = input.content !== undefined ? input.content : existing.content
+  const content =
+    input.content !== undefined
+      ? normalizeMarkdownContent(input.content)
+      : existing.content
   const excerpt = input.excerpt !== undefined ? input.excerpt.trim() : existing.excerpt
   const coverImageUrl =
     input.cover_image_url !== undefined ? input.cover_image_url : existing.cover_image_url

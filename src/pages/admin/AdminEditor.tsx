@@ -17,13 +17,14 @@ import {
   updatePost,
 } from "@/lib/admin-api"
 import { uploadCoverImage, isUploadAbortError } from "@/lib/blob-upload"
+import { normalizeMarkdownContent } from "@/lib/normalize-markdown"
 import { resolveMediaUrl } from "@/lib/media-url"
 import type { Post, PostStatus } from "@/types/post"
 import { AdminChrome, AdminGate } from "./AdminShell"
 
 const AUTOSAVE_MS = 30_000
 
-marked.setOptions({ gfm: true, breaks: true })
+marked.setOptions({ gfm: true, breaks: false })
 
 interface EditorForm {
   title: string
@@ -70,7 +71,7 @@ function formToPayload(form: EditorForm) {
     title: form.title.trim(),
     slug: form.slug.trim() || slugifyTitle(form.title),
     excerpt: form.excerpt.trim(),
-    content: form.content,
+    content: normalizeMarkdownContent(form.content),
     cover_image_url: form.cover_image_url.trim() || null,
     tags: form.tags
       .split(",")
@@ -159,9 +160,12 @@ function AdminEditorInner() {
 
   const previewHtml = useMemo(() => {
     try {
-      return marked.parse(form.content || "_Nothing to preview yet._", {
-        async: false,
-      }) as string
+      return marked.parse(
+        normalizeMarkdownContent(form.content || "_Nothing to preview yet._"),
+        {
+          async: false,
+        },
+      ) as string
     } catch {
       return "<p>Preview unavailable.</p>"
     }
