@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { listPosts } from "./lib/posts"
-import { methodNotAllowed, serverError } from "./lib/response"
-import { getSiteUrl } from "./lib/site"
+import { listPosts } from "./lib/posts.js"
+import { methodNotAllowed, serverError } from "./lib/response.js"
+import { getSiteUrl } from "./lib/site.js"
 
 const STATIC_ROUTES: Array<{ path: string; priority: string }> = [
   { path: "/", priority: "1.0" },

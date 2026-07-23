@@ -3,8 +3,8 @@ import {
   buildSessionCookie,
   createAdminSessionToken,
   timingSafeCompare,
-} from "../lib/auth"
-import { badRequest, json, methodNotAllowed, serverError } from "../lib/response"
+} from "../lib/auth.js"
+import { badRequest, json, methodNotAllowed, serverError } from "../lib/response.js"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {

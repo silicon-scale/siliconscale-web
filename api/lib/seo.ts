@@ -1,4 +1,4 @@
-import { getSiteUrl } from "./site"
+import { getSiteUrl } from "./site.js"
 
 export interface BlogSeoFields {
   slug: string

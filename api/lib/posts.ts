@@ -1,6 +1,6 @@
-import { getSql } from "./db"
-import { computeReadingTimeMinutes } from "./reading-time"
-import type { Post, PostInput, PostStatus, PostUpdateInput } from "./types"
+import { getSql } from "./db.js"
+import { computeReadingTimeMinutes } from "./reading-time.js"
+import type { Post, PostInput, PostStatus, PostUpdateInput } from "./types.js"
 
 function rowToPost(row: Record<string, unknown>): Post {
   return {
