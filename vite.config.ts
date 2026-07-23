@@ -39,6 +39,14 @@ export default defineConfig({
         'robots.txt',
         'og-image.png',
       ],
+      workbox: {
+        // Don't serve the SPA shell for API/meta routes (was causing React 404 on /sitemap.xml)
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /\/sitemap\.xml$/i,
+          /\/robots\.txt$/i,
+        ],
+      },
       manifest: {
         name: 'SiliconScale',
         short_name: 'SiliconScale',

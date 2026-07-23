@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless"
-import { next } from "@vercel/edge"
+import { next, rewrite } from "@vercel/edge"
 import {
   injectAdminNoIndexHtml,
   injectBlogSeoHtml,
@@ -12,6 +12,10 @@ import {
 } from "./lib/server/route-meta.js"
 import { getSiteUrl } from "./lib/server/site.js"
 
+/**
+ * Only run on document routes we care about for SEO.
+ * Exclude assets, API, sitemap, robots — those must hit filesystem/rewrites.
+ */
 export const config = {
   matcher: [
     "/",
@@ -79,26 +83,48 @@ async function fetchPublishedSeo(slug: string): Promise<BlogSeoFields | null> {
   }
 }
 
+/**
+ * Load the SPA shell. Prefer a direct /index.html fetch; if that fails in
+ * production, fall back to rewrite so /blog etc. never become NOT_FOUND
+ * (bare next() serves index for "/" only — not for /blog).
+ */
 async function loadShellHtml(request: Request): Promise<string | null> {
-  const htmlResponse = await fetch(new URL("/index.html", request.url))
-  if (!htmlResponse.ok) return null
-  return htmlResponse.text()
+  try {
+    const indexUrl = new URL("/index.html", request.url)
+    const htmlResponse = await fetch(indexUrl, {
+      headers: {
+        accept: "text/html",
+        // Hint for platforms that skip middleware on subrequests
+        "x-middleware-subrequest": "true",
+      },
+    })
+    if (!htmlResponse.ok) return null
+    return await htmlResponse.text()
+  } catch {
+    return null
+  }
 }
 
-function htmlResponse(html: string, sourceHeaders?: Headers): Response {
-  const headers = new Headers(sourceHeaders)
-  headers.set("Content-Type", "text/html; charset=utf-8")
-  headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300")
-  headers.delete("content-encoding")
-  headers.delete("content-length")
-  return new Response(html, { status: 200, headers })
+function spaFallback(request: Request): Response {
+  return rewrite(new URL("/index.html", request.url))
+}
+
+function htmlResponse(html: string): Response {
+  return new Response(html, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+    },
+  })
 }
 
 export default async function middleware(request: Request): Promise<Response> {
   const url = new URL(request.url)
   const accept = request.headers.get("accept") ?? ""
 
-  if (accept && !accept.includes("text/html")) {
+  // Skip non-document fetches (JS/CSS/images) — let them hit static assets.
+  if (accept && !accept.includes("text/html") && !accept.includes("*/*")) {
     return next()
   }
 
@@ -111,23 +137,27 @@ export default async function middleware(request: Request): Promise<Response> {
     // Admin — noindex
     if (pathname === "/admin" || pathname.startsWith("/admin/")) {
       const shell = await loadShellHtml(request)
-      if (!shell) return next()
+      if (!shell) return spaFallback(request)
       const injected = injectAdminNoIndexHtml(shell, pathname)
-      const res = htmlResponse(injected)
-      res.headers.set("X-Robots-Tag", "noindex, nofollow")
-      res.headers.set("Cache-Control", "private, no-store")
-      return res
+      return new Response(injected, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "private, no-store",
+          "X-Robots-Tag": "noindex, nofollow",
+        },
+      })
     }
 
     // Blog post
     const blogMatch = pathname.match(/^\/blog\/([^/]+)$/)
     if (blogMatch) {
       const slug = decodeURIComponent(blogMatch[1])
-      if (!slug || slug.includes(".")) return next()
+      if (!slug || slug.includes(".")) return spaFallback(request)
       const post = await fetchPublishedSeo(slug)
-      if (!post) return next()
+      if (!post) return spaFallback(request)
       const shell = await loadShellHtml(request)
-      if (!shell) return next()
+      if (!shell) return spaFallback(request)
       return htmlResponse(injectBlogSeoHtml(shell, post))
     }
 
@@ -136,23 +166,23 @@ export default async function middleware(request: Request): Promise<Response> {
     if (workMatch) {
       const slug = decodeURIComponent(workMatch[1])
       const meta = resolveCaseStudySeo(slug)
-      if (!meta) return next()
+      if (!meta) return spaFallback(request)
       const shell = await loadShellHtml(request)
-      if (!shell) return next()
+      if (!shell) return spaFallback(request)
       return htmlResponse(injectPageSeoHtml(shell, meta, getSiteUrl()))
     }
 
-    // Static marketing routes (including /blog listing)
+    // Static marketing routes (including /blog listing and /)
     const staticMeta = resolveStaticPageSeo(pathname)
     if (staticMeta) {
       const shell = await loadShellHtml(request)
-      if (!shell) return next()
+      if (!shell) return spaFallback(request)
       return htmlResponse(injectPageSeoHtml(shell, staticMeta, getSiteUrl()))
     }
 
-    return next()
+    return spaFallback(request)
   } catch (error) {
     console.error("[middleware] SEO injection failed", error)
-    return next()
+    return spaFallback(request)
   }
 }
