@@ -100,7 +100,7 @@ export function WorkProjectCardStyles() {
       .work-list {
         display: flex;
         flex-direction: column;
-        gap: clamp(1.75rem, 6.5vw, 2.5rem);
+        gap: clamp(2rem, 6.5vw, 2.5rem);
       }
       .work-card.scroll-reveal.is-visible {
         overflow: hidden;
