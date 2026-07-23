@@ -255,7 +255,7 @@ const RotatingWord = ({ preferReducedEffects }: { preferReducedEffects: boolean 
 }
 
 /* ─── Main Component ─── */
-const FinalCTA = () => {
+const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
   const [form, setForm] = useState<FinalCTAFormData>(INITIAL)
   const [[step, dir], setStep] = useState<[number, number]>([0, 0])
   const [submitting, setSubmitting] = useState(false)
@@ -394,14 +394,25 @@ const FinalCTA = () => {
               <p className="text-sm font-semibold uppercase tracking-widest text-brand-gold">
                 Start a Project
               </p>
-              <h2
-                className="mt-4 font-bold tracking-tight text-white"
-                style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
-              >
-                Let&apos;s Build Something{' '}
-                <br className="hidden sm:inline" />
-                That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
-              </h2>
+              {headingAs === "h1" ? (
+                <h1
+                  className="mt-4 font-bold tracking-tight text-white"
+                  style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
+                >
+                  Let&apos;s Build Something{' '}
+                  <br className="hidden sm:inline" />
+                  That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
+                </h1>
+              ) : (
+                <h2
+                  className="mt-4 font-bold tracking-tight text-white"
+                  style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
+                >
+                  Let&apos;s Build Something{' '}
+                  <br className="hidden sm:inline" />
+                  That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
+                </h2>
+              )}
               <p className="mt-5 text-lg leading-relaxed text-white/55">
                 Tell us what you&apos;re building. We&apos;ll tell you honestly whether it&apos;s a
                 fit — and if it is, how we&apos;d approach it.

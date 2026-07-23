@@ -210,7 +210,7 @@ function FooterComponent() {
           line-height: 0;
         }
         .footer-watermark {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Sora', sans-serif;
           font-size: clamp(1.35rem, 7.5vw, 2.75rem);
           font-weight: 700;
           color: #fff;
@@ -233,7 +233,7 @@ function FooterComponent() {
           object-fit: contain;
         }
         .footer-tagline {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Sora', sans-serif;
           font-size: clamp(0.95rem, 1.8vw, 1.15rem);
           font-weight: 400;
           color: rgba(255,255,255,0.55);
@@ -324,7 +324,7 @@ function FooterComponent() {
         }
 
         .footer-col-title {
-          font-family: 'Syne', sans-serif;
+          font-family: 'Sora', sans-serif;
           font-size: 0.65rem;
           font-weight: 700;
           letter-spacing: 0.18em;

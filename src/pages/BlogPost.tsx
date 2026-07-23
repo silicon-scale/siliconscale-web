@@ -193,7 +193,7 @@ export default function BlogPost() {
           <figure className="blog-post-cover">
             <img
               src={resolveMediaUrl(post.cover_image_url)}
-              alt=""
+              alt={post.title}
               width={1200}
               height={675}
               decoding="async"
@@ -216,7 +216,7 @@ export default function BlogPost() {
                     {item.cover_image_url ? (
                       <img
                         src={resolveMediaUrl(item.cover_image_url)}
-                        alt=""
+                        alt={item.title}
                         loading="lazy"
                         decoding="async"
                         width={320}

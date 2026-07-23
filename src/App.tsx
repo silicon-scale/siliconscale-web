@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
-import { memo, useEffect, useState } from "react"
+import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from "react"
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
 import { AboutSection } from "./components/AboutSection"
@@ -13,23 +13,25 @@ import { Footer } from "./components/Footer"
 import { IntroLoader } from "./components/IntroLoader"
 import { RevealProvider, useReveal } from "./context/RevealContext"
 import { trackPageView } from "./utils/analytics"
-import About from "./components/About"
-import Work from "./components/Work"
-import WorkCaseStudy from "./components/WorkCaseStudy"
-import Team from "./components/Team"
-import Contact from "./components/Contact"
-import PrivacyPolicy from "./components/PrivacyPolicy"
-import TermsOfService from "./components/TermsOfService"
-import ServicesPage from "./components/ServicesPage"
-import ToolStack from "./components/ToolStack"
-import NotFound from "./pages/NotFound"
-import AdminLogin from "./pages/admin/AdminLogin"
-import AdminPosts from "./pages/admin/AdminPosts"
-import AdminEditor from "./pages/admin/AdminEditor"
-import Blog from "./pages/Blog"
-import BlogPost from "./pages/BlogPost"
+import { syncDocumentSeoForPath } from "./lib/document-seo"
 import { PerfDebugOverlay } from "./components/PerfDebugOverlay"
 import { LenisProvider, useLenis } from "./providers/LenisProvider"
+
+const About = lazy(() => import("./components/About"))
+const Work = lazy(() => import("./components/Work"))
+const WorkCaseStudy = lazy(() => import("./components/WorkCaseStudy"))
+const Team = lazy(() => import("./components/Team"))
+const Contact = lazy(() => import("./components/Contact"))
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"))
+const TermsOfService = lazy(() => import("./components/TermsOfService"))
+const ServicesPage = lazy(() => import("./components/ServicesPage"))
+const ToolStack = lazy(() => import("./components/ToolStack"))
+const NotFound = lazy(() => import("./pages/NotFound"))
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"))
+const AdminPosts = lazy(() => import("./pages/admin/AdminPosts"))
+const AdminEditor = lazy(() => import("./pages/admin/AdminEditor"))
+const Blog = lazy(() => import("./pages/Blog"))
+const BlogPost = lazy(() => import("./pages/BlogPost"))
 
 function scheduleIdle(cb: () => void, timeout = 400): () => void {
   const ric = (window as Window & {
@@ -47,6 +49,18 @@ function scheduleIdle(cb: () => void, timeout = 400): () => void {
 
 function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/")
+}
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center px-4" role="status">
+      <p className="text-sm text-white/45">Loading…</p>
+    </div>
+  )
+}
+
+function LazyRoute({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<RouteFallback />}>{children}</Suspense>
 }
 
 const Home = memo(function Home() {
@@ -119,6 +133,10 @@ function AppContent() {
   }, [location.pathname, lenis])
 
   useEffect(() => {
+    syncDocumentSeoForPath(location.pathname)
+  }, [location.pathname])
+
+  useEffect(() => {
     if (!import.meta.env.PROD) return
     const idle = (window as any).requestIdleCallback as
       | ((cb: () => void, opts?: { timeout: number }) => number)
@@ -155,22 +173,134 @@ function AppContent() {
           >
             <Routes location={location}>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/work" element={<Work />} />
-              <Route path="/work/:slug" element={<WorkCaseStudy />} />
-              <Route path="/team" element={<Team />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/tool-stack" element={<ToolStack />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminPosts />} />
-              <Route path="/admin/new" element={<AdminEditor />} />
-              <Route path="/admin/edit/:id" element={<AdminEditor />} />
-              <Route path="*" element={<NotFound />} />
+              <Route
+                path="/about"
+                element={
+                  <LazyRoute>
+                    <About />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/work"
+                element={
+                  <LazyRoute>
+                    <Work />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/work/:slug"
+                element={
+                  <LazyRoute>
+                    <WorkCaseStudy />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/team"
+                element={
+                  <LazyRoute>
+                    <Team />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <LazyRoute>
+                    <Contact />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <LazyRoute>
+                    <PrivacyPolicy />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/terms"
+                element={
+                  <LazyRoute>
+                    <TermsOfService />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/services"
+                element={
+                  <LazyRoute>
+                    <ServicesPage />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/tool-stack"
+                element={
+                  <LazyRoute>
+                    <ToolStack />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/blog"
+                element={
+                  <LazyRoute>
+                    <Blog />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/blog/:slug"
+                element={
+                  <LazyRoute>
+                    <BlogPost />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/admin/login"
+                element={
+                  <LazyRoute>
+                    <AdminLogin />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <LazyRoute>
+                    <AdminPosts />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/admin/new"
+                element={
+                  <LazyRoute>
+                    <AdminEditor />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="/admin/edit/:id"
+                element={
+                  <LazyRoute>
+                    <AdminEditor />
+                  </LazyRoute>
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <LazyRoute>
+                    <NotFound />
+                  </LazyRoute>
+                }
+              />
             </Routes>
           </motion.div>
         </AnimatePresence>

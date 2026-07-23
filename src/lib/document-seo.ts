@@ -1,4 +1,20 @@
+import {
+  CASE_STUDY_SEO,
+  STATIC_ROUTE_SEO,
+} from "@/data/seo-routes"
+
 const SITE_URL = "https://siliconscale.dev"
+const DEFAULT_OG = `${SITE_URL}/og-image.png`
+
+type PageSeoMeta = {
+  title: string
+  description: string
+  canonicalPath: string
+  ogType?: "website" | "article"
+  ogImage?: string
+  noindex?: boolean
+  jsonLd?: Record<string, unknown>[]
+}
 
 function upsertMeta(
   attr: "name" | "property",
@@ -25,8 +41,13 @@ function upsertLink(rel: string, href: string): void {
   el.setAttribute("href", href)
 }
 
-function upsertJsonLd(data: Record<string, unknown>): void {
-  const id = "blog-article-jsonld"
+function clearSeoJsonLd(): void {
+  document.querySelectorAll('script[type="application/ld+json"][id^="ss-client-jsonld"]').forEach((n) => n.remove())
+  const legacy = document.getElementById("blog-article-jsonld")
+  legacy?.remove()
+}
+
+function upsertJsonLd(id: string, data: Record<string, unknown>): void {
   let el = document.getElementById(id) as HTMLScriptElement | null
   if (!el) {
     el = document.createElement("script")
@@ -37,14 +58,114 @@ function upsertJsonLd(data: Record<string, unknown>): void {
   el.textContent = JSON.stringify(data)
 }
 
+function applyPageMeta(meta: PageSeoMeta): void {
+  const canonical = `${SITE_URL}${meta.canonicalPath === "/" ? "/" : meta.canonicalPath}`
+  const image = meta.ogImage || DEFAULT_OG
+
+  document.title = meta.title
+  upsertMeta("name", "description", meta.description)
+  upsertMeta("name", "author", "SiliconScale")
+  upsertLink("canonical", canonical)
+
+  if (meta.noindex) {
+    upsertMeta("name", "robots", "noindex, nofollow")
+  } else {
+    upsertMeta("name", "robots", "index, follow")
+  }
+
+  upsertMeta("property", "og:type", meta.ogType ?? "website")
+  upsertMeta("property", "og:url", canonical)
+  upsertMeta("property", "og:title", meta.title)
+  upsertMeta("property", "og:description", meta.description)
+  upsertMeta("property", "og:image", image)
+  upsertMeta("property", "og:image:width", "1200")
+  upsertMeta("property", "og:image:height", "630")
+  upsertMeta("property", "og:site_name", "SiliconScale")
+
+  upsertMeta("name", "twitter:card", "summary_large_image")
+  upsertMeta("name", "twitter:title", meta.title)
+  upsertMeta("name", "twitter:description", meta.description)
+  upsertMeta("name", "twitter:image", image)
+
+  clearSeoJsonLd()
+  meta.jsonLd?.forEach((block, i) => {
+    upsertJsonLd(`ss-client-jsonld-${i}`, block)
+  })
+}
+
+function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith("/")) return pathname.slice(0, -1)
+  return pathname || "/"
+}
+
+/** Sync document head for client-side navigations (SPA). */
+export function syncDocumentSeoForPath(pathname: string): void {
+  const path = normalizePath(pathname)
+
+  if (path === "/admin" || path.startsWith("/admin/")) {
+    applyPageMeta({
+      title: "Admin — SiliconScale",
+      description: "SiliconScale admin",
+      canonicalPath: path,
+      noindex: true,
+      ogImage: DEFAULT_OG,
+    })
+    return
+  }
+
+  const workMatch = path.match(/^\/work\/([^/]+)$/)
+  if (workMatch) {
+    const slug = decodeURIComponent(workMatch[1])
+    const entry = CASE_STUDY_SEO[slug]
+    if (entry) {
+      applyPageMeta({
+        title: entry.title,
+        description: entry.description,
+        canonicalPath: `/work/${slug}`,
+        ogType: "article",
+        ogImage: DEFAULT_OG,
+      })
+      return
+    }
+  }
+
+  // Blog posts are handled by applyBlogPostDocumentSeo after fetch
+  if (/^\/blog\/[^/]+$/.test(path)) {
+    return
+  }
+
+  const staticEntry = STATIC_ROUTE_SEO[path]
+  if (staticEntry) {
+    applyPageMeta({
+      title: staticEntry.title,
+      description: staticEntry.description,
+      canonicalPath: staticEntry.path,
+      ogType: staticEntry.ogType ?? "website",
+      ogImage: DEFAULT_OG,
+    })
+  }
+}
+
+export interface ClientPostSeo {
+  slug: string
+  title: string
+  excerpt: string
+  content?: string
+  cover_image_url: string | null
+  tags?: string[]
+  meta_title: string | null
+  meta_description: string | null
+  published_at: string | null
+  updated_at: string | null
+}
+
 function resolveOgImage(coverUrl: string | null | undefined): string {
-  const fallback = `${SITE_URL}/android-chrome-512x512.png`
-  if (!coverUrl) return fallback
+  if (!coverUrl) return DEFAULT_OG
   try {
     const parsed = new URL(coverUrl, window.location.origin)
     if (parsed.hostname.endsWith(".private.blob.vercel-storage.com")) {
       const pathname = parsed.pathname.replace(/^\/+/, "")
-      if (!pathname) return fallback
+      if (!pathname) return DEFAULT_OG
       return `${SITE_URL}/api/media?pathname=${encodeURIComponent(pathname)}`
     }
     if (parsed.pathname.startsWith("/api/media")) {
@@ -53,22 +174,11 @@ function resolveOgImage(coverUrl: string | null | undefined): string {
     return parsed.href
   } catch {
     if (coverUrl.startsWith("/")) return `${SITE_URL}${coverUrl}`
-    return fallback
+    return DEFAULT_OG
   }
 }
 
-export interface ClientPostSeo {
-  slug: string
-  title: string
-  excerpt: string
-  cover_image_url: string | null
-  meta_title: string | null
-  meta_description: string | null
-  published_at: string | null
-  updated_at: string | null
-}
-
-/** Keep browser document head in sync for client-side navigations. */
+/** Keep browser document head in sync for blog post client-side navigations. */
 export function applyBlogPostDocumentSeo(post: ClientPostSeo): () => void {
   const previousTitle = document.title
   const title = (post.meta_title?.trim() || post.title).trim()
@@ -78,27 +188,27 @@ export function applyBlogPostDocumentSeo(post: ClientPostSeo): () => void {
   const published = post.published_at || post.updated_at || new Date().toISOString()
   const modified = post.updated_at || published
   const fullTitle = `${title} — SiliconScale`
+  const tags = (post.tags ?? []).map((t) => t.trim()).filter(Boolean)
+  const words = post.content
+    ? post.content
+        .replace(/```[\s\S]*?```/g, " ")
+        .replace(/[#>*_`\[\]()!-]/g, " ")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length
+    : undefined
 
-  document.title = fullTitle
-  upsertMeta("name", "description", description)
-  upsertMeta("name", "author", "SiliconScale")
-  upsertLink("canonical", pageUrl)
+  applyPageMeta({
+    title: fullTitle,
+    description,
+    canonicalPath: `/blog/${post.slug}`,
+    ogType: "article",
+    ogImage: image,
+  })
 
-  upsertMeta("property", "og:type", "article")
-  upsertMeta("property", "og:url", pageUrl)
-  upsertMeta("property", "og:title", title)
-  upsertMeta("property", "og:description", description)
-  upsertMeta("property", "og:image", image)
-  upsertMeta("property", "og:site_name", "SiliconScale")
-
-  upsertMeta("name", "twitter:card", "summary_large_image")
-  upsertMeta("name", "twitter:title", title)
-  upsertMeta("name", "twitter:description", description)
-  upsertMeta("name", "twitter:image", image)
-
-  upsertJsonLd({
+  const blogPosting: Record<string, unknown> = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: title,
     description,
     image: [image],
@@ -122,11 +232,23 @@ export function applyBlogPostDocumentSeo(post: ClientPostSeo): () => void {
       "@type": "WebPage",
       "@id": pageUrl,
     },
+  }
+  if (words) blogPosting.wordCount = words
+  if (tags.length) blogPosting.articleSection = tags
+
+  upsertJsonLd("ss-client-jsonld-0", blogPosting)
+  upsertJsonLd("ss-client-jsonld-1", {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: title, item: pageUrl },
+    ],
   })
 
   return () => {
     document.title = previousTitle
-    const jsonLd = document.getElementById("blog-article-jsonld")
-    jsonLd?.remove()
+    clearSeoJsonLd()
   }
 }

@@ -269,7 +269,7 @@ function BlogPostCard({ post }: { post: Post }) {
         {post.cover_image_url ? (
           <img
             src={resolveMediaUrl(post.cover_image_url)}
-            alt=""
+            alt={post.title}
             loading="lazy"
             decoding="async"
             width={640}

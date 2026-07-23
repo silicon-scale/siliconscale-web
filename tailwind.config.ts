@@ -38,7 +38,7 @@ export default {
         sans: ["Open Sans", "sans-serif"],
         bagel: ["Bagel Fat One", "cursive"],
         sora: ["Sora", "system-ui", "sans-serif"],
-        syne: ["Syne", "system-ui", "sans-serif"],
+        syne: ["Sora", "system-ui", "sans-serif"],
         "dm-mono": ["DM Mono", "ui-monospace", "monospace"],
       },
       colors: {

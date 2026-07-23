@@ -6,9 +6,8 @@ import Connect from '@/components/Connect'
 export default function Contact() {
   return (
     <>
-      <FinalCTA />
+      <FinalCTA headingAs="h1" />
       <Connect />
     </>
   )
 }
-
