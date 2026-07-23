@@ -12,6 +12,7 @@ import {
 import { applyBlogPostDocumentSeo } from '@/lib/document-seo'
 import { normalizeMarkdownContent } from '@/lib/normalize-markdown'
 import { resolveMediaUrl } from '@/lib/media-url'
+import { BlogTags, blogTagsCss } from '@/components/blog/BlogTags'
 import type { Post } from '@/types/post'
 
 marked.setOptions({ gfm: true, breaks: false })
@@ -185,15 +186,7 @@ export default function BlogPost() {
             {post.title}
           </h1>
           {post.excerpt ? <p className="blog-post-deck">{post.excerpt}</p> : null}
-          {post.tags.length > 0 ? (
-            <div className="blog-post-tags">
-              {post.tags.map((tag) => (
-                <span key={tag} className="blog-post-tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          ) : null}
+          <BlogTags tags={post.tags} className="blog-post-tags" />
         </header>
 
         {post.cover_image_url ? (
@@ -331,21 +324,11 @@ function BlogPostStyles() {
         line-height: 1.55;
         color: rgba(255,255,255,0.62);
       }
+      .blog-post-header .blog-tags,
       .blog-post-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
         margin-top: 1.15rem;
       }
-      .blog-post-tag {
-        font-size: 0.7rem;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: rgba(255,255,255,0.5);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 999px;
-        padding: 0.25rem 0.6rem;
-      }
+      ${blogTagsCss}
       .blog-post-cover {
         margin: 0 0 2rem;
         border-radius: 8px;

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { BlogTags, blogTagsCss } from '@/components/blog/BlogTags'
 import { formatPostDate, listPublishedPosts } from '@/lib/blog-api'
 import { resolveMediaUrl } from '@/lib/media-url'
 import type { Post } from '@/types/post'
@@ -175,21 +176,10 @@ export default function Blog() {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        .blog-card-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.4rem;
+        .blog-card-body .blog-tags {
           margin-top: 0.15rem;
         }
-        .blog-tag {
-          font-size: 0.7rem;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.5);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 999px;
-          padding: 0.2rem 0.55rem;
-        }
+        ${blogTagsCss}
         .blog-empty,
         .blog-status,
         .blog-error {
@@ -298,15 +288,7 @@ function BlogPostCard({ post }: { post: Post }) {
         </div>
         <h2 className="blog-card-title">{post.title}</h2>
         {post.excerpt ? <p className="blog-card-excerpt">{post.excerpt}</p> : null}
-        {post.tags.length > 0 ? (
-          <div className="blog-card-tags">
-            {post.tags.slice(0, 4).map((tag) => (
-              <span key={tag} className="blog-tag">
-                {tag}
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <BlogTags tags={post.tags} limit={4} />
       </div>
     </Link>
   )
