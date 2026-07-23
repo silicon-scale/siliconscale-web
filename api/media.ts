@@ -1,6 +1,6 @@
 import { get } from "@vercel/blob"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { badRequest, methodNotAllowed, notFound, serverError } from "./lib/response.js"
+import { badRequest, methodNotAllowed, notFound, serverError } from "../lib/server/response.js"
 
 /**
  * Public media proxy for private Vercel Blob objects (blog covers).

@@ -1,6 +1,6 @@
 import { neon } from "@neondatabase/serverless"
 import { next } from "@vercel/edge"
-import { injectBlogSeoHtml, type BlogSeoFields } from "./api/lib/seo.js"
+import { injectBlogSeoHtml, type BlogSeoFields } from "./lib/server/seo.js"
 
 export const config = {
   matcher: ["/blog/:slug*"],

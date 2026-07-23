@@ -1,7 +1,7 @@
 import { put } from "@vercel/blob"
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { requireAdmin } from "./lib/auth.js"
-import { badRequest, json, methodNotAllowed, serverError } from "./lib/response.js"
+import { requireAdmin } from "../lib/server/auth.js"
+import { badRequest, json, methodNotAllowed, serverError } from "../lib/server/response.js"
 
 export const config = {
   api: {

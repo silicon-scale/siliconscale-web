@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { isAdminRequest, requireAdmin } from "../lib/auth.js"
-import { createPost, listPosts } from "../lib/posts.js"
-import { badRequest, json, methodNotAllowed, serverError } from "../lib/response.js"
-import type { PostInput, PostStatus } from "../lib/types.js"
+import { isAdminRequest, requireAdmin } from "../../lib/server/auth.js"
+import { createPost, listPosts } from "../../lib/server/posts.js"
+import { badRequest, json, methodNotAllowed, serverError } from "../../lib/server/response.js"
+import type { PostInput, PostStatus } from "../../lib/server/types.js"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

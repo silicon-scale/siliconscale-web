@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import { isAdminRequest, requireAdmin } from "../lib/auth.js"
+import { isAdminRequest, requireAdmin } from "../../lib/server/auth.js"
 import {
   deletePost,
   getPostById,
   getPostBySlug,
   isUuid,
   updatePost,
-} from "../lib/posts.js"
-import { badRequest, json, methodNotAllowed, notFound, serverError } from "../lib/response.js"
-import type { PostUpdateInput } from "../lib/types.js"
+} from "../../lib/server/posts.js"
+import { badRequest, json, methodNotAllowed, notFound, serverError } from "../../lib/server/response.js"
+import type { PostUpdateInput } from "../../lib/server/types.js"
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const param = req.query.param
