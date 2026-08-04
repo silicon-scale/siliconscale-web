@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { SplashHoverButton } from "@/components/ui/SplashHoverButton";
 
@@ -61,75 +60,6 @@ const PRINCIPLES = [
 		desc: "Clean code, tested before it's handed off, explained in plain language — not a black box you're afraid to touch after we leave.",
 	},
 ];
-
-/* ─── Light Beam ─────────────────────────────────────────── */
-function LightBeam() {
-	return (
-		<div
-			className="light-beam"
-			style={{
-				position: "absolute",
-				right: 0,
-				top: "50%",
-				transform: "translateY(-55%)",
-				width: "62%",
-				height: "80%",
-				pointerEvents: "none",
-			}}
-		>
-			<svg
-				width="100%"
-				height="100%"
-				viewBox="0 0 900 600"
-				preserveAspectRatio="xMinYMid meet"
-			>
-				<defs>
-					<radialGradient
-						id="beamOuter"
-						cx="0%"
-						cy="50%"
-						r="100%"
-						gradientUnits="userSpaceOnUse"
-						fx="0"
-						fy="300"
-					>
-						<stop offset="0%" stopColor="#c8dcff" stopOpacity="0.0" />
-						<stop offset="10%" stopColor="#c8dcff" stopOpacity="0.22" />
-						<stop offset="55%" stopColor="#7aabee" stopOpacity="0.08" />
-						<stop offset="100%" stopColor="#000" stopOpacity="0" />
-					</radialGradient>
-					<radialGradient
-						id="beamCore"
-						cx="0%"
-						cy="50%"
-						r="55%"
-						gradientUnits="userSpaceOnUse"
-						fx="0"
-						fy="300"
-					>
-						<stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-						<stop offset="20%" stopColor="#daeaff" stopOpacity="0.35" />
-						<stop offset="100%" stopColor="#000" stopOpacity="0" />
-					</radialGradient>
-				</defs>
-				{/* wide soft halo */}
-				<polygon points="0,300 900,0 900,600" fill="url(#beamOuter)" />
-				{/* tight bright core */}
-				<polygon points="0,300 900,240 900,360" fill="url(#beamCore)" />
-				{/* razor center */}
-				<line
-					x1="0"
-					y1="300"
-					x2="900"
-					y2="300"
-					stroke="white"
-					strokeWidth="1.2"
-					strokeOpacity="0.55"
-				/>
-			</svg>
-		</div>
-	);
-}
 
 /* ─── Section Label ──────────────────────────────────────── */
 function SectionLabel({ text }: { text: string }) {
@@ -199,16 +129,6 @@ export default function AboutPage() {
           outline-offset: 3px;
         }
 
-        .stat-row {
-          display: flex; border-top: 1px solid rgba(255,255,255,0.1);
-          border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .stat-cell {
-          flex: 1; padding: 44px 0 44px 40px;
-          border-right: 1px solid rgba(255,255,255,0.1);
-        }
-        .stat-cell:last-child { border-right: none; }
-
         .pc {
           flex: 1; padding: 64px 56px;
           border-left: 1px solid rgba(255,255,255,0.1);
@@ -216,33 +136,6 @@ export default function AboutPage() {
         }
         .pc:hover { border-color: rgba(255,255,255,0.35); }
         .pc:first-child { border-left: none; padding-left: 0; }
-
-        .mission-section {
-          position: relative;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 60px 56px 110px;
-          overflow: hidden;
-        }
-
-        .bottom-row {
-          position: absolute;
-          bottom: 36px;
-          left: 56px;
-          right: 56px;
-          z-index: 2;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          gap: 24;
-          flex-wrap: wrap;
-        }
-
-        .stats-section {
-          padding: 0 56px;
-        }
 
         .principles-section {
           padding: 128px 56px;
@@ -255,146 +148,27 @@ export default function AboutPage() {
           overflow: hidden;
         }
 
-        .light-beam {
-          position: absolute;
-          right: 0;
-          top: 50%;
-          transform: translateY(-55%);
-          width: 62%;
-          height: 80%;
-          pointer-events: none;
-        }
-
         @media (max-width: 1024px) {
-          .mission-section { padding: 50px 40px 90px; }
-          .bottom-row { left: 40px; right: 40px; bottom: 30px; }
-          .stats-section { padding: 0 40px; }
           .principles-section { padding: 100px 40px; }
           .cta-section { padding: 60px 40px; }
-          .light-beam { width: 50%; height: 70%; }
         }
 
         @media (max-width: 768px) {
-          .mission-section { padding: 10px 20px 80px; }
-          .bottom-row { left: 20px; right: 20px; bottom: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
-          .stats-section { padding: 0 20px; }
           .principles-section { padding: 64px 20px; }
           .cta-section { padding: 40px 20px; }
-          .light-beam { display: none; }
         }
 
         @media (max-width: 480px) {
-          .mission-section { padding: 5px 16px 60px; }
-          .bottom-row { left: 16px; right: 16px; bottom: 16px; }
-          .stats-section { padding: 0 16px; }
           .principles-section { padding: 48px 16px; }
           .cta-section { padding: 32px 16px; }
-          .stat-cell { padding: 32px 0 32px 20px; }
           .pc { padding: 40px 20px; }
         }
 
         @media (max-width: 860px) {
           .principles-wrap { flex-direction: column !important; }
           .pc { border-left: none !important; border-top: 1px solid rgba(255,255,255,0.1); padding: 44px 0 !important; }
-          .stat-row { flex-wrap: wrap; }
-          .stat-cell { flex: 1 1 50%; }
         }
       `}</style>
-
-			{/* ════ HERO / MISSION ════ */}
-			<section className="mission-section">
-				<LightBeam />
-
-				<ScrollReveal style={{ position: "relative", zIndex: 2 }}>
-					<SectionLabel text="OUR MISSION" />
-				</ScrollReveal>
-
-				<ScrollReveal
-					as="h1"
-					delay={0.08}
-					style={{
-						position: "relative",
-						zIndex: 2,
-						fontSize: "clamp(54px,9vw,136px)",
-						fontWeight: 700,
-						lineHeight: 1.0,
-						letterSpacing: "-0.035em",
-						maxWidth: 800,
-						color: "rgba(255,255,255,0.22)",
-					}}
-				>
-					Design.{" "}
-					<span style={{ color: "rgba(255,255,255,0.55)" }}>Build.</span>{" "}
-					<span style={{ color: "rgba(255,255,255,0.82)" }}>Grow.</span>
-				</ScrollReveal>
-
-				<ScrollReveal delay={0.16} className="bottom-row">
-					<div
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: 8,
-							color: "rgba(255,255,255,0.55)",
-							fontSize: 20,
-						}}
-					>
-						↓
-					</div>
-					<p
-						style={{
-							fontFamily: "'DM Mono',monospace",
-							fontSize: 13,
-							lineHeight: 1.75,
-							color: "rgba(255,255,255,0.52)",
-							fontWeight: 300,
-							maxWidth: 540,
-						}}
-					>
-						SiliconScale builds the systems, stores, and automation that let a business
-						run with less friction and more revenue. We&apos;re not chasing awards —
-						we&apos;re building things that work, and hold up under real use.
-					</p>
-					<Link to="/contact" className="join-btn">
-						Start a project
-					</Link>
-				</ScrollReveal>
-			</section>
-
-			{/* ════ STATS ════ */}
-			<div className="stats-section">
-				<div className="stat-row">
-					{[
-						{ n: "12+", l: "Real Projects Delivered" },
-						{ n: "2.5+", l: "Years Building" },
-						{ n: "95%", l: "Client Retention" },
-						{ n: "6+", l: "Businesses Served" },
-					].map((s, i) => (
-						<ScrollReveal key={s.l} staggerIndex={i + 1} className="stat-cell">
-							<p
-								style={{
-									fontSize: "clamp(30px,4vw,52px)",
-									fontWeight: 700,
-									letterSpacing: "-0.03em",
-									marginBottom: 10,
-								}}
-							>
-								{s.n}
-							</p>
-							<p
-								style={{
-									fontFamily: "'DM Mono',monospace",
-									fontSize: 11,
-									letterSpacing: "0.12em",
-									textTransform: "uppercase",
-									color: "rgba(255,255,255,0.32)",
-								}}
-							>
-								{s.l}
-							</p>
-						</ScrollReveal>
-					))}
-				</div>
-			</div>
 
 			{/* ════ PRINCIPLES ════ */}
 			<section className="principles-section">

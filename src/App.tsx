@@ -3,8 +3,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from "react"
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
-import { AboutSection } from "./components/AboutSection"
-import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { HowWeDo } from "./components/HowWeDo"
 import { Testimonials } from "./components/Testimonials"
@@ -77,12 +75,6 @@ const Home = memo(function Home() {
       <HeroSection />
       {belowFold ? (
         <>
-          <div className="cv-auto">
-            <AboutSection />
-          </div>
-          <div className="cv-auto">
-            <Highlights />
-          </div>
           <div className="cv-auto">
             <Services />
           </div>

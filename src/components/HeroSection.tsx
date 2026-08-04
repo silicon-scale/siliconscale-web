@@ -1,298 +1,395 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
-import { memo, useCallback, useRef, useEffect, useState, type TransitionEvent } from 'react'
-import { MagneticButton } from './ui/MagneticButton'
-import { SpotlightBeams } from './SpotlightBeams'
-import { useReveal } from '../context/RevealContext'
-import { CanvasText } from '@/components/ui/canvas-text'
-import { useIsMobile } from '@/hooks/useIsMobile'
-import { useSectionInView } from '@/hooks/useSectionInView'
-import { SplashHoverButton } from '@/components/ui/SplashHoverButton'
-import { trackEvent } from '@/utils/analytics'
-import { FOCUS_RING } from '@/lib/focus'
-import { ENTRANCE_SETTLE_MS } from '@/lib/motion'
-import { brandGoldAlpha } from '@/lib/brand'
-import { setPerfDebugLoop } from '@/utils/perfDebug'
+import { memo, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useReducedMotion } from 'framer-motion'
+import ScrollReveal from '@/components/ui/ScrollReveal'
+import { CountUpNumber } from '@/components/ui/CountUpNumber'
+import { cn } from '@/lib/utils'
 
-const HERO_CANVAS_COLORS = [
-  'rgba(255,255,255,0.85)',
-  'rgba(200,215,235,0.75)',
-  'rgba(143,171,212,0.65)',
-  brandGoldAlpha(0.85),
-  brandGoldAlpha(0.55),
-  'rgba(255,255,255,0.45)',
-] as const
-
-const PULSE_DOTS = [
-  {
-    style: { top: '30%', left: '26%' },
-    opacity: [0.4, 1, 0.4] as number[],
-    scale: [1, 1.9, 1] as number[],
-    duration: 5,
-    delay: 0.6,
-  },
-  {
-    style: { top: '45%', left: '60%' },
-    opacity: [0.35, 0.95, 0.35] as number[],
-    scale: [1, 1.7, 1] as number[],
-    duration: 6.2,
-    delay: 1.4,
-  },
-  {
-    style: { top: '62%', left: '34%' },
-    opacity: [0.4, 1, 0.4] as number[],
-    scale: [1, 1.8, 1] as number[],
-    duration: 7,
-    delay: 0.9,
-  },
-  {
-    style: { top: '52%', right: '20%' },
-    opacity: [0.45, 1, 0.45] as number[],
-    scale: [1, 2, 1] as number[],
-    duration: 5.8,
-    delay: 1.8,
-  },
-] as const
-
-function clearWillChange(e: TransitionEvent<HTMLElement>) {
-  if (e.target !== e.currentTarget) return
-  if (e.propertyName !== 'transform' && e.propertyName !== 'opacity') return
-  e.currentTarget.style.willChange = 'auto'
-  e.currentTarget.classList.remove('is-animating')
+/* ─── Light Beam — identical to the About page's mission hero ─────────── */
+function LightBeam() {
+  return (
+    <div
+      className="light-beam"
+      style={{
+        position: 'absolute',
+        right: 0,
+        top: '50%',
+        transform: 'translateY(-55%)',
+        width: '62%',
+        height: '80%',
+        pointerEvents: 'none',
+      }}
+    >
+      <svg width="100%" height="100%" viewBox="0 0 900 600" preserveAspectRatio="xMinYMid meet">
+        <defs>
+          <radialGradient
+            id="beamOuter"
+            cx="0%"
+            cy="50%"
+            r="100%"
+            gradientUnits="userSpaceOnUse"
+            fx="0"
+            fy="300"
+          >
+            <stop offset="0%" stopColor="#c8dcff" stopOpacity="0.0" />
+            <stop offset="10%" stopColor="#c8dcff" stopOpacity="0.22" />
+            <stop offset="55%" stopColor="#7aabee" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient
+            id="beamCore"
+            cx="0%"
+            cy="50%"
+            r="55%"
+            gradientUnits="userSpaceOnUse"
+            fx="0"
+            fy="300"
+          >
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+            <stop offset="20%" stopColor="#daeaff" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        {/* wide soft halo */}
+        <polygon points="0,300 900,0 900,600" fill="url(#beamOuter)" />
+        {/* tight bright core */}
+        <polygon points="0,300 900,240 900,360" fill="url(#beamCore)" />
+        {/* razor center */}
+        <line x1="0" y1="300" x2="900" y2="300" stroke="white" strokeWidth="1.2" strokeOpacity="0.55" />
+      </svg>
+    </div>
+  )
 }
 
-function HeroSectionComponent() {
-  const navigate = useNavigate()
-  const { mountStage, revealStarted } = useReveal()
+/* ─── Section Label — identical to the About page's [ TEXT ] eyebrow ──── */
+function SectionLabel({ text }: { text: string }) {
+  return (
+    <p
+      style={{
+        fontFamily: "'DM Mono',monospace",
+        fontSize: 12,
+        letterSpacing: '0.2em',
+        color: 'rgba(255,255,255,0.55)',
+        marginBottom: 48,
+        textTransform: 'uppercase',
+      }}
+    >
+      {'[ ' + text + ' ]'}
+    </p>
+  )
+}
+
+const HEADLINE_WORDS = [
+  { text: 'Design.', color: 'rgba(255,255,255,0.22)' },
+  { text: 'Build.', color: 'rgba(255,255,255,0.55)' },
+  { text: 'Grow.', color: 'rgba(255,255,255,0.85)' },
+] as const
+
+const HEADLINE_STYLE = {
+  position: 'relative' as const,
+  zIndex: 2,
+  fontSize: 'clamp(54px,9vw,136px)',
+  fontWeight: 700,
+  lineHeight: 1.0,
+  letterSpacing: '-0.035em',
+  maxWidth: 800,
+}
+
+/**
+ * "Design. Build. Grow." — each word drops in from above, one at a time,
+ * and lands with a decaying gravity bounce. Pure CSS `@keyframes` (see
+ * the .word-drop rule below) rather than a JS-driven animation library —
+ * it runs the moment the element paints, with no dependency on React
+ * effect timing, hook state, or hydration order. Per-keyframe
+ * animation-timing-function alternates ease-in (falling, accelerating)
+ * and ease-out (rising off a bounce, decelerating) to read as gravity
+ * rather than a generic bounce easing curve.
+ */
+function MissionHeadline() {
+  return (
+    <h1 style={HEADLINE_STYLE}>
+      {HEADLINE_WORDS.map((w, i) => (
+        <span
+          key={w.text}
+          className="word-drop"
+          style={{
+            color: w.color,
+            marginRight: i < HEADLINE_WORDS.length - 1 ? '0.28em' : 0,
+            animationDelay: `${i * 1.15}s`,
+          }}
+        >
+          {w.text}
+        </span>
+      ))}
+    </h1>
+  )
+}
+
+const STATS = [
+  {
+    value: '12+',
+    label: 'Real Projects Delivered',
+    sub: 'Across e-commerce, internal tools, and AI systems',
+  },
+  {
+    value: '2.5+',
+    label: 'Years Building',
+    sub: 'Designing & shipping on the web',
+  },
+  {
+    value: '95%',
+    label: 'Client Retention',
+    sub: 'Teams that keep coming back',
+  },
+  {
+    value: '6+',
+    label: 'Businesses Served',
+    sub: 'From early-stage to growing teams',
+  },
+] as const
+
+/**
+ * Self-contained one-shot IntersectionObserver — deliberately not the
+ * shared `useInViewOnce` (@/hooks/useInViewOnce -> sharedScrollRevealObserver
+ * singleton). Same idea as the headline fix: fewer shared/hidden moving
+ * parts to go wrong across hot-reloads, so this component owns its own
+ * observer end to end.
+ */
+function useLocalInViewOnce<T extends HTMLElement>(disabled: boolean) {
+  const ref = useRef<T>(null)
+  const [inView, setInView] = useState(disabled)
+
+  useEffect(() => {
+    if (disabled) {
+      setInView(true)
+      return
+    }
+
+    const el = ref.current
+    if (!el) return
+
+    const rect = el.getBoundingClientRect()
+    const alreadyVisible = rect.top < window.innerHeight * 0.94 && rect.bottom > window.innerHeight * 0.06
+    if (alreadyVisible) {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [disabled])
+
+  return { ref, inView }
+}
+
+/**
+ * Same stat-row treatment as the Highlights section (CountUpNumber,
+ * index numbering, font-bagel figure) so this block and Highlights read
+ * as one system even though this one lives inside the mission hero.
+ */
+function HeroStatRow({ stat, index }: { stat: (typeof STATS)[number]; index: number }) {
   const prefersReducedMotion = useReducedMotion()
-  const isMobile = useIsMobile()
-  const hasRevealedRef = useRef(false)
-  const sectionRef = useRef<HTMLElement>(null)
-  const [ambientReady, setAmbientReady] = useState(false)
-  const [revealClassOn, setRevealClassOn] = useState(false)
-  const sectionInView = useSectionInView(sectionRef, { initial: true })
-
-  const pulseLoopsActive =
-    !prefersReducedMotion && ambientReady && sectionInView
-
-  useEffect(() => {
-    setPerfDebugLoop('hero', pulseLoopsActive ? 'active' : 'paused')
-  }, [pulseLoopsActive])
-
-  useEffect(() => {
-    if (revealStarted) hasRevealedRef.current = true
-  }, [revealStarted])
-
-  const shouldReveal = hasRevealedRef.current || revealStarted || !!prefersReducedMotion
-  const allowCanvasText = mountStage >= 2
-
-  // Double-rAF so the "hidden" styles paint before .is-revealed toggles (CSS transition).
-  useEffect(() => {
-    if (!shouldReveal) {
-      setRevealClassOn(false)
-      return
-    }
-    if (prefersReducedMotion) {
-      setRevealClassOn(true)
-      return
-    }
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setRevealClassOn(true))
-    })
-    return () => cancelAnimationFrame(id)
-  }, [shouldReveal, prefersReducedMotion])
-
-  // Ambient loops start after entrance settles.
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      setAmbientReady(false)
-      return
-    }
-    if (!shouldReveal) {
-      setAmbientReady(false)
-      return
-    }
-    const t = window.setTimeout(() => setAmbientReady(true), ENTRANCE_SETTLE_MS)
-    return () => clearTimeout(t)
-  }, [shouldReveal, prefersReducedMotion])
-
-  const goToContact = useCallback(() => {
-    trackEvent('cta_click', { location: 'hero' })
-    navigate('/contact')
-  }, [navigate])
-  const goToWork = useCallback(() => {
-    trackEvent('cta_click', { location: 'hero_work' })
-    navigate('/work')
-  }, [navigate])
-
-  const itemClass = (index: number, extra = '') =>
-    [
-      'reveal-item',
-      `reveal-item--${index}`,
-      extra,
-      revealClassOn ? 'is-revealed' : '',
-      revealClassOn && !prefersReducedMotion ? 'is-animating' : '',
-    ]
-      .filter(Boolean)
-      .join(' ')
+  const { ref, inView } = useLocalInViewOnce<HTMLDivElement>(!!prefersReducedMotion)
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen w-full overflow-hidden bg-page"
-      aria-label="Hero"
-      style={{ contain: 'layout paint' }}
+    <div
+      ref={ref}
+      className={cn(
+        'flex flex-col gap-3',
+        index !== 0 && 'sm:border-l sm:border-white/10 sm:pl-8 lg:pl-10',
+      )}
     >
-      <div
-        className="pointer-events-none absolute inset-0 z-0 opacity-40"
-        aria-hidden
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(148,163,184,0.15) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(148,163,184,0.12) 1px, transparent 1px)
-          `,
-          backgroundSize: '80px 80px',
-        }}
-      />
-
-      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
-        <div className="hero-glow-dot hero-glow-dot--35" style={{ top: '22%', left: '18%' }} />
-        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '38%', left: '42%' }} />
-        <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '55%', right: '26%' }} />
-
-        {!prefersReducedMotion
-          ? PULSE_DOTS.map((dot, i) => (
-              <motion.div
-                key={i}
-                className="hero-glow-dot hero-glow-dot--pulse"
-                style={dot.style}
-                initial={false}
-                animate={
-                  pulseLoopsActive
-                    ? { opacity: [...dot.opacity], scale: [...dot.scale] }
-                    : { opacity: dot.opacity[0], scale: 1 }
-                }
-                transition={
-                  pulseLoopsActive
-                    ? {
-                        duration: dot.duration,
-                        repeat: Infinity,
-                        repeatType: 'mirror',
-                        delay: dot.delay,
-                      }
-                    : { duration: 0 }
-                }
-              />
-            ))
-          : null}
+      <div className="flex items-baseline gap-3">
+        <span
+          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-white/20 tabular-nums"
+          aria-hidden
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <CountUpNumber
+          value={stat.value}
+          animate={inView}
+          className="font-bagel leading-none tracking-tight text-white"
+          style={{ fontSize: 'clamp(2.6rem, 4.5vw, 3.75rem)' }}
+        />
       </div>
+      <div className="text-base font-medium text-white/90 sm:text-lg">{stat.label}</div>
+      <div className="text-[0.78rem] text-white/60 sm:text-xs">{stat.sub}</div>
+    </div>
+  )
+}
 
-      <SpotlightBeams loopActive={pulseLoopsActive} />
+/**
+ * Landing hero — the About page's Mission + Stats sections, used verbatim
+ * (same markup, same inline styles, same classes) as the site's front door.
+ */
+function HeroSectionComponent() {
+  return (
+    <div style={{ background: '#000', color: '#fff', fontFamily: "'Sora','Helvetica Neue',sans-serif", overflowX: 'hidden' }}>
+      <style>{`
+        .join-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          border: 1px solid rgba(255,255,255,0.28);
+          padding: 12px 24px; border-radius: 8px;
+          font-family: 'DM Mono',monospace; font-size: 11px;
+          letter-spacing: 0.14em; text-transform: uppercase;
+          color: #fff; background: transparent; cursor: pointer;
+          text-decoration: none; transition: background 0.25s, border-color 0.25s;
+        }
+        .join-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.55); }
+        .join-btn:focus-visible {
+          outline: 2px solid var(--focus-ring);
+          outline-offset: 3px;
+        }
 
-      <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
-        <div className="mx-auto max-w-4xl text-center" aria-hidden={!shouldReveal}>
+        @keyframes heroWordDrop {
+          0% { transform: translateY(-240px); opacity: 0; animation-timing-function: ease-in; }
+          5% { opacity: 1; }
+          42% { transform: translateY(0); animation-timing-function: ease-out; }
+          55% { transform: translateY(-60px); animation-timing-function: ease-in; }
+          70% { transform: translateY(0); animation-timing-function: ease-out; }
+          79% { transform: translateY(-22px); animation-timing-function: ease-in; }
+          88% { transform: translateY(0); animation-timing-function: ease-out; }
+          94% { transform: translateY(-6px); animation-timing-function: ease-in; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        .word-drop {
+          display: inline-block;
+          animation-name: heroWordDrop;
+          animation-duration: 1.4s;
+          animation-timing-function: ease-in;
+          animation-fill-mode: both;
+          animation-iteration-count: 1;
+          will-change: transform, opacity;
+        }
+
+        .mission-section {
+          position: relative;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: 60px 56px 110px;
+          overflow: hidden;
+        }
+
+        .bottom-row {
+          position: absolute;
+          bottom: 36px;
+          left: 56px;
+          right: 56px;
+          z-index: 2;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+
+        .stats-section {
+          padding: 0 56px 56px;
+        }
+
+        .light-beam {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-55%);
+          width: 62%;
+          height: 80%;
+          pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
+          .mission-section { padding: 50px 40px 90px; }
+          .bottom-row { left: 40px; right: 40px; bottom: 30px; }
+          .stats-section { padding: 0 40px 44px; }
+          .light-beam { width: 50%; height: 70%; }
+        }
+
+        @media (max-width: 768px) {
+          .mission-section { padding: 10px 20px 80px; }
+          .bottom-row { left: 20px; right: 20px; bottom: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+          .stats-section { padding: 0 20px 36px; }
+          .light-beam { display: none; }
+        }
+
+        @media (max-width: 480px) {
+          .mission-section { padding: 5px 16px 60px; }
+          .bottom-row { left: 16px; right: 16px; bottom: 16px; }
+          .stats-section { padding: 0 16px 28px; }
+        }
+      `}</style>
+
+      {/* ════ HERO / MISSION ════ */}
+      <section className="mission-section" aria-label="Hero">
+        <LightBeam />
+
+        <ScrollReveal style={{ position: 'relative', zIndex: 2 }}>
+          <SectionLabel text="OUR MISSION" />
+        </ScrollReveal>
+
+        <MissionHeadline />
+
+        <ScrollReveal delay={0.16} className="bottom-row">
           <div
-            className={itemClass(0, 'mb-5 flex items-center justify-center gap-3 sm:gap-4')}
-            onTransitionEnd={clearWillChange}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              color: 'rgba(255,255,255,0.55)',
+              fontSize: 20,
+            }}
           >
-            <span
-              className="h-px w-10 shrink-0 bg-brand-gold sm:w-14"
-              aria-hidden
-            />
-            <p className="text-xs font-medium tracking-[0.12em] text-white/70 sm:text-sm sm:tracking-[0.14em]">
-              We just don&apos;t build websites
-            </p>
+            ↓
           </div>
-
-          <h1
-            className={itemClass(1, 'reveal-h1 font-black leading-[1.02] tracking-tight text-white')}
-            style={{ fontSize: 'clamp(2.15rem, 7.2vw, 4.8rem)', textWrap: 'balance' }}
-            onTransitionEnd={clearWillChange}
-          >
-            <span className="block">
-              We Build the{" "}
-              {isMobile ? (
-                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
-                  Systems
-                </span>
-              ) : allowCanvasText ? (
-                <CanvasText
-                  text="Systems"
-                  backgroundClassName="bg-brand-gold"
-                  colors={[...HERO_CANVAS_COLORS]}
-                  lineGap={5}
-                  animationDuration={16}
-                  curveIntensity={54}
-                  lineWidth={1.6}
-                  className="align-baseline"
-                />
-              ) : (
-                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
-                  Systems
-                </span>
-              )}
-            </span>
-            <span className="block">
-              That{" "}
-              {isMobile ? (
-                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
-                  Grow
-                </span>
-              ) : allowCanvasText ? (
-                <CanvasText
-                  text="Grow"
-                  backgroundClassName="bg-brand-gold"
-                  colors={[...HERO_CANVAS_COLORS]}
-                  lineGap={5}
-                  animationDuration={16}
-                  curveIntensity={54}
-                  lineWidth={1.6}
-                  className="align-baseline"
-                />
-              ) : (
-                <span className="align-baseline" style={{ color: 'var(--brand-gold)' }}>
-                  Grow
-                </span>
-              )}{' '}
-              Your Business
-            </span>
-          </h1>
-
           <p
-            className={itemClass(2, 'mt-5 text-sm text-white/75 sm:text-base max-w-2xl mx-auto')}
-            onTransitionEnd={clearWillChange}
+            style={{
+              fontFamily: "'DM Mono',monospace",
+              fontSize: 13,
+              lineHeight: 1.75,
+              color: 'rgba(255,255,255,0.52)',
+              fontWeight: 300,
+              maxWidth: 540,
+            }}
           >
-            Custom software, headless Shopify stores, and AI agents — built to save you hours every week
-            and make your business more money, not just look better online.
+            SiliconScale builds the systems, stores, and automation that let a business run with
+            less friction and more revenue. We&apos;re not chasing awards — we&apos;re building
+            things that work, and hold up under real use.
           </p>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <Link to="/contact" className="join-btn">
+              Start a project
+            </Link>
+            <Link to="/work" className="join-btn">
+              See our work
+            </Link>
+          </div>
+        </ScrollReveal>
+      </section>
 
-          <div
-            className={itemClass(3, 'mt-10 flex flex-col items-center gap-4')}
-            onTransitionEnd={clearWillChange}
-          >
-            <div className="flex flex-wrap justify-center gap-4">
-              <SplashHoverButton
-                onClick={goToContact}
-                className={`px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] ${FOCUS_RING}`}
-              >
-                Start Your Project
-              </SplashHoverButton>
-              <MagneticButton
-                onClick={goToWork}
-                className="rounded-button border border-white/40 bg-transparent px-8 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-black"
-              >
-                See Our Work
-              </MagneticButton>
-            </div>
-            <p className="mt-6 text-sm text-white/55">
-              Trusted by founders who needed it built right the first time.
-            </p>
+      {/* ════ STATS — same treatment as the Highlights section, one horizontal row ════ */}
+      <div className="stats-section">
+        <div className="border-t border-white/8 pt-12">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4 sm:gap-x-6 lg:gap-x-10">
+            {STATS.map((stat, index) => (
+              <HeroStatRow key={stat.label} stat={stat} index={index} />
+            ))}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 
