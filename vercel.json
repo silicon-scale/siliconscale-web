@@ -5,7 +5,7 @@
       "destination": "/api/sitemap"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|@|node_modules/).*)",
       "has": [
         {
           "type": "header",
@@ -16,7 +16,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/((?!api/|.*\\..*).*)",
+      "source": "/((?!api/|@|node_modules/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]

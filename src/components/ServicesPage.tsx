@@ -333,7 +333,7 @@ function ServiceCardBody({
         </h2>
 
         {!card.locked && card.chips.length > 0 ? (
-          <div className="chip-row" aria-label={`${card.title} offerings`}>
+          <div className="chip-row">
             {card.chips.map((chip) => (
               <span key={chip} className="chip">
                 {chip}
@@ -598,7 +598,7 @@ const ServiceCardReel = memo(function ServiceCardReel({
       ))}
 
       <div className="reel-sticky">
-        <div className="reel-frame" aria-label="Services card reel">
+        <div className="reel-frame">
           {cards.map((card, index) => (
             <ReelCard
               key={card.id}

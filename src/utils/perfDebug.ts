@@ -2,10 +2,11 @@ export type PerfDebugLoopKey =
   | 'hero'
   | 'testimonials'
   | 'servicesTicker'
+  | 'bento'
   | 'finalCtaAmbient'
-  | 'finalCtaRotatingWord'
   | 'footerWaves'
   | 'connectGlitter'
+  | 'preContactMarquee'
 export type PerfDebugLoopStatus = 'active' | 'paused' | 'unknown'
 
 /** Navbar frosted glass — isolated compositor layer (see Navbar.tsx). */
@@ -24,10 +25,11 @@ const loopState: Record<PerfDebugLoopKey, PerfDebugLoopStatus> = {
   hero: 'unknown',
   testimonials: 'unknown',
   servicesTicker: 'unknown',
+  bento: 'unknown',
   finalCtaAmbient: 'unknown',
-  finalCtaRotatingWord: 'unknown',
   footerWaves: 'unknown',
   connectGlitter: 'unknown',
+  preContactMarquee: 'unknown',
 }
 
 /** Stable snapshot for useSyncExternalStore — same reference until a loop changes. */

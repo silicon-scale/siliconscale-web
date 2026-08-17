@@ -26,7 +26,7 @@ type SecondaryCtaLinkProps = SecondaryCtaBaseProps &
 export type SecondaryCtaProps = SecondaryCtaButtonProps | SecondaryCtaLinkProps
 
 const VARIANT_CLASS: Record<SecondaryCtaVariant, string> = {
-  /** White filled — AboutSection / ServicesPage */
+  /** White filled — ServicesPage */
   solid:
     'inline-flex items-center gap-2 rounded-button bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-white/90',
   /** Bordered with gold hover — Highlights */

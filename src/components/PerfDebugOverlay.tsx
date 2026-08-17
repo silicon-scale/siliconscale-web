@@ -31,6 +31,7 @@ export function PerfDebugOverlay() {
   return (
     <div
       className="pointer-events-none fixed bottom-3 left-3 z-[9999] max-w-[min(100vw-1.5rem,320px)] rounded-lg border border-white/15 bg-black/90 px-3 py-2 font-mono text-[10px] leading-relaxed text-white/85 shadow-lg backdrop-blur-0"
+      role="status"
       aria-live="polite"
       aria-label="Performance debug readout"
     >
@@ -49,9 +50,9 @@ export function PerfDebugOverlay() {
       <p>testimonials: {loops.testimonials}</p>
       <p>services ticker: {loops.servicesTicker}</p>
       <p>finalCTA ambient: {loops.finalCtaAmbient}</p>
-      <p>finalCTA rotatingWord: {loops.finalCtaRotatingWord}</p>
       <p>footer waves: {loops.footerWaves}</p>
       <p>connect glitter: {loops.connectGlitter}</p>
+      <p>pre-contact marquee: {loops.preContactMarquee}</p>
       <p className="mt-1 border-t border-white/10 pt-1 text-white/70">navbar</p>
       <p>approach: {navbar.approach}</p>
       <p>blur radius: {navbar.blurRadiusPx}px</p>

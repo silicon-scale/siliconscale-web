@@ -192,7 +192,7 @@ function HeroSectionComponent() {
       <SpotlightBeams loopActive={pulseLoopsActive} />
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
-        <div className="mx-auto max-w-4xl text-center" aria-hidden={!shouldReveal}>
+        <div className="mx-auto max-w-4xl text-center">
           <div
             className={itemClass(0, 'mb-5 flex items-center justify-center gap-3 sm:gap-4')}
             onTransitionEnd={clearWillChange}

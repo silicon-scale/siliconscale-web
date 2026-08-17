@@ -15,14 +15,14 @@
  */
 
 // PLAAM IMAGES
-import plaam2 from '@/assets/case-studies/plaam/2.webp'
-import plaam3 from '@/assets/case-studies/plaam/3.webp'
-import plaam4 from '@/assets/case-studies/plaam/4.webp'
-import plaam5 from '@/assets/case-studies/plaam/5.webp'
-import plaam6 from '@/assets/case-studies/plaam/6.webp'
-import plaam7 from '@/assets/case-studies/plaam/7.webp'
-import plaam8 from '@/assets/case-studies/plaam/8.webp'
-import plaam9 from '@/assets/case-studies/plaam/9.webp'
+import plaam2 from '@/assets/case-studies/plaam/2.webp?responsive'
+import plaam3 from '@/assets/case-studies/plaam/3.webp?responsive'
+import plaam4 from '@/assets/case-studies/plaam/4.webp?responsive'
+import plaam5 from '@/assets/case-studies/plaam/5.webp?responsive'
+import plaam6 from '@/assets/case-studies/plaam/6.webp?responsive'
+import plaam7 from '@/assets/case-studies/plaam/7.webp?responsive'
+import plaam8 from '@/assets/case-studies/plaam/8.webp?responsive'
+import plaam9 from '@/assets/case-studies/plaam/9.webp?responsive'
 
 // DDEN IMAGES
 
@@ -33,12 +33,14 @@ import plaam9 from '@/assets/case-studies/plaam/9.webp'
 
 // 
 
-import ddenImage from '@/assets/project-images/dden.webp'
-import mnrdcImage from '@/assets/project-images/mnrdc.webp'
-import rdcImage from '@/assets/project-images/rdc.webp'
-import axelsImage from '@/assets/project-images/axels.webp'
-import plaamImage from '@/assets/project-images/plaam.webp'
-import lavviImage from '@/assets/project-images/lavvi.webp'
+import ddenImage from '@/assets/project-images/dden.webp?responsive'
+import mnrdcImage from '@/assets/project-images/mnrdc.webp?responsive'
+import rdcImage from '@/assets/project-images/rdc.webp?responsive'
+import axelsImage from '@/assets/project-images/axels.webp?responsive'
+import plaamImage from '@/assets/project-images/plaam.webp?responsive'
+import lavviImage from '@/assets/project-images/lavvi.webp?responsive'
+
+import type { ResponsivePicture } from '@/types/images'
 
 export type ProjectStatOverlay = {
   value: string
@@ -74,7 +76,7 @@ export type Project = {
   statOverlay?: ProjectStatOverlay
   link: string
   websiteUrl?: string
-  image: string
+  image: ResponsivePicture
   imageAlt: string
   year: string
   isSample?: boolean
@@ -82,7 +84,7 @@ export type Project = {
   isIndependent?: boolean
   /** When true, listing card links to `/work/:slug` and the case study page is available. */
   caseStudy?: boolean
-  gallery: string[]
+  gallery: ResponsivePicture[]
   challenge: { heading: string; body: string[] }
   solution: { heading: string; body: string[] }
   results: ProjectResult[]
@@ -92,9 +94,9 @@ export type Project = {
   /** Case study overview copy (1–2 paragraphs). */
   introBody?: string[]
   /** Full-bleed hero on case study page (falls back to `image`). */
-  heroImage?: string
+  heroImage?: ResponsivePicture
   /** Two-up image row below Challenges (falls back to first gallery shots). */
-  challengeImages?: string[]
+  challengeImages?: ResponsivePicture[]
   /** Results section heading (falls back to generic default in template). */
   resultsHeading?: string
 }
@@ -145,10 +147,10 @@ const CASE_STUDY_GALLERIES = {
 
 /** Gallery uses the hero shot repeated until additional assets exist. */
 function galleryFrom(
-  hero: string,
-  gallery?: readonly string[],
+  hero: ResponsivePicture,
+  gallery?: readonly ResponsivePicture[],
   count = 4,
-): string[] {
+): ResponsivePicture[] {
   if (gallery?.length) return [...gallery]
 
   return Array.from({ length: count }, () => hero)

@@ -212,7 +212,7 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
   }, [exiting, finish])
 
   return (
-    <section
+    <div
       className={[
         'intro-loader',
         exiting ? 'intro-loader--exit' : '',
@@ -228,8 +228,8 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
         if (e.propertyName !== 'opacity' && e.propertyName !== 'transform') return
         finish()
       }}
-      aria-label="Loading"
       role="progressbar"
+      aria-label="Loading"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={0}
@@ -345,6 +345,6 @@ export function IntroLoader({ visible, onExitComplete }: IntroLoaderProps) {
           loading… <span className="intro-progress-num" ref={pctRef}>0%</span>
         </p>
       </div>
-    </section>
+    </div>
   )
 }

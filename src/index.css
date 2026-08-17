@@ -48,6 +48,16 @@ body {
 .text-brand-highlight {
   color: var(--brand-cream);
 }
+/* AA text hierarchy on dark page backgrounds (unlayered — wins over opacity utilities) */
+.text-subtle {
+  color: var(--text-subtle);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
 .from-brand-gold {
   --tw-gradient-from: var(--brand-gold) var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(var(--brand-gold-rgb) / 0) var(--tw-gradient-to-position);
@@ -134,6 +144,14 @@ body {
   --color-brand: var(--brand-gold);
   --color-brand-highlight: var(--brand-cream);
   --color-ink: var(--brand-ink);
+
+  /*
+   * AA-safe text on page black (#050505). Use instead of text-white/20–40.
+   * Ratios vs --brand-black: subtle ~5.9:1 · muted ~8.1:1 · secondary ~11.7:1
+   */
+  --text-subtle: #8a8a8a;
+  --text-muted: #a3a3a3;
+  --text-secondary: #c4c4c4;
 
   /*
    * Elevation pairs (radius + shadow). Collapses reinvented 16–28px radii
@@ -670,75 +688,120 @@ html {
 }
 
 /*
- * Footer ambient — gold wash via radial-gradient (no filter:blur).
- * Sized to approximate prior 400px / 300px discs + blur(80px) footprint.
+ * FinalCTA form card surface — diagonal near-black fill + bottom-weighted
+ * border fade. Grid + beam layers below add the ambient background texture.
  */
-.footer-glow {
+.final-cta-form-card {
+  background: linear-gradient(
+    145deg,
+    #16161a 0%,
+    #0c0c10 38%,
+    #0a0a0c 62%,
+    #050505 100%
+  );
+}
+
+/*
+ * Line grid confined to a diagonal pocket (center → top-right), fine cells,
+ * soft dissolve toward the bottom-left rather than a full-card fade. A
+ * sparse, large repeating tile (10x10 cells) scatters a handful of lit
+ * (gray-filled) cells across the grid so a few tiles read as "glowing"
+ * without the repeat itself becoming a visible checkerboard.
+ */
+.final-cta-form-card-grid {
   position: absolute;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  border-radius: 9999px;
-}
-.footer-glow--1 {
-  width: 400px;
-  height: 400px;
-  top: 80px;
-  left: -100px;
-  background: radial-gradient(
-    circle,
-    rgb(var(--brand-gold-rgb) / 0.07) 0%,
-    rgb(var(--brand-gold-rgb) / 0.045) 28%,
-    rgb(var(--brand-gold-rgb) / 0.018) 48%,
-    rgb(var(--brand-gold-rgb) / 0.006) 62%,
-    transparent 78%
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Crect x='22' y='22' width='22' height='22' fill='rgba(255,255,255,0.07)'/%3E%3Crect x='132' y='44' width='22' height='22' fill='rgba(255,255,255,0.06)'/%3E%3Crect x='88' y='110' width='22' height='22' fill='rgba(255,255,255,0.08)'/%3E%3Crect x='44' y='154' width='22' height='22' fill='rgba(255,255,255,0.05)'/%3E%3Crect x='176' y='176' width='22' height='22' fill='rgba(255,255,255,0.07)'/%3E%3C/svg%3E"),
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size:
+    220px 220px,
+    22px 22px,
+    22px 22px;
+  mask-image: linear-gradient(to top right, transparent 0%, transparent 38%, black 100%);
+  -webkit-mask-image: linear-gradient(
+    to top right,
+    transparent 0%,
+    transparent 38%,
+    black 100%
   );
 }
-.footer-glow--2 {
-  width: 300px;
-  height: 300px;
-  top: 40px;
-  right: -60px;
-  background: radial-gradient(
-    circle,
-    rgb(var(--brand-gold-rgb) / 0.07) 0%,
-    rgb(var(--brand-gold-rgb) / 0.042) 30%,
-    rgb(var(--brand-gold-rgb) / 0.016) 50%,
-    rgb(var(--brand-gold-rgb) / 0.005) 64%,
-    transparent 78%
+
+/* Outer stroke via masked gradient layer: solid at bottom → transparent at top */
+.final-cta-form-card-border {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  padding: 1px;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.08) 28%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 88%
   );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
 }
-.footer-glow--1.is-animated {
-  animation: footer-glow-drift-1 14s ease-in-out infinite;
-  will-change: transform;
+
+/* BackgroundGrid tiles — slow ambient CSS glow (not Framer) */
+.ss-grid-tile {
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: 0 0 0 transparent;
 }
-.footer-glow--2.is-animated {
-  animation: footer-glow-drift-2 18s ease-in-out infinite;
-  will-change: transform;
+.ss-grid-tile--lit {
+  background-color: rgba(143, 171, 212, 0.15);
+  box-shadow: 0 0 10px rgba(143, 171, 212, 0.12);
 }
-@keyframes footer-glow-drift-1 {
+.ss-grid-tile--animate {
+  animation-name: ss-grid-tile-glow;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: background-color, box-shadow;
+}
+/*
+ * Cycle length is set per-tile (≈9–14s): ~45% idle (3–8s gap) then a ~4–6s
+ * ease-in-out breath. Peak stays soft (~0.15) — ambient shimmer, not a flash.
+ */
+@keyframes ss-grid-tile-glow {
   0%,
+  45% {
+    background-color: rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 transparent;
+  }
+  58% {
+    background-color: rgba(143, 171, 212, 0.08);
+    box-shadow: 0 0 6px rgba(143, 171, 212, 0.06);
+  }
+  68%,
+  74% {
+    background-color: rgba(143, 171, 212, 0.15);
+    box-shadow: 0 0 10px rgba(143, 171, 212, 0.12);
+  }
+  88%,
   100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(15px, 20px, 0);
-  }
-}
-@keyframes footer-glow-drift-2 {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(-10px, -25px, 0);
+    background-color: rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 transparent;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .footer-glow--1.is-animated,
-  .footer-glow--2.is-animated {
-    animation: none;
+  .ss-grid-tile--animate {
+    animation: none !important;
     will-change: auto;
   }
 }
+
 
 /* One-shot settle pulse when a Highlights stat count completes. */
 @keyframes count-up-settle {

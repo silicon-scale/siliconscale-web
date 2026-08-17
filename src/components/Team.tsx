@@ -236,7 +236,6 @@ export default function Team() {
       id="team"
       ref={sectionRef}
       className="relative min-h-screen overflow-hidden bg-page text-white"
-      aria-label="Team section"
       aria-labelledby="team-heading"
     >
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -303,8 +302,21 @@ export default function Team() {
         {/* Slightly smaller gap = wider cards */}
         <div className="mt-12 mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-8">
           {FOUNDERS.map((founder, i) => (
-            <ScrollReveal key={founder.name} staggerIndex={i + 1}>
-              <FounderCard founder={founder} featuredOnMd={i === 2} />
+            <ScrollReveal
+              key={founder.name}
+              staggerIndex={i + 1}
+              className={
+                // Third card: at md (2-col grid) center it, capped to one column's
+                // width, in the spanned row; at lg (3-col grid) it's a normal cell.
+                // These classes live on ScrollReveal itself (not FounderCard's
+                // <article>) because ScrollReveal's own root div is the actual grid
+                // item — grid-column/max-width only take effect on a direct child.
+                i === 2
+                  ? 'md:col-span-2 md:mx-auto md:max-w-[calc(50%-1.25rem)] lg:col-span-1 lg:mx-0 lg:max-w-none'
+                  : undefined
+              }
+            >
+              <FounderCard founder={founder} />
             </ScrollReveal>
           ))}
         </div>

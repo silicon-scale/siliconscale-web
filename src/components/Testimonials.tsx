@@ -255,7 +255,7 @@ export function Testimonials() {
 
         <div
           className={`ss-marquee${inView ? '' : ' is-offscreen'}`}
-          aria-label="Testimonials scrolling rows"
+          aria-hidden="true"
         >
           <div className="ss-rows">
             <div className="ss-row left" aria-hidden>

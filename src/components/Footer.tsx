@@ -1,16 +1,29 @@
 'use client'
 
-import { memo, useEffect, useRef, type CSSProperties } from 'react'
+import { memo, useEffect, useRef } from 'react'
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
-import { Instagram, Linkedin, Mail } from 'lucide-react'
+import { Instagram, Linkedin, Facebook, X as XIcon, Mail } from 'lucide-react'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
-/** Lucide icons in footer social row — keep size/stroke identical. */
-const FOOTER_SOCIAL_ICON_SIZE = 22
+/** Lucide icons in the brand-block social row — keep size/stroke identical. */
+const FOOTER_SOCIAL_ICON_SIZE = 20
 const FOOTER_SOCIAL_ICON_STROKE = 1.75
+
+/** Only place social links appear — icon row in the left column. */
+const FOOTER_SOCIAL_LINKS = [
+  { href: 'https://www.instagram.com/siliconscale', label: 'Instagram', Icon: Instagram },
+  { href: 'https://www.linkedin.com/company/siliconscale', label: 'LinkedIn', Icon: Linkedin },
+  { href: 'https://www.facebook.com/siliconscale', label: 'Facebook', Icon: Facebook },
+  { href: 'https://x.com/siliconscale', label: 'X (Twitter)', Icon: XIcon },
+  { href: 'mailto:contact@siliconscale.dev', label: 'Email', Icon: Mail },
+] as const
+
+/** Derived from the "2.5+ Years Building" stat (Highlights.tsx) — end year stays current. */
+const FOOTER_FOUNDED_YEAR = 2024
 
 /** Static wave shapes — path geometry never animated (transform-only motion). */
 const FOOTER_WAVE_LAYERS = [
@@ -28,7 +41,7 @@ const FOOTER_WAVE_LAYERS = [
   },
   {
     d: 'M0,78 C200,105 400,50 600,78 C800,105 1000,50 1200,78 L1200,120 L0,120 Z',
-    fill: 'var(--brand-black)',
+    fill: 'var(--footer-bg, #191919)',
     duration: '14s',
     reverse: false,
   },
@@ -53,7 +66,6 @@ function FooterComponent() {
   const preferReducedEffects = usePreferReducedEffects()
 
   const motionEnabled = !preferReducedEffects
-  const motionActive = motionEnabled && inView
 
   useEffect(() => {
     if (!motionEnabled) {
@@ -78,8 +90,9 @@ function FooterComponent() {
 
       <style>{`
         .footer-root {
+          --footer-bg: #191919;
           position: relative;
-          background: var(--brand-black);
+          background: var(--footer-bg);
           color: #fff;
           font-family: 'Open Sans', sans-serif;
           overflow: visible;
@@ -175,182 +188,148 @@ function FooterComponent() {
           z-index: 2;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 0 clamp(1rem, 5vw, 2.5rem) 3rem;
+          padding: 4rem clamp(1rem, 5vw, 2.5rem) 3.5rem;
+        }
+        @media (max-width: 768px) {
+          .footer-body {
+            padding-top: 3rem;
+            padding-bottom: 2.5rem;
+          }
+        }
+
+        .footer-top {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          gap: clamp(2rem, 6vw, 5rem);
+        }
+        @media (max-width: 900px) {
+          .footer-top {
+            flex-direction: column;
+            gap: 2rem;
+          }
         }
 
         .footer-brand {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 0.75rem;
-          padding-bottom: 3rem;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          margin-bottom: 3rem;
+          gap: 0.6rem;
+          flex: 1 1 280px;
+          max-width: 340px;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+          /* flex-basis: 280px would otherwise be read as a min-HEIGHT once
+             .footer-top's main axis flips to vertical, padding this block out
+             to ~280px tall regardless of its actual (much shorter) content. */
           .footer-brand {
-            gap: 0.5rem;
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
+            flex: 0 1 auto;
+            max-width: none;
           }
         }
-        .footer-brand-head {
-          display: flex;
+
+        .footer-eyebrow {
+          display: inline-flex;
           align-items: center;
-          gap: 0.45rem;
-          flex-wrap: nowrap;
-          overflow: visible;
-          max-width: 100%;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 0.4rem 1rem;
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.5);
         }
-        .footer-logo-mark {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          line-height: 0;
-        }
-        .footer-watermark {
-          font-family: 'Sora', sans-serif;
-          font-size: clamp(1.35rem, 7.5vw, 2.75rem);
-          font-weight: 700;
-          color: #fff;
-          letter-spacing: -0.03em;
-          line-height: 1;
-          margin: 0;
-          padding-inline-end: 0.1em;
-          user-select: none;
-          white-space: nowrap;
-          overflow: visible;
-        }
-        .footer-wordmark-dot {
-          letter-spacing: 0;
-          margin-inline-start: 0.04em;
-        }
-        .footer-logo {
-          display: block;
-          height: clamp(1.75rem, 9vw, 3rem);
-          width: auto;
-          object-fit: contain;
-        }
+
         .footer-tagline {
-          font-family: 'Sora', sans-serif;
-          font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+          font-size: 0.875rem;
           font-weight: 400;
           color: rgba(255,255,255,0.55);
-          letter-spacing: -0.01em;
+          letter-spacing: -0.005em;
           margin: 0;
-          line-height: 1.4;
+          line-height: 1.45;
         }
+
         .footer-socials {
           display: flex;
           align-items: center;
-          flex-wrap: nowrap;
-          gap: clamp(0.75rem, 3vw, 1.25rem);
-          margin-top: 0.25rem;
+          flex-wrap: wrap;
+          gap: 0.5rem;
           max-width: 100%;
         }
         .footer-socials svg {
-          width: 1.375rem;
-          height: 1.375rem;
+          width: 1.15rem;
+          height: 1.15rem;
           flex-shrink: 0;
         }
-        .footer-social-link,
-        .footer-email-link {
+        .footer-social-link {
           display: inline-flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          min-width: 2.75rem;
-          min-height: 2.75rem;
-          padding: 0.625rem;
-          border-radius: 8px;
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.03);
           color: rgba(255,255,255,0.65);
           text-decoration: none;
-          transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-        }
-        .footer-email-link {
-          justify-content: flex-start;
-          gap: 0.5rem;
-          min-width: 0;
-          flex-shrink: 1;
-          padding-right: 0.25rem;
-          font-size: clamp(0.72rem, 3.15vw, 1rem);
-          white-space: nowrap;
-        }
-        .footer-social-link:hover,
-        .footer-email-link:hover {
-          color: #fff;
-          background: rgba(255,255,255,0.08);
+          transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
         }
         .footer-social-link:hover {
+          color: #fff;
+          background: rgba(255,255,255,0.08);
+          border-color: rgba(255,255,255,0.2);
           transform: scale(1.05);
         }
-        .footer-social-link:focus-visible,
-        .footer-email-link:focus-visible {
+        .footer-social-link:focus-visible {
           outline: 2px solid var(--focus-ring);
           outline-offset: 3px;
         }
 
+        .footer-built-with {
+          font-size: 0.75rem;
+          color: rgba(255,255,255,0.4);
+        }
+
         .footer-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 2rem;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: clamp(3rem, 4vw, 4rem);
+          flex: 1 1 auto;
         }
         @media (max-width: 900px) {
-          .footer-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 768px) {
-          .footer-grid { gap: 1.5rem; }
-        }
-        @media (max-width: 480px) {
           .footer-grid {
             grid-template-columns: 1fr 1fr;
-            column-gap: clamp(1.25rem, 5vw, 1.75rem);
-            row-gap: 2.25rem;
+            row-gap: 2rem;
           }
-          .footer-grid > :nth-child(1) {
-            grid-column: 1;
-            grid-row: 1;
-          }
-          .footer-grid > :nth-child(2) {
-            grid-column: 1;
-            grid-row: 2;
-          }
-          .footer-grid > :nth-child(3) {
-            grid-column: 2;
-            grid-row: 1;
-            align-self: start;
-          }
+        }
+        @media (max-width: 768px) {
+          .footer-grid { gap: 2.5rem; row-gap: 2rem; }
         }
 
         .footer-col-title {
-          font-family: 'Sora', sans-serif;
-          font-size: 0.65rem;
+          font-size: 0.75rem;
           font-weight: 700;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(255,255,255,0.55);
-          margin: 0 0 1.2rem;
+          color: rgba(255,255,255,0.5);
+          margin: 0 0 1rem;
         }
 
         .footer-links {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
-        }
-        @media (max-width: 768px) {
-          .footer-links {
-            gap: 0.5rem;
-          }
+          gap: 0.625rem;
         }
         .footer-link {
-          font-size: 0.88rem;
-          color: rgba(255,255,255,0.55);
+          font-size: 0.875rem;
+          color: rgba(255,255,255,0.7);
           text-decoration: none;
           transition: color 0.2s ease, padding-left 0.2s ease;
         }
         .footer-link:hover {
-          color: rgba(255,255,255,0.9);
+          color: #fff;
           padding-left: 4px;
         }
         .footer-link:focus-visible {
@@ -359,12 +338,33 @@ function FooterComponent() {
           border-radius: 2px;
         }
         .footer-link--muted {
-          font-size: 0.75rem;
-          color: rgba(255,255,255,0.32);
+          color: rgba(255,255,255,0.4);
         }
         .footer-link--muted:hover {
-          color: rgba(255,255,255,0.55);
-          padding-left: 2px;
+          color: rgba(255,255,255,0.7);
+        }
+
+        .footer-bottom-wrap {
+          position: relative;
+          overflow: hidden;
+          /* Clearance so the giant wordmark doesn't crowd the copyright row above it */
+          padding-bottom: clamp(2.5rem, 8vw, 4.5rem);
+        }
+        .footer-giant-wordmark {
+          position: absolute;
+          left: 50%;
+          bottom: -0.22em;
+          transform: translateX(-50%);
+          z-index: 1;
+          font-family: 'Sora', sans-serif;
+          font-weight: 800;
+          font-size: clamp(2.75rem, 10.5vw, 7.5rem);
+          line-height: 0.8;
+          letter-spacing: -0.04em;
+          color: rgba(255,255,255,0.05);
+          white-space: nowrap;
+          user-select: none;
+          pointer-events: none;
         }
 
         .footer-bottom {
@@ -372,7 +372,7 @@ function FooterComponent() {
           z-index: 2;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 1.5rem clamp(1rem, 5vw, 2.5rem);
+          padding: 1.75rem clamp(1rem, 5vw, 2.5rem);
           border-top: 1px solid rgba(255,255,255,0.08);
           display: flex;
           align-items: center;
@@ -419,161 +419,135 @@ function FooterComponent() {
         </div>
       </div>
 
-      {/* Ambient glow — radial-gradient orbs, transform-only drift */}
-      <div
-        className={`footer-glow footer-glow--1${motionActive ? ' is-animated' : ''}`}
-        aria-hidden
-      />
-      <div
-        className={`footer-glow footer-glow--2${motionActive ? ' is-animated' : ''}`}
-        aria-hidden
-      />
-
       <div className="footer-body">
-        <ScrollReveal className="footer-brand">
-          <div className="footer-brand-head">
-            <div className="footer-logo-mark">
-              <img
-                src="/transparent-logo.svg"
-                alt=""
-                width="120"
-                height="120"
-                className="footer-logo"
-                loading="lazy"
-                decoding="async"
-                aria-hidden
-              />
-            </div>
-            <span className="footer-watermark">
-              SiliconScale Tech
-              <span className="footer-wordmark-dot" aria-hidden="true">
-                .
-              </span>
-            </span>
-          </div>
-          <p className="footer-tagline">
-            Custom systems, Shopify stores, and AI agents for businesses that need it to work.
-          </p>
-          <div className="footer-socials">
-            <a
-              href="https://www.instagram.com/siliconscale"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="footer-social-link"
-              aria-label="Instagram"
-            >
-              <Instagram
-                size={FOOTER_SOCIAL_ICON_SIZE}
-                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
-                aria-hidden
-              />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/siliconscale"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="footer-social-link"
-              aria-label="LinkedIn"
-            >
-              <Linkedin
-                size={FOOTER_SOCIAL_ICON_SIZE}
-                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
-                aria-hidden
-              />
-            </a>
-            <a
-              href="mailto:contact@siliconscale.dev"
-              className="footer-email-link"
-              aria-label="Email"
-            >
-              <Mail
-                size={FOOTER_SOCIAL_ICON_SIZE}
-                strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
-                aria-hidden
-              />
-              contact@siliconscale.dev
-            </a>
-          </div>
-        </ScrollReveal>
+        <div className="footer-top">
+          <ScrollReveal className="footer-brand">
+            <span className="footer-eyebrow">Dev Studio</span>
 
-        <div className="footer-grid">
-          <ScrollReveal staggerIndex={1}>
-            <div>
-              <h4 className="footer-col-title">Quick Links</h4>
-            <div className="footer-links">
-              <Link to="/" className="footer-link">
-                Home
-              </Link>
-              <Link to="/services" className="footer-link">
-                Services
-              </Link>
-              <Link to="/tool-stack" className="footer-link">
-                Tool Stack
-              </Link>
-              <Link to="/contact" className="footer-link">
-                Contact
-              </Link>
-              <Link to="/about" className="footer-link">
-                About
-              </Link>
-              <Link to="/work" className="footer-link">
-                Work
-              </Link>
-              <Link to="/blog" className="footer-link">
-                Blog
-              </Link>
-              <Link to="/team" className="footer-link">
-                Team
-              </Link>
+            <p className="footer-tagline">
+              Custom systems, Shopify stores, and AI agents for businesses that need it to
+              work.
+            </p>
+
+            <div className="footer-socials">
+              {FOOTER_SOCIAL_LINKS.map(({ href, label, Icon }) => {
+                const isMailto = href.startsWith('mailto:')
+                return (
+                  <a
+                    key={label}
+                    href={href}
+                    target={isMailto ? undefined : '_blank'}
+                    rel={isMailto ? undefined : 'noreferrer noopener'}
+                    className="footer-social-link"
+                    aria-label={label}
+                  >
+                    <Icon
+                      size={FOOTER_SOCIAL_ICON_SIZE}
+                      strokeWidth={FOOTER_SOCIAL_ICON_STROKE}
+                      aria-hidden
+                    />
+                  </a>
+                )
+              })}
             </div>
-            </div>
+
+            <p className="footer-built-with">
+              Built with ♡ in India @ {FOOTER_FOUNDED_YEAR} - {new Date().getFullYear()}
+            </p>
           </ScrollReveal>
 
-          <ScrollReveal staggerIndex={2}>
-            <div>
-              <h4 className="footer-col-title">Useful Links</h4>
-              <div className="footer-links">
-                <Link to="/privacy" className="footer-link">
-                  Privacy Policy
-                </Link>
-                <Link to="/terms" className="footer-link">
-                  Terms of Service
-                </Link>
-                <Link to="/admin" className="footer-link footer-link--muted">
-                  Admin
-                </Link>
+          <div className="footer-grid">
+            <ScrollReveal staggerIndex={1}>
+              <div>
+                <h4 className="footer-col-title">Menu</h4>
+                <div className="footer-links">
+                  <Link to="/" className="footer-link">
+                    Home
+                  </Link>
+                  <Link to="/about" className="footer-link">
+                    About
+                  </Link>
+                  <Link to="/work" className="footer-link">
+                    Work
+                  </Link>
+                  <Link to="/team" className="footer-link">
+                    Team
+                  </Link>
+                </div>
               </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
 
-          <ScrollReveal staggerIndex={3}>
-            <div>
-              <h4 className="footer-col-title">Services</h4>
-              <nav className="footer-links">
-                <Link to="/services#development" className="footer-link">
-                  Custom Systems
-                </Link>
-                <Link to="/services#shopify-headless" className="footer-link">
-                  Shopify Development
-                </Link>
-                <Link to="/services#ai-agents" className="footer-link">
-                  AI & Automation
-                </Link>
-                <Link to="/services#integrations" className="footer-link">
-                  Integrations
-                </Link>
-              </nav>
-            </div>
-          </ScrollReveal>
+            <ScrollReveal staggerIndex={2}>
+              <div>
+                <h4 className="footer-col-title">Quick Links</h4>
+                <div className="footer-links">
+                  <Link to="/services" className="footer-link">
+                    Services
+                  </Link>
+                  <Link to="/tool-stack" className="footer-link">
+                    Tool Stack
+                  </Link>
+                  <Link to="/blog" className="footer-link">
+                    Blog
+                  </Link>
+                  <Link to="/contact" className="footer-link">
+                    Contact
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal staggerIndex={3}>
+              <div>
+                <h4 className="footer-col-title">Services</h4>
+                <nav className="footer-links">
+                  <Link to="/services#development" className="footer-link">
+                    Custom Systems
+                  </Link>
+                  <Link to="/services#shopify-headless" className="footer-link">
+                    Shopify Development
+                  </Link>
+                  <Link to="/services#ai-agents" className="footer-link">
+                    AI & Automation
+                  </Link>
+                  <Link to="/services#integrations" className="footer-link">
+                    Integrations
+                  </Link>
+                </nav>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal staggerIndex={4}>
+              <div>
+                <h4 className="footer-col-title">Legal</h4>
+                <div className="footer-links">
+                  <Link to="/privacy" className="footer-link">
+                    Privacy Policy
+                  </Link>
+                  <Link to="/terms" className="footer-link">
+                    Terms of Service
+                  </Link>
+                  <Link to="/admin" className="footer-link footer-link--muted">
+                    Admin
+                  </Link>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </div>
 
+      <div className="footer-bottom-wrap">
+        <div className="footer-giant-wordmark" aria-hidden>
+          SiliconScale Tech.
+        </div>
         <ScrollReveal className="footer-bottom">
           <span className="footer-bottom-text">
             © {new Date().getFullYear()} SiliconScale Tech. All rights reserved.
           </span>
           <span className="footer-bottom-text">Building scalable digital products.</span>
         </ScrollReveal>
+      </div>
     </footer>
   )
 }

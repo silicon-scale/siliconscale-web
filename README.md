@@ -20,8 +20,11 @@ cd <YOUR_PROJECT_NAME>
 # Install dependencies
 pnpm install
 
-# Start the development server
+# Start the frontend only (no /api routes)
 pnpm run dev
+
+# Start frontend + API (required for blog, admin, uploads)
+pnpm run dev:full
 ```
 
 ## Tech stack
@@ -34,7 +37,8 @@ pnpm run dev
 
 ## Scripts
 
-- `pnpm dev` — Start dev server with HMR
+- `pnpm dev` — Vite frontend only (HMR). Blog/admin API calls will fail.
+- `pnpm dev:full` — `vercel dev` — frontend + `/api/*` (use this for the blog)
 - `pnpm build` — Production build
 - `pnpm preview` — Preview production build locally
 - `pnpm lint` — Run ESLint

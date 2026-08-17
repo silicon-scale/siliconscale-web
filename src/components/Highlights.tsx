@@ -55,7 +55,7 @@ function HighlightStatRow({
     >
       <div className="flex items-baseline gap-3">
         <span
-          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-white/20 tabular-nums"
+          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-subtle tabular-nums"
           aria-hidden
         >
           {String(index + 1).padStart(2, '0')}

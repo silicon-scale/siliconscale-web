@@ -40,7 +40,9 @@ export default {
         sora: ["Sora", "system-ui", "sans-serif"],
         syne: ["Sora", "system-ui", "sans-serif"],
         "dm-mono": ["DM Mono", "ui-monospace", "monospace"],
+        editorial: ["Instrument Serif", "Georgia", "Times New Roman", "serif"],
       },
+
       colors: {
         border: "var(--border)",
         input: "var(--input)",
