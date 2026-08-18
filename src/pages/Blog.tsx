@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { PageHero } from '@/components/ui/PageHero'
 import { listPublishedPosts } from '@/lib/blog-api'
 import {
   formatJournalDate,
@@ -81,17 +82,21 @@ export default function Blog() {
     <section className="journal-page relative bg-page text-white" aria-labelledby="blog-heading">
       <JournalStyles />
 
-      <div className="journal-shell">
-        <ScrollReveal className="journal-header">
-          <p className="journal-eyebrow">Editorial</p>
-          <h1 id="blog-heading" className="journal-title">
-            The journal
-          </h1>
-          <p className="journal-lede">
-            Engineering notes, product thinking, and lessons from building digital experiences.
-          </p>
-        </ScrollReveal>
+      <PageHero className="pt-[7.5rem]">
+        <div className="journal-shell">
+          <ScrollReveal className="journal-header">
+            <p className="journal-eyebrow">Editorial</p>
+            <h1 id="blog-heading" className="journal-title">
+              The journal
+            </h1>
+            <p className="journal-lede">
+              Engineering notes, product thinking, and lessons from building digital experiences.
+            </p>
+          </ScrollReveal>
+        </div>
+      </PageHero>
 
+      <div className="journal-shell">
         {loading ? (
           <p className="journal-status" role="status">
             Loading posts…
@@ -306,7 +311,7 @@ function JournalStyles() {
   return (
     <style>{`
       .journal-page {
-        padding: 7.5rem 0 5.5rem;
+        padding: 0 0 5.5rem;
         font-family: 'Open Sans', system-ui, sans-serif;
       }
       .journal-shell {

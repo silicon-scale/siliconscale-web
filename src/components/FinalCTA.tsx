@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } fr
 import emailjs from '@emailjs/browser'
 import SectionShell from '@/components/ui/SectionShell'
 import Reveal from '@/components/ui/Reveal'
+import { PageHeroBackdrop } from '@/components/ui/PageHero'
 import { BrandButton } from '@/components/ui/BrandButton'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
@@ -353,25 +354,28 @@ const FinalCTA = ({ headingAs = 'h2' }: { headingAs?: 'h1' | 'h2' }) => {
       <div className="mx-auto max-w-6xl">
         {/* ─── Section heading — spans both columns ─── */}
         <Reveal>
-          <div className="mb-12 lg:mb-16">
-            <SectionEyebrow variant="pill">Let&apos;s Start</SectionEyebrow>
-            {headingAs === 'h1' ? (
-              <h1
-                className="mt-5 font-black leading-[1.05] tracking-tight text-white"
-                style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
-              >
-                <span className="text-white/45">Ready</span> to{' '}
-                <span className="text-white/45">build</span> something.
-              </h1>
-            ) : (
-              <h2
-                className="mt-5 font-black leading-[1.05] tracking-tight text-white"
-                style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
-              >
-                <span className="text-white/45">Ready</span> to{' '}
-                <span className="text-white/45">build</span> something.
-              </h2>
-            )}
+          <div className="relative mb-12 lg:mb-16">
+            {headingAs === 'h1' ? <PageHeroBackdrop showGlow={false} /> : null}
+            <div className="relative z-10">
+              <SectionEyebrow variant="pill">Let&apos;s Start</SectionEyebrow>
+              {headingAs === 'h1' ? (
+                <h1
+                  className="mt-5 font-black leading-[1.05] tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
+                >
+                  <span className="text-white/45">Ready</span> to{' '}
+                  <span className="text-white/45">build</span> something.
+                </h1>
+              ) : (
+                <h2
+                  className="mt-5 font-black leading-[1.05] tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
+                >
+                  <span className="text-white/45">Ready</span> to{' '}
+                  <span className="text-white/45">build</span> something.
+                </h2>
+              )}
+            </div>
           </div>
         </Reveal>
 

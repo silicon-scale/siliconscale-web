@@ -3,6 +3,7 @@
 import { memo } from 'react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { PageHero } from '@/components/ui/PageHero'
 import { WorkProjectCard, WorkProjectCardStyles } from '@/components/work/WorkProjectCard'
 import { INDEPENDENT_PROJECTS, PROJECTS } from '@/data/projects'
 
@@ -15,7 +16,7 @@ function WorkListing() {
     >
       <style>{`
         .work-page {
-          padding: 7.5rem 0 5rem;
+          padding: 0 0 5rem;
           font-family: 'Sora', system-ui, sans-serif;
           position: relative;
           z-index: 0;
@@ -98,16 +99,20 @@ function WorkListing() {
 
       <div className="work-glow" aria-hidden />
 
-      <div className="work-shell">
-        <ScrollReveal className="work-header">
-          <SectionEyebrow variant="pillMono">Portfolio</SectionEyebrow>
-          <h1 id="work-heading">Results you can measure.</h1>
-          <p>
-            Every project on this page is live — click through and see it running, not a
-            mockup.
-          </p>
-        </ScrollReveal>
+      <PageHero className="pt-[7.5rem]">
+        <div className="work-shell">
+          <ScrollReveal className="work-header">
+            <SectionEyebrow variant="pillMono">Portfolio</SectionEyebrow>
+            <h1 id="work-heading">Results you can measure.</h1>
+            <p>
+              Every project on this page is live — click through and see it running, not a
+              mockup.
+            </p>
+          </ScrollReveal>
+        </div>
+      </PageHero>
 
+      <div className="work-shell">
         <div className="work-list">
           {PROJECTS.map((project, index) => (
             <WorkProjectCard key={project.id} project={project} index={index} />

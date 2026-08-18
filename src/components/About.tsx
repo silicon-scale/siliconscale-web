@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { SplashHoverButton } from "@/components/ui/SplashHoverButton";
+import { PageHeroBackdrop } from "@/components/ui/PageHero";
 
 /* ─── Data ───────────────────────────────────────────────── */
 const PRINCIPLES = [
@@ -303,6 +304,7 @@ export default function AboutPage() {
 
 			{/* ════ HERO / MISSION ════ */}
 			<section className="mission-section">
+				<PageHeroBackdrop showGlow={false} />
 				<LightBeam />
 
 				<ScrollReveal style={{ position: "relative", zIndex: 2 }}>

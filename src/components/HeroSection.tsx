@@ -3,8 +3,10 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { memo, useCallback, useRef, useEffect, useState, type TransitionEvent } from 'react'
+import Lottie from 'lottie-react'
 import { MagneticButton } from './ui/MagneticButton'
-import { SpotlightBeams } from './SpotlightBeams'
+import { Spotlight } from '@/components/ui/spotlight-new'
+import rocketAnimation from '@/assets/Rocket launch animation _Space exploration.json'
 import { useReveal } from '../context/RevealContext'
 import { CanvasText } from '@/components/ui/canvas-text'
 import { useIsMobile } from '@/hooks/useIsMobile'
@@ -75,7 +77,7 @@ function HeroSectionComponent() {
   const sectionInView = useSectionInView(sectionRef, { initial: true })
 
   const pulseLoopsActive =
-    !prefersReducedMotion && ambientReady && sectionInView
+    !prefersReducedMotion && !isMobile && ambientReady && sectionInView
 
   useEffect(() => {
     setPerfDebugLoop('hero', pulseLoopsActive ? 'active' : 'paused')
@@ -157,12 +159,12 @@ function HeroSectionComponent() {
         }}
       />
 
-      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+      <div className="pointer-events-none absolute inset-0 z-0 hidden md:block" aria-hidden>
         <div className="hero-glow-dot hero-glow-dot--35" style={{ top: '22%', left: '18%' }} />
         <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '38%', left: '42%' }} />
         <div className="hero-glow-dot hero-glow-dot--30" style={{ top: '55%', right: '26%' }} />
 
-        {!prefersReducedMotion
+        {!prefersReducedMotion && !isMobile
           ? PULSE_DOTS.map((dot, i) => (
               <motion.div
                 key={i}
@@ -189,20 +191,18 @@ function HeroSectionComponent() {
           : null}
       </div>
 
-      <SpotlightBeams loopActive={pulseLoopsActive} />
+      <Spotlight />
 
       <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10">
         <div className="mx-auto max-w-4xl text-center">
           <div
-            className={itemClass(0, 'mb-5 flex items-center justify-center gap-3 sm:gap-4')}
+            className={itemClass(0, 'mb-5 flex items-center justify-center')}
             onTransitionEnd={clearWillChange}
           >
-            <span
-              className="h-px w-10 shrink-0 bg-brand-gold sm:w-14"
-              aria-hidden
-            />
-            <p className="text-xs font-medium tracking-[0.12em] text-white/70 sm:text-sm sm:tracking-[0.14em]">
-              We just don&apos;t build websites
+            <p className="text-sm font-medium tracking-[0.12em] sm:text-base sm:tracking-[0.14em]">
+              <span className="inline-block rounded-md bg-brand-gold px-3 py-1 text-black">
+                We just don&apos;t build websites
+              </span>
             </p>
           </div>
 
@@ -286,9 +286,18 @@ function HeroSectionComponent() {
                 See Our Work
               </MagneticButton>
             </div>
-            <p className="mt-6 text-sm text-white/55">
-              Trusted by founders who needed it built right the first time.
-            </p>
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <Lottie
+                animationData={rocketAnimation}
+                loop={!prefersReducedMotion}
+                autoplay={!prefersReducedMotion}
+                className="h-10 w-10 sm:h-12 sm:w-12"
+                aria-hidden
+              />
+              <p className="text-sm text-white/55">
+                Trusted by founders who needed it built right the first time.
+              </p>
+            </div>
           </div>
         </div>
       </div>

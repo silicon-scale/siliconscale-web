@@ -19,6 +19,7 @@ import { useReveal } from '@/context/RevealContext'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta } from '@/components/ui/SecondaryCta'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { PageHero } from '@/components/ui/PageHero'
 import { ToolPhysicsPlayground } from '@/components/ToolPhysicsPlayground'
 
 type ServiceCard = {
@@ -984,21 +985,25 @@ export default function ServicesPage() {
         />
       </div>
 
-      <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
-        <ScrollReveal className="mb-14">
-          <SectionEyebrow variant="pillMono">What we do</SectionEyebrow>
-          <h1
-            id="services-heading"
-            className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
-          >
-            Services Built Around What Actually Grows Your Business
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65">
-            Seven ways we help — pick the one that matches what you&apos;re building, or tell us
-            the problem and we&apos;ll point you to the right one.
-          </p>
-        </ScrollReveal>
+      <PageHero className="pt-36 sm:pt-40 lg:pt-44" showGlow={false}>
+        <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 lg:px-10">
+          <ScrollReveal className="mb-14">
+            <SectionEyebrow variant="pillMono">What we do</SectionEyebrow>
+            <h1
+              id="services-heading"
+              className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
+            >
+              Services Built Around What Actually Grows Your Business
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65">
+              Seven ways we help — pick the one that matches what you&apos;re building, or tell us
+              the problem and we&apos;ll point you to the right one.
+            </p>
+          </ScrollReveal>
+        </div>
+      </PageHero>
 
+      <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 pb-24 lg:px-10 lg:pb-28">
         {servicesLayout === 'static' ? (
           <StaticServiceList cards={cards} onCta={onCta} />
         ) : servicesLayout === 'simple' ? (
