@@ -243,7 +243,6 @@ export function Testimonials() {
       <div className="ss-test-shell">
         <ScrollReveal className="ss-test-head">
           <div>
-            <span className="ss-test-pill">TESTIMONIALS</span>
             <h2 id="testimonials-heading" className="ss-test-title">
               What Our Clients Say
             </h2>

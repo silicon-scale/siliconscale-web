@@ -183,11 +183,6 @@ export function HowWeDo() {
           {/* Header */}
           <ScrollReveal className="flex flex-wrap items-end justify-between gap-8 mb-14 lg:mb-20">
             <div>
-              <span
-                className="inline-block mb-4 text-xs font-bold tracking-[0.22em] uppercase text-white/55"
-              >
-                HOW WE WORK
-              </span>
               <h2
                 id="how-we-do-heading"
                 className="text-white font-bold tracking-tight"

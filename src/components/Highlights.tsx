@@ -1,8 +1,7 @@
 'use client'
 
-import { useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
-import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
@@ -74,18 +73,20 @@ function HighlightStatRow({
 }
 
 export function Highlights() {
+  const prefersReducedMotion = useReducedMotion()
+  const { ref: titleRef, inView: titleInView } = useInViewOnce<HTMLHeadingElement>({
+    disabled: !!prefersReducedMotion,
+  })
+
   return (
     <section
       aria-labelledby="highlights-heading"
       className="w-full bg-page py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 sm:px-8 lg:px-10">
-        {/* Header — eyebrow + compact link (matches Services textLink pattern) */}
+        {/* Header — compact link (matches Services textLink pattern) */}
         <ScrollReveal className="space-y-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <SectionEyebrow className="border-white/10 bg-transparent font-medium text-white/55">
-              By the Numbers
-            </SectionEyebrow>
+          <div className="flex justify-end">
             <SecondaryCta variant="textLink" to="/about">
               About
               <ArrowRight className={SECTION_ARROW_ICON_CLASS} aria-hidden />
@@ -93,10 +94,21 @@ export function Highlights() {
           </div>
           <h2
             id="highlights-heading"
+            ref={titleRef}
             className="font-semibold tracking-tight text-white"
             style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)' }}
           >
-            Numbers we can back up.
+            <motion.span
+              className="inline-block whitespace-nowrap rounded-md bg-brand-gold px-3 py-1 text-black sm:px-4"
+              initial={false}
+              animate={{
+                clipPath: titleInView ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+              }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.65, 0, 0.35, 1] }}
+            >
+              Numbers
+            </motion.span>{' '}
+            we can back up.
           </h2>
         </ScrollReveal>
 

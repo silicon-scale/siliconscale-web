@@ -1,13 +1,14 @@
 'use client'
 
-import { memo, useEffect, useRef } from 'react'
-import type { CSSProperties } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Instagram, Linkedin, Facebook, X as XIcon, Mail } from 'lucide-react'
 import { useSectionInView } from '@/hooks/useSectionInView'
 import { usePreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
+import { cn } from '@/lib/utils'
 
 /** Lucide icons in the brand-block social row — keep size/stroke identical. */
 const FOOTER_SOCIAL_ICON_SIZE = 20
@@ -57,6 +58,64 @@ function FooterWaveSvg({ d, fill }: { d: string; fill: string }) {
     >
       <path d={d} fill={fill} />
     </svg>
+  )
+}
+
+/** Replaces the literal "DEV" word in the brand-block badge. */
+function FooterStudioIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className={className} aria-hidden>
+      <path d="M216.1 272.3C212.2 269.4 208.3 268 204.5 268L187.1 268L187.1 372.5L204.5 372.5C208.4 372.5 212.3 371.1 216.1 368.2C219.9 365.3 221.9 360.9 221.9 355.1L221.9 285.4C221.9 279.6 219.9 275.2 216.1 272.3zM500.1 96L139.9 96C115.7 96 96.1 115.6 96 139.8L96 500.2C96.1 524.4 115.7 544 139.9 544L500.1 544C524.3 544 543.9 524.4 544 500.2L544 139.8C543.9 115.6 524.3 96 500.1 96zM250.2 355.2C250.2 374 238.6 402.5 201.8 402.5L155.4 402.5L155.4 237L202.8 237C238.2 237 250.2 265.5 250.2 284.3L250.2 355.2zM350.9 266.5L297.6 266.5L297.6 304.9L330.2 304.9L330.2 334.5L297.6 334.5L297.6 372.9L350.9 372.9L350.9 402.5L288.7 402.5C277.5 402.8 268.3 394 268 382.8L268 257.7C267.7 246.6 276.6 237.3 287.7 237L350.9 237L350.9 266.5zM454.5 381.8C441.3 412.5 417.7 406.4 407.1 381.8L368.6 237L401.2 237L430.9 350.7L460.5 237L493.1 237L454.6 381.8z" />
+    </svg>
+  )
+}
+
+/** Sits before "Building scalable digital products." in the bottom bar. */
+function FooterBuildingIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className={className} aria-hidden>
+      <path d="M348 62.7C330.7 52.7 309.3 52.7 292 62.7L207.8 111.3C190.5 121.3 179.8 139.8 179.8 159.8L179.8 261.7L91.5 312.7C74.2 322.7 63.5 341.2 63.5 361.2L63.5 458.5C63.5 478.5 74.2 497 91.5 507L175.8 555.6C193.1 565.6 214.5 565.6 231.8 555.6L320.1 504.6L408.4 555.6C425.7 565.6 447.1 565.6 464.4 555.6L548.5 507C565.8 497 576.5 478.5 576.5 458.5L576.5 361.2C576.5 341.2 565.8 322.7 548.5 312.7L460.2 261.7L460.2 159.8C460.2 139.8 449.5 121.3 432.2 111.3L348 62.7zM296 356.6L296 463.1L207.7 514.1C206.5 514.8 205.1 515.2 203.7 515.2L203.7 409.9L296 356.6zM527.4 357.2C528.1 358.4 528.5 359.8 528.5 361.2L528.5 458.5C528.5 461.4 527 464 524.5 465.4L440.2 514C439 514.7 437.6 515.1 436.2 515.1L436.2 409.8L527.4 357.2zM412.3 159.8L412.3 261.7L320 315L320 208.5L411.2 155.9C411.9 157.1 412.3 158.5 412.3 159.9z" />
+    </svg>
+  )
+}
+
+type FooterLinkProps = {
+  to: string
+  className?: string
+  children: ReactNode
+}
+
+/**
+ * Shared nav-link behavior for the footer columns: the hover slide is a
+ * plain CSS transition, but the slot-machine tilt (rotateX 0→-26deg→0)
+ * needs to reliably run to completion on both a quick mouse hover-and-leave
+ * AND a mobile tap — a pure `:hover`-triggered keyframe would truncate/
+ * reset mid-tilt the moment the pointer leaves, so it's driven by a
+ * JS-toggled class + timeout instead. `triggerFlip` is idempotent (just
+ * re-arms the same timeout), so a touch tap's ghost `mouseenter` on some
+ * mobile browsers can't cause a double-trigger — it just extends the same
+ * one.
+ */
+function FooterLink({ to, className, children }: FooterLinkProps) {
+  const [flipping, setFlipping] = useState(false)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const triggerFlip = () => {
+    setFlipping(true)
+    if (timeoutRef.current !== null) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => setFlipping(false), 500)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
+  return (
+    <Link to={to} className={cn('footer-link', className)} onMouseEnter={triggerFlip} onTouchStart={triggerFlip}>
+      <span className={cn('footer-link-inner', flipping && 'is-flipping')}>{children}</span>
+    </Link>
   )
 }
 
@@ -229,16 +288,48 @@ function FooterComponent() {
         }
 
         .footer-eyebrow {
+          position: relative;
           display: inline-flex;
           align-items: center;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,0.1);
-          padding: 0.4rem 1rem;
+          gap: 0.4rem;
+          overflow: hidden;
+          border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background-color: rgba(255,255,255,0.03);
+          padding: 0.4rem 0.85rem;
           font-size: 0.7rem;
           font-weight: 600;
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.5);
+        }
+        /* Box-level shimmer — a moving neutral light band across the
+           background, not the text. Toggled by motionEnabled in JS
+           (mirrors the .final-cta-glow--accent.is-animated pattern) with a
+           prefers-reduced-motion kill-switch as a second guard. */
+        .footer-eyebrow--shimmer {
+          background-image: linear-gradient(
+            100deg,
+            transparent 30%,
+            rgba(255,255,255,0.08) 46%,
+            rgba(255,255,255,0.16) 50%,
+            rgba(255,255,255,0.08) 54%,
+            transparent 70%
+          );
+          background-repeat: no-repeat;
+          background-size: 220% 100%;
+          animation: footerEyebrowShimmer 3.6s ease-in-out infinite;
+          will-change: background-position;
+        }
+        @keyframes footerEyebrowShimmer {
+          0% { background-position: 160% 0; }
+          100% { background-position: -60% 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .footer-eyebrow--shimmer {
+            animation: none;
+            background-image: none;
+          }
         }
 
         .footer-tagline {
@@ -323,14 +414,16 @@ function FooterComponent() {
           gap: 0.625rem;
         }
         .footer-link {
+          display: inline-block;
           font-size: 0.875rem;
           color: rgba(255,255,255,0.7);
           text-decoration: none;
-          transition: color 0.2s ease, padding-left 0.2s ease;
+          transition: color 0.2s ease, transform 0.2s ease;
+          perspective: 500px;
         }
         .footer-link:hover {
           color: #fff;
-          padding-left: 4px;
+          transform: translateX(4px);
         }
         .footer-link:focus-visible {
           outline: 2px solid var(--focus-ring);
@@ -342,6 +435,32 @@ function FooterComponent() {
         }
         .footer-link--muted:hover {
           color: rgba(255,255,255,0.7);
+        }
+        /* Slot-machine tilt — the rotating element is a separate inner span
+           so it never touches box-model properties (width/padding/margin)
+           that would reflow .footer-links or the grid column around it;
+           only transform moves. Peak angle stays well under 90deg so the
+           front face is always what's on screen — past 90deg you start
+           seeing the back of the element, which without a matching
+           backface reads as a mirrored flash of the text; backface-
+           visibility: hidden is a second guard against that same issue. */
+        .footer-link-inner {
+          display: inline-block;
+          transform-style: preserve-3d;
+          backface-visibility: hidden;
+        }
+        .footer-link-inner.is-flipping {
+          animation: footerLinkTilt 450ms ease-in-out;
+        }
+        @keyframes footerLinkTilt {
+          0% { transform: rotateX(0deg); }
+          50% { transform: rotateX(-26deg); }
+          100% { transform: rotateX(0deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .footer-link-inner.is-flipping {
+            animation: none;
+          }
         }
 
         .footer-bottom-wrap {
@@ -422,11 +541,13 @@ function FooterComponent() {
       <div className="footer-body">
         <div className="footer-top">
           <ScrollReveal className="footer-brand">
-            <span className="footer-eyebrow">Dev Studio</span>
+            <span className={cn('footer-eyebrow', motionEnabled && 'footer-eyebrow--shimmer')}>
+              <FooterStudioIcon className="h-6 w-6 shrink-0" />
+              Studio
+            </span>
 
             <p className="footer-tagline">
-              Custom systems, Shopify stores, and AI agents for businesses that need it to
-              work.
+              We don&apos;t build websites. We build what businesses run on.
             </p>
 
             <div className="footer-socials">
@@ -461,18 +582,10 @@ function FooterComponent() {
               <div>
                 <h4 className="footer-col-title">Menu</h4>
                 <div className="footer-links">
-                  <Link to="/" className="footer-link">
-                    Home
-                  </Link>
-                  <Link to="/about" className="footer-link">
-                    About
-                  </Link>
-                  <Link to="/work" className="footer-link">
-                    Work
-                  </Link>
-                  <Link to="/team" className="footer-link">
-                    Team
-                  </Link>
+                  <FooterLink to="/">Home</FooterLink>
+                  <FooterLink to="/about">About</FooterLink>
+                  <FooterLink to="/work">Work</FooterLink>
+                  <FooterLink to="/team">Team</FooterLink>
                 </div>
               </div>
             </ScrollReveal>
@@ -481,18 +594,10 @@ function FooterComponent() {
               <div>
                 <h4 className="footer-col-title">Quick Links</h4>
                 <div className="footer-links">
-                  <Link to="/services" className="footer-link">
-                    Services
-                  </Link>
-                  <Link to="/tool-stack" className="footer-link">
-                    Tool Stack
-                  </Link>
-                  <Link to="/blog" className="footer-link">
-                    Blog
-                  </Link>
-                  <Link to="/contact" className="footer-link">
-                    Contact
-                  </Link>
+                  <FooterLink to="/services">Services</FooterLink>
+                  <FooterLink to="/tool-stack">Tool Stack</FooterLink>
+                  <FooterLink to="/blog">Blog</FooterLink>
+                  <FooterLink to="/contact">Contact</FooterLink>
                 </div>
               </div>
             </ScrollReveal>
@@ -501,18 +606,10 @@ function FooterComponent() {
               <div>
                 <h4 className="footer-col-title">Services</h4>
                 <nav className="footer-links">
-                  <Link to="/services#development" className="footer-link">
-                    Custom Systems
-                  </Link>
-                  <Link to="/services#shopify-headless" className="footer-link">
-                    Shopify Development
-                  </Link>
-                  <Link to="/services#ai-agents" className="footer-link">
-                    AI & Automation
-                  </Link>
-                  <Link to="/services#integrations" className="footer-link">
-                    Integrations
-                  </Link>
+                  <FooterLink to="/services#development">Custom Systems</FooterLink>
+                  <FooterLink to="/services#shopify-headless">Shopify Development</FooterLink>
+                  <FooterLink to="/services#ai-agents">AI & Automation</FooterLink>
+                  <FooterLink to="/services#integrations">Integrations</FooterLink>
                 </nav>
               </div>
             </ScrollReveal>
@@ -521,15 +618,11 @@ function FooterComponent() {
               <div>
                 <h4 className="footer-col-title">Legal</h4>
                 <div className="footer-links">
-                  <Link to="/privacy" className="footer-link">
-                    Privacy Policy
-                  </Link>
-                  <Link to="/terms" className="footer-link">
-                    Terms of Service
-                  </Link>
-                  <Link to="/admin" className="footer-link footer-link--muted">
+                  <FooterLink to="/privacy">Privacy Policy</FooterLink>
+                  <FooterLink to="/terms">Terms of Service</FooterLink>
+                  <FooterLink to="/admin" className="footer-link--muted">
                     Admin
-                  </Link>
+                  </FooterLink>
                 </div>
               </div>
             </ScrollReveal>
@@ -545,7 +638,10 @@ function FooterComponent() {
           <span className="footer-bottom-text">
             © {new Date().getFullYear()} SiliconScale Tech. All rights reserved.
           </span>
-          <span className="footer-bottom-text">Building scalable digital products.</span>
+          <span className="footer-bottom-text inline-flex items-center gap-0.5">
+            <FooterBuildingIcon className="h-4 w-4 shrink-0 mt-[0.8px]" />
+            Building scalable digital products.
+          </span>
         </ScrollReveal>
       </div>
     </footer>

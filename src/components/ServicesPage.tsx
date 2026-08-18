@@ -988,7 +988,6 @@ export default function ServicesPage() {
       <PageHero className="pt-36 sm:pt-40 lg:pt-44" showGlow={false}>
         <div className="services-shell relative z-10 mx-auto max-w-6xl px-6 lg:px-10">
           <ScrollReveal className="mb-14">
-            <SectionEyebrow variant="pillMono">What we do</SectionEyebrow>
             <h1
               id="services-heading"
               className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"

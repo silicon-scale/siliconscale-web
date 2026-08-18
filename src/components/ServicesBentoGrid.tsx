@@ -3,12 +3,14 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ScanSearch, Mic, Search, ShoppingBag } from 'lucide-react'
+import { Mic, Search, ShoppingBag } from 'lucide-react'
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import wholeThingIllustration from '@/assets/24070814_bwink_edu_01_single_12_compressed.webp'
 import { BrandButton } from '@/components/ui/BrandButton'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { useSectionInView } from '@/hooks/useSectionInView'
-import { REVEAL_EASE } from '@/lib/motion'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
+import { REVEAL_EASE, COUNT_UP_DURATION_S, easeRevealProgress } from '@/lib/motion'
 import { FOCUS_RING } from '@/lib/focus'
 import { trackEvent } from '@/utils/analytics'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
@@ -316,6 +318,32 @@ export function ServicesBentoGrid() {
     setPerfDebugLoop('bento', loopActive ? 'active' : 'paused')
   }, [loopActive])
 
+  // "Progress, every week" donut — fills from progressStart to its target
+  // (62%) the first time it's scrolled into view. The center label is
+  // derived from this same state (not a separate CountUpNumber) so the
+  // ring and the label can never drift out of sync with each other.
+  const progressStart = 10
+  const progressTarget = PROGRESS[0].value
+  const { ref: progressRef, inView: progressInView } = useInViewOnce<HTMLDivElement>({
+    disabled: !!prefersReduced,
+    variant: 'countUp',
+  })
+  const [progressValue, setProgressValue] = useState(prefersReduced ? progressTarget : progressStart)
+
+  useEffect(() => {
+    if (!progressInView || prefersReduced) return
+    let rafId = 0
+    const startTime = performance.now()
+    const tick = (now: number) => {
+      const elapsed = now - startTime
+      const linear = Math.min(1, elapsed / (COUNT_UP_DURATION_S * 1000))
+      setProgressValue(progressStart + (progressTarget - progressStart) * easeRevealProgress(linear))
+      if (linear < 1) rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [progressInView, prefersReduced, progressStart, progressTarget])
+
   const goToContact = () => {
     trackEvent('cta_click', { location: 'services_bento' })
     navigate('/contact')
@@ -423,34 +451,30 @@ export function ServicesBentoGrid() {
         <div className={`ss-bento${loopActive ? '' : ' is-loops-paused'}`}>
           <ScrollReveal staggerIndex={3} className={`ss-bento-left flex flex-col ${CARD_SURFACE}`}>
             <div className="p-4 pb-0">
-              <div className="overflow-hidden rounded-2xl bg-[#f5f5f3]">
-                <div className="flex items-center gap-1.5 border-b border-neutral-200 px-3 py-2.5">
-                  <span className="h-2 w-2 rounded-full" style={{ background: '#ff5f57' }} />
-                  <span className="h-2 w-2 rounded-full" style={{ background: '#febc2e' }} />
-                  <span className="h-2 w-2 rounded-full" style={{ background: '#28c840' }} />
-                  <div className="ml-3 h-1.5 w-28 rounded-full bg-neutral-300" />
-                </div>
-                <div className="p-5">
-                  <div className="mb-2.5 h-2 w-40 rounded-full bg-neutral-300" />
-                  <div className="mb-1.5 flex gap-1.5">
-                    <div className="h-1.5 w-16 rounded-full bg-neutral-200" />
-                    <div className="h-1.5 w-16 rounded-full bg-neutral-200" />
-                  </div>
-                  <div className="mb-4 h-1.5 w-24 rounded-full bg-neutral-200" />
-                  <div className="flex aspect-[4/3] items-center justify-center rounded-xl bg-neutral-200/70">
-                    <ScanSearch size={26} className="text-neutral-400" aria-hidden />
-                  </div>
-                </div>
+              <div className="relative h-64 overflow-hidden rounded-2xl bg-[#f5f5f3] sm:h-72">
+                {/* Blurred, scaled-up backdrop fills the letterboxed space around the
+                    contained image below instead of leaving flat white margins. */}
+                <img
+                  src={wholeThingIllustration}
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 h-full w-full scale-125 object-cover blur-2xl"
+                />
+                <img
+                  src={wholeThingIllustration}
+                  alt=""
+                  className="relative h-full w-full object-contain p-12"
+                />
               </div>
             </div>
 
             <div className="ss-bento-dot-grid mt-6 flex flex-1 flex-col justify-end p-8 pt-8">
               <h3 className="mb-2.5 font-sora text-xl font-semibold tracking-tight text-white">
-                Design and development
+                We build the whole thing.
               </h3>
               <p className="mb-6 max-w-xs text-[15px] leading-relaxed text-muted">
-                We design, build, and ship the whole product — custom software, headless Shopify, AI
-                agents — so you&apos;re not hiring five different people to do it.
+                We design, build, and ship the product — so you&apos;re not coordinating five
+                different teams.
               </p>
               <BrandButton onClick={goToContact} className={FOCUS_RING}>
                 Start a project
@@ -460,20 +484,24 @@ export function ServicesBentoGrid() {
 
           <ScrollReveal staggerIndex={4} className={`ss-bento-small flex flex-col p-6 ${CARD_SURFACE}`}>
             <h3 className="mb-6 font-sora text-lg font-semibold leading-snug tracking-tight text-white">
-              Real progress, every week.
+              Progress, every week
             </h3>
             <div className="flex flex-1 items-center justify-center">
-              <div className="relative h-32 w-32">
+              <div ref={progressRef} className="relative h-32 w-32">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={[...PROGRESS]}
+                      data={[
+                        { name: 'done', value: progressValue, color: PROGRESS[0].color },
+                        { name: 'left', value: 100 - progressValue, color: PROGRESS[1].color },
+                      ]}
                       dataKey="value"
                       innerRadius={40}
                       outerRadius={60}
                       startAngle={90}
                       endAngle={-270}
                       stroke="none"
+                      isAnimationActive={false}
                     >
                       {PROGRESS.map((d) => (
                         <Cell key={d.name} fill={d.color} />
@@ -482,8 +510,11 @@ export function ServicesBentoGrid() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-bagel text-white" style={{ fontSize: '1.4rem' }}>
-                    62%
+                  <span
+                    className="font-bagel tabular-nums text-white"
+                    style={{ fontSize: '1.4rem' }}
+                  >
+                    {Math.round(progressValue)}%
                   </span>
                 </div>
               </div>
@@ -500,6 +531,12 @@ export function ServicesBentoGrid() {
               <h3 className="font-sora text-lg font-semibold tracking-tight text-white">
                 Hosting, deployment &amp; maintenance
               </h3>
+              <p className="mt-2 text-[15px] font-medium text-white/80">
+                It doesn&apos;t stop at launch.
+              </p>
+              <p className="mt-1 max-w-xs text-[15px] leading-relaxed text-muted">
+                We deploy, monitor, maintain, and improve what we build.
+              </p>
             </div>
             <div
               className="pointer-events-none absolute inset-0"
@@ -544,7 +581,7 @@ export function ServicesBentoGrid() {
             className={`ss-bento-components relative min-h-[220px] overflow-hidden p-6 ${CARD_SURFACE}`}
           >
             <h3 className="relative z-10 max-w-[70%] font-sora text-lg font-semibold leading-snug tracking-tight text-white">
-              Components, dashboards, and everything else
+              One team. End to end.
             </h3>
             <svg
               className="absolute inset-0 h-full w-full"

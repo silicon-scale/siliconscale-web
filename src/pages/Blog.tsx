@@ -2,43 +2,21 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  Bot,
-  Code2,
-  Layers,
-  Lock,
-  Search,
-  Shield,
-  ShoppingBag,
-  Sparkles,
-  Users,
-  type LucideIcon,
-} from 'lucide-react'
+import { Clock, Layers, Search } from 'lucide-react'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { ScrollRevealGroup } from '@/components/ui/ScrollRevealGroup'
 import { PageHero } from '@/components/ui/PageHero'
 import { listPublishedPosts } from '@/lib/blog-api'
 import {
   formatJournalDate,
-  getFeaturedHighlights,
+  formatRelativeTime,
   JOURNAL_AUTHOR,
   matchesJournalSearch,
   splitFeaturedAndArchive,
-  type FeaturedHighlightIcon,
 } from '@/lib/blog-journal'
 import { resolveMediaUrl } from '@/lib/media-url'
 import { FOCUS_RING } from '@/lib/focus'
 import type { Post } from '@/types/post'
-
-const HIGHLIGHT_ICONS: Record<FeaturedHighlightIcon, LucideIcon> = {
-  sparkles: Sparkles,
-  users: Users,
-  shield: Shield,
-  lock: Lock,
-  code: Code2,
-  shopping: ShoppingBag,
-  bot: Bot,
-  layers: Layers,
-}
 
 export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([])
@@ -118,11 +96,7 @@ export default function Blog() {
           </div>
         ) : (
           <>
-            {!searching && featured ? (
-              <ScrollReveal delay={0.08}>
-                <FeaturedArticle post={featured} />
-              </ScrollReveal>
-            ) : null}
+            {!searching && featured ? <FeaturedArticle post={featured} /> : null}
 
             <div className="journal-archive">
               <div className="journal-archive-bar">
@@ -177,9 +151,6 @@ export default function Blog() {
 
 function FeaturedArticle({ post }: { post: Post }) {
   const dateLabel = formatJournalDate(post.published_at ?? post.created_at)
-  const highlights = getFeaturedHighlights(post)
-  const left = highlights.slice(0, 2)
-  const right = highlights.slice(2, 4)
   const category = post.tags[0]?.trim() || 'Cover story'
   const reading =
     post.reading_time_minutes === 1
@@ -188,44 +159,33 @@ function FeaturedArticle({ post }: { post: Post }) {
 
   return (
     <Link to={`/blog/${post.slug}`} className={`journal-featured ${FOCUS_RING}`}>
-      <div className="journal-featured-stage" aria-hidden>
-        <div className="journal-featured-points journal-featured-points--left">
-          {left.map((item) => (
-            <FeatureHighlight key={item.id} icon={item.icon} label={item.label} />
-          ))}
-        </div>
-
-        <div className="journal-featured-frame">
-          <div className="journal-featured-media">
-            {post.cover_image_url ? (
-              <img
-                src={resolveMediaUrl(post.cover_image_url)}
-                alt=""
-                loading="eager"
-                decoding="async"
-                width={720}
-                height={720}
-              />
-            ) : (
-              <div className="journal-featured-fallback" aria-hidden>
-                SS
-              </div>
-            )}
+      <div className="journal-featured-media">
+        {post.cover_image_url ? (
+          <img
+            src={resolveMediaUrl(post.cover_image_url)}
+            alt=""
+            loading="eager"
+            decoding="async"
+            width={1400}
+            height={900}
+          />
+        ) : (
+          <div className="journal-featured-fallback" aria-hidden>
+            SS
           </div>
-        </div>
-
-        <div className="journal-featured-points journal-featured-points--right">
-          {right.map((item) => (
-            <FeatureHighlight key={item.id} icon={item.icon} label={item.label} />
-          ))}
-        </div>
+        )}
       </div>
 
-      <div className="journal-featured-copy">
-        <span className="journal-cover-pill">{category}</span>
-        <h2 className="journal-featured-title">{post.title}</h2>
-        {post.excerpt ? <p className="journal-featured-excerpt">{post.excerpt}</p> : null}
-        <div className="journal-featured-meta">
+      {/* Each piece stagger-reveals on first view via one shared IO (CSS
+          transform/opacity only — no per-frame JS, cheap even on low-end
+          devices) instead of the whole card fading in as a single block. */}
+      <ScrollRevealGroup className="journal-featured-copy">
+        <span className="journal-cover-pill scroll-reveal-item">{category}</span>
+        <h2 className="journal-featured-title scroll-reveal-item">{post.title}</h2>
+        {post.excerpt ? (
+          <p className="journal-featured-excerpt scroll-reveal-item">{post.excerpt}</p>
+        ) : null}
+        <div className="journal-featured-meta scroll-reveal-item">
           <AuthorMark />
           <span className="journal-meta-sep" aria-hidden>
             ·
@@ -236,31 +196,14 @@ function FeaturedArticle({ post }: { post: Post }) {
           </span>
           <span>{reading}</span>
         </div>
-      </div>
+      </ScrollRevealGroup>
     </Link>
   )
 }
 
-function FeatureHighlight({
-  icon,
-  label,
-}: {
-  icon: FeaturedHighlightIcon
-  label: string
-}) {
-  const Icon = HIGHLIGHT_ICONS[icon]
-  return (
-    <div className="journal-point">
-      <span className="journal-point-icon">
-        <Icon size={14} strokeWidth={1.75} aria-hidden />
-      </span>
-      <span className="journal-point-label">{label}</span>
-    </div>
-  )
-}
-
 function ArchiveCard({ post }: { post: Post }) {
-  const dateLabel = formatJournalDate(post.published_at ?? post.created_at)
+  const relativeTime = formatRelativeTime(post.published_at ?? post.created_at)
+  const category = post.tags[0]?.trim()
 
   return (
     <Link to={`/blog/${post.slug}`} className={`journal-card ${FOCUS_RING}`}>
@@ -276,29 +219,29 @@ function ArchiveCard({ post }: { post: Post }) {
           />
         ) : (
           <div className="journal-card-fallback" aria-hidden>
-            SS
+            <div className="journal-card-fallback-grid" />
+            <Layers size={32} strokeWidth={1.25} className="journal-card-fallback-icon" />
           </div>
         )}
+        {category ? <span className="journal-card-tag">{category}</span> : null}
       </div>
       <div className="journal-card-body">
-        {dateLabel ? (
-          <time className="journal-card-date" dateTime={post.published_at ?? post.created_at}>
-            {dateLabel}
-          </time>
+        {relativeTime ? (
+          <span className="journal-card-time">
+            <Clock size={13} strokeWidth={1.75} aria-hidden />
+            <time dateTime={post.published_at ?? post.created_at}>{relativeTime}</time>
+          </span>
         ) : null}
         <h3 className="journal-card-title">{post.title}</h3>
         {post.excerpt ? <p className="journal-card-excerpt">{post.excerpt}</p> : null}
-        <div className="journal-card-author">
-          <AuthorMark compact />
-        </div>
       </div>
     </Link>
   )
 }
 
-function AuthorMark({ compact = false }: { compact?: boolean }) {
+function AuthorMark() {
   return (
-    <span className={`journal-author${compact ? ' journal-author--compact' : ''}`}>
+    <span className="journal-author">
       <span className="journal-author-avatar" aria-hidden>
         {JOURNAL_AUTHOR.initials}
       </span>
@@ -356,88 +299,41 @@ function JournalStyles() {
         color: var(--text-muted);
       }
 
-      /* ── Featured cover ── */
+      /* ── Featured cover — the image IS the card, full-bleed; copy sits
+         directly on top of it (no box/blur), readable via a plain gradient
+         scrim behind it instead. ── */
       .journal-featured {
         display: block;
         position: relative;
         overflow: hidden;
+        height: clamp(340px, 48vw, 560px);
         margin-bottom: clamp(3.5rem, 8vw, 5.5rem);
-        padding: clamp(1.5rem, 4vw, 2.75rem);
         border-radius: 28px;
         text-decoration: none;
         color: inherit;
-        background:
-          radial-gradient(ellipse 70% 65% at 50% 42%, #2a2a2a 0%, #1a1a1a 52%, #121212 100%);
-        border: 1px solid rgba(255,255,255,0.07);
+        background: #f1f1f1;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 30px 70px rgba(0,0,0,0.35);
         transition: border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
       }
       .journal-featured:hover {
-        border-color: rgba(255,255,255,0.14);
-      }
-      .journal-featured-stage {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        align-items: center;
-        margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
-      }
-      @media (min-width: 900px) {
-        .journal-featured-stage {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
-          gap: 1.25rem 1.5rem;
-          min-height: 22rem;
-        }
-      }
-      .journal-featured-points {
-        display: none;
-        flex-direction: column;
-        gap: 1.75rem;
-      }
-      @media (min-width: 900px) {
-        .journal-featured-points { display: flex; }
-        .journal-featured-points--left { align-items: flex-start; padding-right: 0.5rem; }
-        .journal-featured-points--right { align-items: flex-end; padding-left: 0.5rem; text-align: right; }
-        .journal-featured-points--right .journal-point { flex-direction: row-reverse; }
-      }
-      .journal-point {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.65rem;
-        max-width: 11.5rem;
-      }
-      .journal-point-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.04);
-        color: rgb(var(--brand-gold-rgb) / 0.9);
-        flex-shrink: 0;
-      }
-      .journal-point-label {
-        font-size: 0.78rem;
-        line-height: 1.35;
-        color: rgba(255,255,255,0.55);
-      }
-      .journal-featured-frame {
-        justify-self: center;
-        width: min(100%, 22rem);
-        aspect-ratio: 1;
-        padding: 0.55rem;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+        border-color: rgba(0,0,0,0.14);
       }
       .journal-featured-media {
-        width: 100%;
-        height: 100%;
+        position: absolute;
+        inset: 0;
         overflow: hidden;
-        border-radius: 16px;
-        background: #0f0f0f;
+        background: #f1f1f1;
+      }
+      /* Plain dark gradient scrim (no blur) behind the copy — keeps the
+         text legible over whatever the cover photo looks like without a
+         visible frosted-glass box. */
+      .journal-featured-media::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.32) 38%, transparent 68%);
+        pointer-events: none;
       }
       .journal-featured-media img {
         width: 100%;
@@ -453,21 +349,24 @@ function JournalStyles() {
         transform: scale(1.02);
         filter: brightness(1.04);
       }
-      .journal-featured-fallback,
-      .journal-card-fallback {
+      .journal-featured-fallback {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 100%;
         height: 100%;
-        min-height: 12rem;
         font-family: 'Instrument Serif', Georgia, serif;
         font-size: 2rem;
-        color: rgba(255,255,255,0.18);
+        color: rgba(0,0,0,0.15);
         letter-spacing: 0.06em;
-        background: #141414;
+        background: #f1f1f1;
       }
       .journal-featured-copy {
+        position: absolute;
+        left: clamp(1.75rem, 4vw, 2.75rem);
+        right: clamp(1.75rem, 4vw, 2.75rem);
+        bottom: clamp(1.5rem, 3.5vw, 2.5rem);
+        z-index: 2;
         max-width: 34rem;
       }
       .journal-cover-pill {
@@ -475,34 +374,34 @@ function JournalStyles() {
         align-items: center;
         padding: 0.35rem 0.75rem;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.22);
+        background: rgba(255,255,255,0.12);
         font-family: 'DM Mono', ui-monospace, monospace;
         font-size: 0.65rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.62);
+        color: rgba(255,255,255,0.85);
       }
       .journal-featured-title {
-        margin: 1rem 0 0;
+        margin: 0.85rem 0 0;
         font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
         font-weight: 400;
-        font-size: clamp(1.85rem, 4.2vw, 2.85rem);
-        line-height: 1.12;
+        font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+        line-height: 1.14;
         letter-spacing: -0.015em;
         color: #fff;
         transition: color 0.35s ease;
       }
       .journal-featured:hover .journal-featured-title {
-        color: rgb(var(--brand-gold-rgb) / 0.95);
+        color: rgb(var(--brand-gold-rgb) / 1);
       }
       .journal-featured-excerpt {
-        margin: 0.85rem 0 0;
-        font-size: 0.95rem;
-        line-height: 1.65;
-        color: var(--text-muted);
+        margin: 0.6rem 0 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: rgba(255,255,255,0.75);
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
@@ -511,12 +410,12 @@ function JournalStyles() {
         flex-wrap: wrap;
         align-items: center;
         gap: 0.45rem;
-        margin-top: 1.25rem;
-        font-size: 0.82rem;
-        color: rgba(255,255,255,0.5);
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.65);
       }
       .journal-meta-sep {
-        color: rgba(255,255,255,0.28);
+        color: rgba(255,255,255,0.35);
       }
 
       /* ── Archive bar + search ── */
@@ -653,6 +552,53 @@ function JournalStyles() {
         transform: scale(1.02);
         filter: brightness(1.05);
       }
+      /* Category pill floating over the top-right corner of the thumbnail. */
+      .journal-card-tag {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.65rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(10,10,10,0.65);
+        backdrop-filter: blur(6px);
+        font-family: 'DM Mono', ui-monospace, monospace;
+        font-size: 0.6rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.75);
+      }
+      /* Fallback for posts without a cover image — dot grid + mark instead
+         of a flat placeholder block. */
+      .journal-card-fallback {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        min-height: 12rem;
+        overflow: hidden;
+        background: #141414;
+      }
+      .journal-card-fallback-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.5;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+        background-size: 22px 22px;
+        mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, transparent 100%);
+        -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, transparent 100%);
+      }
+      .journal-card-fallback-icon {
+        position: relative;
+        color: rgba(255,255,255,0.22);
+      }
       .journal-card-body {
         display: flex;
         flex-direction: column;
@@ -660,12 +606,18 @@ function JournalStyles() {
         padding-top: 1.05rem;
         flex: 1;
       }
-      .journal-card-date {
+      .journal-card-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
         font-family: 'DM Mono', ui-monospace, monospace;
-        font-size: 0.68rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
         color: var(--text-subtle);
+      }
+      .journal-card-time svg {
+        flex-shrink: 0;
+        opacity: 0.7;
       }
       .journal-card-title {
         margin: 0;
@@ -690,10 +642,6 @@ function JournalStyles() {
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      .journal-card-author {
-        margin-top: auto;
-        padding-top: 0.85rem;
-      }
 
       .journal-author {
         display: inline-flex;
@@ -714,14 +662,9 @@ function JournalStyles() {
         font-size: 0.55rem;
         letter-spacing: 0.04em;
       }
-      .journal-author--compact .journal-author-avatar {
-        width: 1.35rem;
-        height: 1.35rem;
-        font-size: 0.5rem;
-      }
       .journal-author-name {
         font-size: 0.82rem;
-        color: rgba(255,255,255,0.55);
+        color: rgba(255,255,255,0.75);
       }
 
       .journal-empty,
