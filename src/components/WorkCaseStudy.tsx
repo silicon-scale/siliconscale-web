@@ -726,9 +726,6 @@ function CaseStudyBody({ project }: { project: Project }) {
             <RevealBlock>
               <header className="cs-header">
                 <div className="cs-header-copy">
-                  <span className={cn('cs-tag', project.isSample && 'cs-tag--sample')}>
-                    {project.tag}
-                  </span>
                   <h1 id="cs-title" className="cs-title">
                     {project.title}
                   </h1>
@@ -754,7 +751,6 @@ function CaseStudyBody({ project }: { project: Project }) {
         </PageHero>
 
         <div className="cs-shell">
-          <div className="cs-header-divider" role="separator" aria-hidden />
 
           {/* 2 — Intro */}
           <RevealBlock>
@@ -794,7 +790,6 @@ function CaseStudyBody({ project }: { project: Project }) {
         <CenteredTextBand
           id="cs-challenges-heading"
           title="Challenges"
-          icon={<ChallengesIcon />}
         >
           {project.challenge.body.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
@@ -818,7 +813,6 @@ function CaseStudyBody({ project }: { project: Project }) {
         <CenteredTextBand
           id="cs-solutions-heading"
           title="Solutions"
-          icon={<SolutionsIcon />}
         >
           {project.solution.body.map((paragraph) => (
             <p key={paragraph}>{renderRichText(paragraph)}</p>

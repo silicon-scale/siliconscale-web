@@ -102,7 +102,6 @@ function WorkListing() {
       <PageHero className="pt-[7.5rem]">
         <div className="work-shell">
           <ScrollReveal className="work-header">
-            <SectionEyebrow variant="pillMono">Portfolio</SectionEyebrow>
             <h1 id="work-heading">Results you can measure.</h1>
             <p>
               Every project on this page is live — click through and see it running, not a

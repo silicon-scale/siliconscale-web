@@ -422,9 +422,6 @@ export function WorkProjectCard({
       </div>
 
       <div className="work-card-panel">
-        <span className={cn('work-row-tag', project.isSample && 'work-row-tag--sample')}>
-          {project.tag}
-        </span>
         <h2 className="work-row-title">{project.title}</h2>
         <span className="work-row-services">{project.services}</span>
         <p className="work-row-desc">{project.description}</p>
