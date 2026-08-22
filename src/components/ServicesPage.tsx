@@ -294,6 +294,20 @@ const SERVICE_CARDS: ServiceCard[] = [
 ]
 
 const CARD_COUNT = SERVICE_CARDS.length
+
+/**
+ * ONE signature palette, used identically on every card — no more
+ * per-card hue-coding. Warm terracotta/brass, in the register of
+ * Kempegowda (Bengaluru) Terminal 2's canopy: clay roofing, brass
+ * signage, timber lattice, daylight filtering through a weave.
+ */
+const RT_ACCENT = '#C6784B' // terracotta / clay
+const RT_BRASS = '#B99567' // brass signage line
+const RT_CARD_BG =
+  'linear-gradient(165deg, rgba(43,32,23,0.92) 0%, rgba(12,10,8,0.98) 62%)'
+const RT_LOCKED_BG =
+  'linear-gradient(165deg, rgba(36,36,34,0.85) 0%, rgba(12,10,8,0.98) 62%)'
+
 const TITLE_DESKTOP: React.CSSProperties = {
   fontSize: 'clamp(2.4rem, 5vw, 3.6rem)',
   letterSpacing: '-0.03em',
@@ -309,26 +323,34 @@ const TITLE_MOBILE: React.CSSProperties = {
 
 function ServiceCardBody({
   card,
+  index,
   onCta,
   titleStyle,
 }: {
   card: ServiceCard
+  index: number
   onCta: () => void
   titleStyle: React.CSSProperties
 }) {
   return (
     <>
-      {/* Always mounted — lead visibility via .reel-card.is-lead opacity (no DOM churn) */}
-      <div
-        className="card-watermark"
-        aria-hidden="true"
-        style={{ ['--wm-accent' as string]: card.accent }}
-      >
-        <div className="card-watermark-glyph">{card.icon(`${card.id}-wm`)}</div>
+      {/* Canopy — a woven lattice with a slow daylight sweep, standing in for
+          per-card icon art. One shared motif, identical on every card. */}
+      <div className="card-canopy" aria-hidden="true" />
+
+      {/* Hairline frame + corner ticks — echoes an instrument bezel, not a decoration */}
+      <div className="card-bezel" aria-hidden="true" />
+
+      {/* Gate plaque — small brass signage numeral, the only "icon" left */}
+      <div className="card-plaque" aria-hidden="true">
+        <span className="card-plaque-number">{String(index + 1).padStart(2, '0')}</span>
       </div>
 
       <div className="card-copy">
-        <p className="service-pill">{card.eyebrow}</p>
+        <div className="service-pill-row">
+          <span className="service-index-tag">{String(index + 1).padStart(2, '0')}</span>
+          <p className="service-pill">{card.eyebrow}</p>
+        </div>
         <h2 className="mt-4 font-extrabold" style={titleStyle}>
           {card.title}
         </h2>
@@ -350,21 +372,11 @@ function ServiceCardBody({
         {card.locked ? (
           <span className="coming-soon-badge">Coming Soon</span>
         ) : (
-          <button
-            type="button"
-            onClick={onCta}
-            className="service-cta"
-            style={{ backgroundColor: card.accent, borderColor: 'rgba(0,0,0,0.15)' }}
-          >
-            <span className="service-cta-badge" />
+          <button type="button" onClick={onCta} className="service-cta">
             {card.cta}
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </button>
         )}
-      </div>
-
-      <div className="icon-wrap">
-        <div className="icon-shell">{card.icon(`${card.id}-badge`)}</div>
       </div>
     </>
   )
@@ -519,15 +531,16 @@ function ReelCard({
         y,
         zIndex,
         pointerEvents,
-        ['--accent' as string]: card.accent,
+        ['--accent' as string]: RT_ACCENT,
         backgroundColor: '#0a0a0a',
-        backgroundImage: card.bg,
+        backgroundImage: card.locked ? RT_LOCKED_BG : RT_CARD_BG,
       }}
       layout={false}
     >
       <div className="stack-inner">
         <ServiceCardBody
           card={card}
+          index={index}
           onCta={onCta}
           titleStyle={mode === 'mobile' ? TITLE_MOBILE : TITLE_DESKTOP}
         />
@@ -577,6 +590,12 @@ const ServiceCardReel = memo(function ServiceCardReel({
     return ((p - startHold) / (1 - startHold - endHold)) * max
   })
 
+  const [railIndex, setRailIndex] = React.useState(0)
+  useMotionValueEvent(activeFloat, 'change', (v) => {
+    const rounded = Math.round(v)
+    setRailIndex((prev) => (prev === rounded ? prev : rounded))
+  })
+
   return (
     <div
       ref={runwayRef}
@@ -599,6 +618,22 @@ const ServiceCardReel = memo(function ServiceCardReel({
       ))}
 
       <div className="reel-sticky">
+        {/* Progress rail — reads the runway position, writes nothing back into it */}
+        {mode === 'desktop' ? (
+          <div
+            className="reel-rail"
+            aria-hidden="true"
+            style={{ ['--accent' as string]: RT_ACCENT }}
+          >
+            {cards.map((card, i) => (
+              <span
+                key={`rail-${card.id}`}
+                className={`reel-rail-dot${i === railIndex ? ' is-active' : ''}`}
+              />
+            ))}
+          </div>
+        ) : null}
+
         <div className="reel-frame">
           {cards.map((card, index) => (
             <ReelCard
@@ -625,19 +660,19 @@ function StaticServiceList({
 }) {
   return (
     <div className="reel-static">
-      {cards.map((card) => (
+      {cards.map((card, i) => (
         <article
           key={card.id}
           id={card.id}
           className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
           style={{
-            ['--accent' as string]: card.accent,
+            ['--accent' as string]: RT_ACCENT,
             backgroundColor: '#0a0a0a',
-            backgroundImage: card.bg,
+            backgroundImage: card.locked ? RT_LOCKED_BG : RT_CARD_BG,
           }}
         >
           <div className="stack-inner">
-            <ServiceCardBody card={card} onCta={onCta} titleStyle={TITLE_MOBILE} />
+            <ServiceCardBody card={card} index={i} onCta={onCta} titleStyle={TITLE_MOBILE} />
           </div>
         </article>
       ))}
@@ -663,13 +698,13 @@ function ScrollRevealServiceList({
           staggerIndex={i}
           className={`reel-static-card is-lead${card.locked ? ' is-locked' : ''}`}
           style={{
-            ['--accent' as string]: card.accent,
+            ['--accent' as string]: RT_ACCENT,
             backgroundColor: '#0a0a0a',
-            backgroundImage: card.bg,
+            backgroundImage: card.locked ? RT_LOCKED_BG : RT_CARD_BG,
           }}
         >
           <div className="stack-inner">
-            <ServiceCardBody card={card} onCta={onCta} titleStyle={TITLE_MOBILE} />
+            <ServiceCardBody card={card} index={i} onCta={onCta} titleStyle={TITLE_MOBILE} />
           </div>
         </ScrollReveal>
       ))}
@@ -736,6 +771,37 @@ export default function ServicesPage() {
           top: 140px;
           z-index: 2;
         }
+
+        /* Progress rail — a quiet vertical index beside the runway, like a
+           model-lineup indicator. Purely a read-out of railIndex; never
+           influences activeFloat or the reel physics above. */
+        .reel-rail {
+          position: absolute;
+          right: calc(100% + 22px);
+          top: 50%;
+          transform: translateY(-50%);
+          display: none;
+          flex-direction: column;
+          gap: 10px;
+          z-index: 3;
+        }
+        .reel-rail-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 999px;
+          background: rgba(255,255,255,0.16);
+          transition: transform 320ms cubic-bezier(.16,1,.3,1), background 320ms ease,
+            box-shadow 320ms ease;
+        }
+        .reel-rail-dot.is-active {
+          background: var(--accent);
+          transform: scale(1.6);
+          box-shadow: 0 0 12px 1px color-mix(in srgb, var(--accent) 55%, transparent);
+        }
+        @media (min-width: 1280px) {
+          .reel-rail { display: flex; }
+        }
+
         .reel-frame {
           position: relative;
           max-width: 1120px;
@@ -774,66 +840,160 @@ export default function ServicesPage() {
         .reel-card:not(.is-live) {
           filter: none;
         }
-        .stack-inner {
-          position: relative;
-          padding: 58px 56px;
-          min-height: 640px;
-          height: 100%;
-          display: grid;
-          grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
-          gap: 24px;
-          align-items: stretch;
-          z-index: 0;
-        }
-        .card-copy,
-        .icon-wrap {
-          position: relative;
-          z-index: 2;
-        }
-        .card-watermark {
+
+        /* Hairline bezel — a single inset rule + four corner ticks, the kind
+           of framing device found on an instrument face or a car's HUD.
+           Pure CSS, no JS, opacity rides with .is-lead like the watermark. */
+        .card-bezel {
           position: absolute;
-          right: -6%;
-          bottom: -10%;
-          width: min(420px, 58%);
-          height: min(420px, 72%);
-          z-index: 0;
+          inset: 18px;
+          z-index: 1;
           pointer-events: none;
-          display: grid;
-          place-items: center;
-          color: var(--wm-accent);
-          /* Always in DOM — only lead card paints it */
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 14px;
           opacity: 0;
-          visibility: hidden;
+          transition: opacity 420ms ease;
         }
-        .reel-card.is-lead .card-watermark,
-        .reel-static-card.is-lead .card-watermark {
+        .reel-card.is-lead .card-bezel,
+        .reel-static-card.is-lead .card-bezel {
           opacity: 1;
-          visibility: visible;
         }
-        .card-watermark::before {
+        .card-bezel::before,
+        .card-bezel::after {
           content: '';
           position: absolute;
-          inset: 8%;
-          border-radius: 50%;
-          background: radial-gradient(
-            circle,
-            color-mix(in srgb, var(--wm-accent) 55%, transparent) 0%,
-            transparent 68%
-          );
-          opacity: 0.35;
+          width: 14px;
+          height: 14px;
+          border: 1px solid rgba(255,255,255,0.16);
         }
-        .card-watermark-glyph {
+        .card-bezel::before {
+          top: -1px;
+          left: -1px;
+          border-right: 0;
+          border-bottom: 0;
+          border-top-left-radius: 4px;
+        }
+        .card-bezel::after {
+          bottom: -1px;
+          right: -1px;
+          border-left: 0;
+          border-top: 0;
+          border-bottom-right-radius: 4px;
+        }
+
+        .stack-inner {
           position: relative;
-          width: 86px;
-          height: 86px;
-          transform: scale(4.4);
-          transform-origin: center center;
-          opacity: 0.09;
+          padding: 58px 64px;
+          min-height: 640px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          z-index: 0;
         }
-        .card-watermark-glyph svg {
-          display: block;
-          width: 86px;
-          height: 86px;
+        .card-copy {
+          position: relative;
+          z-index: 2;
+          max-width: 720px;
+        }
+
+        /*
+         * CANOPY — the one signature motif, shared by every card.
+         * A woven timber-lattice pattern (a "jali") with a slow shaft of
+         * daylight drifting across it, the way sun moves through the
+         * lattice roof of Kempegowda Terminal 2's garden concourse.
+         * Same on every card — nothing here is per-card or per-hue.
+         */
+        .card-canopy {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 480ms ease;
+          background-image:
+            repeating-linear-gradient(
+              55deg,
+              rgba(185,149,103,0.10) 0px,
+              rgba(185,149,103,0.10) 1px,
+              transparent 1px,
+              transparent 34px
+            ),
+            repeating-linear-gradient(
+              -55deg,
+              rgba(185,149,103,0.10) 0px,
+              rgba(185,149,103,0.10) 1px,
+              transparent 1px,
+              transparent 34px
+            );
+          mask-image: linear-gradient(
+            180deg,
+            transparent 0%,
+            black 28%,
+            black 100%
+          );
+        }
+        .reel-card.is-lead .card-canopy,
+        .reel-static-card.is-lead .card-canopy {
+          opacity: 1;
+        }
+        .card-canopy::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(
+            520px 320px at var(--daylight-x, 20%) 0%,
+            rgba(198,120,75,0.16),
+            transparent 62%
+          );
+          animation: canopyDaylight 22s ease-in-out infinite alternate;
+        }
+        @keyframes canopyDaylight {
+          from { --daylight-x: 8%; }
+          to { --daylight-x: 84%; }
+        }
+
+        /* Gate plaque — a small brass numeral tile, the one remaining
+           "icon": airport gate signage, not illustration. */
+        .card-plaque {
+          position: absolute;
+          top: 22px;
+          right: 22px;
+          z-index: 2;
+          display: grid;
+          place-items: center;
+          width: 44px;
+          height: 44px;
+          border-radius: 8px;
+          border: 1px solid rgba(185,149,103,0.35);
+          background: linear-gradient(160deg, rgba(185,149,103,0.14), rgba(0,0,0,0.3));
+          opacity: 0;
+          transform: translateY(-4px);
+          transition: opacity 420ms ease, transform 420ms cubic-bezier(.16,1,.3,1);
+        }
+        .reel-card.is-lead .card-plaque,
+        .reel-static-card.is-lead .card-plaque {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        .card-plaque-number {
+          font-family: 'DM Mono', monospace;
+          font-size: 13px;
+          letter-spacing: 0.04em;
+          color: #e7cba8;
+          font-variant-numeric: tabular-nums;
+        }
+        .service-pill-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .service-index-tag {
+          font-family: 'DM Mono', monospace;
+          font-size: 0.7rem;
+          letter-spacing: 0.14em;
+          color: rgba(255,255,255,0.3);
+          font-variant-numeric: tabular-nums;
         }
         .chip-row {
           display: flex;
@@ -852,33 +1012,38 @@ export default function ServicesPage() {
           color: rgba(255,255,255,0.7);
           /* Solid paint only — backdrop-filter samples sibling peek cards through the stack */
           background: rgba(0, 0, 0, 0.45);
+          transition: border-color 260ms ease, color 260ms ease;
+        }
+        .chip:hover {
+          border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+          color: rgba(255,255,255,0.92);
         }
         .service-cta {
           margin-top: 18px;
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          padding: 10px 14px;
+          padding: 10px 16px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.14);
-          background: rgba(255,255,255,0.08);
-          color: rgba(0,0,0,0.9);
+          border: 1px solid rgba(255,255,255,0.85);
+          background: #f7f3ee;
+          color: #17130f;
           font-weight: 700;
           font-size: 12px;
           letter-spacing: 0.08em;
           text-transform: uppercase;
-          transition: transform 0.18s ease, background 0.18s ease;
+          transition: transform 0.18s cubic-bezier(.16,1,.3,1), background 0.18s ease,
+            box-shadow 0.18s ease;
         }
-        .service-cta:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+        .service-cta:hover {
+          transform: translateY(-1px);
+          background: #ffffff;
+          box-shadow: 0 10px 26px -12px color-mix(in srgb, var(--accent) 55%, transparent);
+        }
         .service-cta:active { transform: translateY(0px); }
         .service-cta:focus-visible {
           outline: 2px solid var(--focus-ring);
           outline-offset: 3px;
-        }
-        .service-cta-badge {
-          width: 12px; height: 12px; border-radius: 999px;
-          background: var(--accent);
-          box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 45%, transparent);
         }
         .coming-soon-badge {
           margin-top: 18px;
@@ -895,21 +1060,6 @@ export default function ServicesPage() {
           letter-spacing: 0.12em;
           text-transform: uppercase;
         }
-        .icon-wrap {
-          display: flex;
-          justify-content: flex-end;
-          align-items: flex-start;
-        }
-        .icon-shell {
-          width: 150px;
-          height: 150px;
-          display: grid;
-          place-items: center;
-          border-radius: 28px;
-          background: rgba(0, 0, 0, 0.35);
-          border: 1px solid rgba(255,255,255,0.10);
-        }
-
         /* Reduced-motion / no-JS-friendly fallback list */
         .reel-static {
           display: flex;
@@ -938,15 +1088,9 @@ export default function ServicesPage() {
           .reel-sticky { top: 110px; }
           .reel-runway { height: calc(var(--reel-count, ${CARD_COUNT}) * clamp(520px, 78vh, 720px)); }
           .reel-frame { min-height: 620px; height: clamp(540px, 70vh, 700px); }
-          .stack-inner { grid-template-columns: 1fr; min-height: 620px; padding: 44px 36px; }
-          .icon-wrap { justify-content: flex-start; }
-          .card-watermark {
-            width: min(360px, 70%);
-            height: min(360px, 58%);
-            right: -8%;
-            bottom: -8%;
-          }
-          .card-watermark-glyph { transform: scale(3.6); }
+          .stack-inner { min-height: 620px; padding: 44px 36px; }
+          .card-plaque { top: 16px; right: 16px; width: 38px; height: 38px; }
+          .card-bezel { inset: 14px; }
         }
         @media (max-width: 768px) {
           .reel-sticky { top: 92px; }
@@ -954,14 +1098,11 @@ export default function ServicesPage() {
           .reel-frame { min-height: 560px; height: clamp(520px, 68vh, 640px); }
           .reel-card { border-radius: 20px; }
           .stack-inner { padding: 34px 24px; min-height: 560px; }
-          .icon-shell { width: 120px; height: 120px; border-radius: 24px; }
           .chip { font-size: 10px; padding: 6px 9px; }
           .reel-static-card { border-radius: 20px; }
-          .card-watermark {
-            width: min(280px, 78%);
-            height: min(280px, 52%);
-          }
-          .card-watermark-glyph { transform: scale(3.1); opacity: 0.07; }
+          .card-plaque { top: 14px; right: 14px; width: 34px; height: 34px; }
+          .card-plaque-number { font-size: 11px; }
+          .card-bezel { inset: 10px; border-radius: 12px; }
         }
         .service-pill {
           font-family: 'DM Mono', monospace;
@@ -969,6 +1110,19 @@ export default function ServicesPage() {
           letter-spacing: 0.18em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.55);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .reel-rail-dot,
+          .card-bezel,
+          .card-plaque,
+          .chip,
+          .service-cta {
+            transition: none !important;
+          }
+          .card-canopy::after {
+            animation: none !important;
+          }
         }
       `}</style>
 
