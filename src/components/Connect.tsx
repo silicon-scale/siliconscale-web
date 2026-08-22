@@ -299,7 +299,6 @@ export function Connect() {
 
       <div className="connect-shell">
         <ScrollReveal className="connect-head">
-          <span className="connect-pill">LET&apos;S CONNECT</span>
           <h2 className="connect-title">We&apos;re here for ideas, feedback, or a friendly hello!</h2>
         </ScrollReveal>
 

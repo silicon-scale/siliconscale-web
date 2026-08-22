@@ -359,18 +359,6 @@ const FinalCTA = ({ headingAs = 'h2' }: { headingAs?: 'h1' | 'h2' }) => {
           <div className="relative mb-12 lg:mb-16">
             {headingAs === 'h1' ? <PageHeroBackdrop showGlow={false} /> : null}
             <div className="relative z-10" ref={startTitleRef}>
-              <p className="inline-block">
-                <motion.span
-                  className="inline-block whitespace-nowrap rounded-md bg-brand-gold px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-black"
-                  initial={false}
-                  animate={{
-                    clipPath: startTitleInView ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
-                  }}
-                  transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.65, 0, 0.35, 1] }}
-                >
-                  Let&apos;s Start
-                </motion.span>
-              </p>
               {headingAs === 'h1' ? (
                 <h1
                   className="mt-5 font-black leading-[1.05] tracking-tight text-white"
@@ -421,13 +409,6 @@ const FinalCTA = ({ headingAs = 'h2' }: { headingAs?: 'h1' | 'h2' }) => {
                   aria-hidden
                 />
 
-                {/* Arrow button — hidden until hover, rotates once toward up-right */}
-                <div
-                  className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.08] opacity-0 backdrop-blur-md transition-all duration-300 ease-out group-hover:opacity-100"
-                  aria-hidden
-                >
-                  <ArrowUpRight className="h-4 w-4 -rotate-45 text-brand-gold transition-transform duration-300 ease-out group-hover:rotate-0" />
-                </div>
 
                 {/* Title + subtitle — frosted glass panel */}
                 <div className="absolute bottom-5 left-5 max-w-[80%] rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 backdrop-blur-md">
