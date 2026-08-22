@@ -11,14 +11,9 @@ export type Founder = {
 
 type FounderCardProps = {
   founder: Founder
-  /** Center the third card on md screens */
-  featuredOnMd?: boolean
 }
 
-export function FounderCard({
-  founder,
-  featuredOnMd = false,
-}: FounderCardProps) {
+export function FounderCard({ founder }: FounderCardProps) {
   const {
     name,
     role,
@@ -29,11 +24,7 @@ export function FounderCard({
 
   return (
     <article
-      className={`group flex flex-col items-center px-6 py-10 text-center transition-transform duration-500 hover:-translate-y-2 md:px-7 ${
-        featuredOnMd
-          ? 'md:col-span-2 md:max-w-[calc(50%-1.5rem)] md:justify-self-center lg:col-span-1 lg:max-w-none lg:justify-self-stretch'
-          : ''
-      }`}
+      className="group flex flex-col items-center px-6 py-10 text-center transition-transform duration-500 hover:-translate-y-2 md:px-7"
       style={{
         background: '#050402',
         border: '0.5px solid #1e1a13',

@@ -1,16 +1,48 @@
-/* Self-hosted fonts — font-display: swap is built into @fontsource defaults */
-@import "@fontsource/open-sans/400.css";
-@import "@fontsource/open-sans/600.css";
-@import "@fontsource/open-sans/700.css";
-@import "@fontsource/open-sans/400-italic.css";
-@import "@fontsource/open-sans/600-italic.css";
-@import "@fontsource/open-sans/700-italic.css";
-@import "@fontsource/bagel-fat-one/400.css";
-@import "@fontsource/dm-mono/300.css";
-@import "@fontsource/dm-mono/400.css";
-@import "@fontsource/sora/300.css";
-@import "@fontsource/sora/400.css";
-@import "@fontsource/sora/500.css";
-@import "@fontsource/sora/600.css";
-@import "@fontsource/sora/700.css";
-@import "@fontsource/sora/800.css";
+/*
+ * Self-hosted fonts — font-display: swap is built into @fontsource defaults.
+ *
+ * Latin(+latin-ext) subsets only. The generic entrypoints (e.g. open-sans/400.css)
+ * pull every language subset — Bagel Fat One alone shipped 92 @font-face blocks
+ * (~120 KB of CSS) for Korean glyphs the site never renders.
+ *
+ * latin-ext is kept for Open Sans + Bagel Fat One because CMS-driven blog
+ * content (titles/body) renders in them and may contain accented characters.
+ * Sora / DM Mono only render hardcoded English copy — latin is enough.
+ */
+
+/* Open Sans — body font. Weights 400/600/700 (+ italics used by Team <em>,
+   FounderCard, and blog prose em/strong em). */
+@import "@fontsource/open-sans/latin-400.css";
+@import "@fontsource/open-sans/latin-600.css";
+@import "@fontsource/open-sans/latin-700.css";
+@import "@fontsource/open-sans/latin-ext-400.css";
+@import "@fontsource/open-sans/latin-ext-600.css";
+@import "@fontsource/open-sans/latin-ext-700.css";
+@import "@fontsource/open-sans/latin-400-italic.css";
+@import "@fontsource/open-sans/latin-600-italic.css";
+@import "@fontsource/open-sans/latin-700-italic.css";
+/* Keeps "←" in blog/admin back links rendering in Open Sans (U+2190). */
+@import "@fontsource/open-sans/symbols-400.css";
+
+/* Bagel Fat One — display numerals/headings (Highlights, case-study results,
+   blog titles). Single weight. */
+@import "@fontsource/bagel-fat-one/latin-400.css";
+@import "@fontsource/bagel-fat-one/latin-ext-400.css";
+
+/* DM Mono — 300 (About) + 400 (labels/meta sitewide). */
+@import "@fontsource/dm-mono/latin-300.css";
+@import "@fontsource/dm-mono/latin-400.css";
+
+/* Sora — 400 (legal/footer), 600 (About/Services), 700, 800 (ToolStack,
+   case studies; 900 requests resolve to 800). 300/500 are never rendered. */
+@import "@fontsource/sora/latin-400.css";
+@import "@fontsource/sora/latin-600.css";
+@import "@fontsource/sora/latin-700.css";
+@import "@fontsource/sora/latin-800.css";
+
+/* Instrument Serif — editorial journal titles (Blog listing / archive).
+   Single weight + italic; latin + latin-ext for CMS titles. */
+@import "@fontsource/instrument-serif/latin-400.css";
+@import "@fontsource/instrument-serif/latin-ext-400.css";
+@import "@fontsource/instrument-serif/latin-400-italic.css";
+@import "@fontsource/instrument-serif/latin-ext-400-italic.css";

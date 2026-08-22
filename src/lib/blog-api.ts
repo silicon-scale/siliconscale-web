@@ -1,17 +1,36 @@
 import type { Post } from "@/types/post"
 
+async function readJsonResponse<T>(res: Response): Promise<T> {
+  const text = await res.text()
+  const trimmed = text.trimStart()
+  if (!trimmed) {
+    throw new Error(`Empty API response (${res.status})`)
+  }
+  try {
+    return JSON.parse(trimmed) as T
+  } catch {
+    // Vite-only (`pnpm dev`) used to return transformed `api/*.ts` source here.
+    if (/^import\b/.test(trimmed) || trimmed.includes("API routes are unavailable")) {
+      throw new Error(
+        "Blog API is not running. Stop `pnpm dev` and start `pnpm dev:full` (vercel dev).",
+      )
+    }
+    throw new Error(`Invalid API response (${res.status})`)
+  }
+}
+
 export async function listPublishedPosts(): Promise<Post[]> {
   const res = await fetch("/api/posts?status=published", {
     credentials: "same-origin",
     headers: { Accept: "application/json" },
   })
 
+  const data = await readJsonResponse<{ error?: string; posts?: Post[] }>(res)
+
   if (!res.ok) {
-    const data = (await res.json().catch(() => ({}))) as { error?: string }
     throw new Error(data.error || `Failed to load posts (${res.status})`)
   }
 
-  const data = (await res.json()) as { posts?: Post[] }
   return data.posts ?? []
 }
 
@@ -21,10 +40,7 @@ export async function getPublishedPost(slug: string): Promise<Post> {
     headers: { Accept: "application/json" },
   })
 
-  const data = (await res.json().catch(() => ({}))) as {
-    error?: string
-    post?: Post
-  }
+  const data = await readJsonResponse<{ error?: string; post?: Post }>(res)
 
   if (!res.ok || !data.post) {
     const err = new Error(data.error || `Post not found (${res.status})`) as Error & {

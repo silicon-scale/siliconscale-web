@@ -3,9 +3,12 @@ import { AnimatePresence, motion } from "framer-motion"
 import { lazy, memo, Suspense, useEffect, useState, type ReactNode } from "react"
 import { Navbar } from "./components/Navbar"
 import { HeroSection } from "./components/HeroSection"
+import { ServicesBentoGrid } from "./components/ServicesBentoGrid"
+import { Highlights } from "./components/Highlights"
 import { Services } from "./components/Services.tsx"
 import { HowWeDo } from "./components/HowWeDo"
 import { Testimonials } from "./components/Testimonials"
+import PreContactCTA from "./components/PreContactCTA"
 import FinalCTA from "./components/FinalCTA"
 import { Footer } from "./components/Footer"
 import { IntroLoader } from "./components/IntroLoader"
@@ -76,6 +79,12 @@ const Home = memo(function Home() {
       {belowFold ? (
         <>
           <div className="cv-auto">
+            <ServicesBentoGrid />
+          </div>
+          <div className="cv-auto">
+            <Highlights />
+          </div>
+          <div className="cv-auto">
             <Services />
           </div>
           <div className="cv-auto">
@@ -83,6 +92,9 @@ const Home = memo(function Home() {
           </div>
           <div className="cv-auto">
             <Testimonials />
+          </div>
+          <div className="cv-auto">
+            <PreContactCTA />
           </div>
           <div className="cv-auto">
             <FinalCTA />
@@ -152,7 +164,7 @@ function AppContent() {
       </a>
       {!admin ? <Navbar /> : null}
 
-      <main className="relative" role="main" id="main-content">
+      <main className="relative" id="main-content">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location.pathname}
@@ -351,7 +363,15 @@ export default function App() {
           />
         )}
         <RevealProvider mountStage={mountStage}>
-          <AppContent />
+          {/* inert while intro covers the UI — avoids focusable nodes under the overlay */}
+          <div
+            ref={(el) => {
+              if (!el) return
+              el.toggleAttribute('inert', loaderVisible)
+            }}
+          >
+            <AppContent />
+          </div>
         </RevealProvider>
       </LenisProvider>
     </Router>

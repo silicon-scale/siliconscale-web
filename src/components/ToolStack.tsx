@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { PageHero } from '@/components/ui/PageHero'
 import { ToolIcon } from '@/components/toolIcons'
 import { REVEAL_EASE } from '@/lib/motion'
 import { FOCUS_RING } from '@/lib/focus'
@@ -458,21 +459,25 @@ export default function ToolStack() {
         }}
       />
 
-      <div className="tool-stack-shell relative z-10 mx-auto max-w-6xl px-6 pt-36 pb-24 sm:pt-40 lg:px-10 lg:pt-44 lg:pb-28">
-        <ScrollReveal className="mb-6 max-w-3xl">
-          <SectionEyebrow variant="pillMono">Our Stack</SectionEyebrow>
-          <h1
-            id="tool-stack-heading"
-            className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.25rem]"
-          >
-            The tools behind what we build
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65 sm:text-base">
-            Design, development, animation, AI, and ops — the tools we actually reach for on
-            client work, not a laundry list of every logo on the internet.
-          </p>
-        </ScrollReveal>
+      <PageHero className="pt-36 sm:pt-40 lg:pt-44" showGlow={false}>
+        <div className="tool-stack-shell relative z-10 mx-auto max-w-6xl px-6 lg:px-10">
+          <ScrollReveal className="mb-6 max-w-3xl">
+            <SectionEyebrow variant="pillMono">Our Stack</SectionEyebrow>
+            <h1
+              id="tool-stack-heading"
+              className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-[3.25rem]"
+            >
+              The tools behind what we build
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/65 sm:text-base">
+              Design, development, animation, AI, and ops — the tools we actually reach for on
+              client work, not a laundry list of every logo on the internet.
+            </p>
+          </ScrollReveal>
+        </div>
+      </PageHero>
 
+      <div className="tool-stack-shell relative z-10 mx-auto max-w-6xl px-6 pb-24 lg:px-10 lg:pb-28">
         {STACK.map((category, index) => (
           <CategorySection key={category.title} category={category} index={index} />
         ))}

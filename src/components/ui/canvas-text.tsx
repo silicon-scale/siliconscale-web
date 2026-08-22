@@ -268,7 +268,8 @@ export function CanvasText({
         className={cn("pointer-events-none absolute h-0 w-0 opacity-0", backgroundClassName)}
         aria-hidden="true"
       />
-      <span ref={textRef} className="invisible inline-block" aria-hidden="true">
+      {/* opacity:0 keeps text in the a11y tree (unlike visibility:hidden / aria-hidden). */}
+      <span ref={textRef} className="inline-block opacity-0">
         {text}
       </span>
       <canvas
@@ -278,8 +279,7 @@ export function CanvasText({
           width: dimensions.width || "auto",
           height: dimensions.height || "auto",
         }}
-        aria-label={text}
-        role="img"
+        aria-hidden="true"
       />
     </span>
   );

@@ -8,6 +8,7 @@ import { OptimizedImage } from '@/components/OptimizedImage'
 import { SectionEyebrow } from '@/components/ui/SectionEyebrow'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
+import { PageHero } from '@/components/ui/PageHero'
 import FinalCTA from '@/components/FinalCTA'
 import { WorkProjectCard, WorkProjectCardStyles } from '@/components/work/WorkProjectCard'
 import { CaseStudyParallaxShowcase } from '@/components/work/CaseStudyParallaxShowcase'
@@ -23,6 +24,7 @@ import {
 import { trackEvent } from '@/utils/analytics'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { cn } from '@/lib/utils'
+import type { ResponsivePicture } from '@/types/images'
 
 const INTRO_BODY_FALLBACK = [
   'PLACEHOLDER — intro paragraph 1 needed for case study overview.',
@@ -80,7 +82,7 @@ function ImageGrid({
   className,
   columns = 2,
 }: {
-  images: string[]
+  images: ResponsivePicture[]
   altPrefix: string
   className?: string
   columns?: 2 | 'gallery'
@@ -95,7 +97,7 @@ function ImageGrid({
       )}
     >
       {images.map((src, i) => (
-        <div key={`${src}-${i}`} className={cn('cs-image-cell', PROJECT_SCREENSHOT_CONTAIN_CLASS)}>
+        <div key={`${src.img.src}-${i}`} className={cn('cs-image-cell', PROJECT_SCREENSHOT_CONTAIN_CLASS)}>
           <OptimizedImage
             src={src}
             alt={`${altPrefix} ${i + 1}`}
@@ -315,7 +317,7 @@ function CaseStudyBody({ project }: { project: Project }) {
       <article className="cs-page bg-page text-white" aria-labelledby="cs-title">
         <style>{`
           .cs-page {
-            padding: 7.5rem 0 0;
+            padding: 0;
             font-family: 'Sora', system-ui, sans-serif;
             position: relative;
             z-index: 0;
@@ -718,36 +720,40 @@ function CaseStudyBody({ project }: { project: Project }) {
 
         <WorkProjectCardStyles />
 
-        <div className="cs-shell">
-          {/* 1 — Header */}
-          <RevealBlock>
-            <header className="cs-header">
-              <div className="cs-header-copy">
-                <span className={cn('cs-tag', project.isSample && 'cs-tag--sample')}>
-                  {project.tag}
-                </span>
-                <h1 id="cs-title" className="cs-title">
-                  {project.title}
-                </h1>
-                <p className="cs-services">{project.services}</p>
-              </div>
-              {visitUrl && !visitUrl.startsWith('PLACEHOLDER') ? (
-                <a
-                  href={visitUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cs-visit rounded-button"
-                  onClick={() =>
-                    trackEvent('project_click', { project_name: project.id, surface: 'case_study' })
-                  }
-                >
-                  Visit website
-                  <ArrowUpRight className="h-4 w-4" aria-hidden />
-                </a>
-              ) : null}
-            </header>
-          </RevealBlock>
+        <PageHero className="pt-[7.5rem]">
+          <div className="cs-shell">
+            {/* 1 — Header */}
+            <RevealBlock>
+              <header className="cs-header">
+                <div className="cs-header-copy">
+                  <span className={cn('cs-tag', project.isSample && 'cs-tag--sample')}>
+                    {project.tag}
+                  </span>
+                  <h1 id="cs-title" className="cs-title">
+                    {project.title}
+                  </h1>
+                  <p className="cs-services">{project.services}</p>
+                </div>
+                {visitUrl && !visitUrl.startsWith('PLACEHOLDER') ? (
+                  <a
+                    href={visitUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cs-visit rounded-button"
+                    onClick={() =>
+                      trackEvent('project_click', { project_name: project.id, surface: 'case_study' })
+                    }
+                  >
+                    Visit website
+                    <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  </a>
+                ) : null}
+              </header>
+            </RevealBlock>
+          </div>
+        </PageHero>
 
+        <div className="cs-shell">
           <div className="cs-header-divider" role="separator" aria-hidden />
 
           {/* 2 — Intro */}
@@ -774,6 +780,7 @@ function CaseStudyBody({ project }: { project: Project }) {
                   width={1600}
                   height={900}
                   loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   sizes="(max-width: 1080px) 100vw, 1080px"
                   className="h-full w-full object-cover object-top"

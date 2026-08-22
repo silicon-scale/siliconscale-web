@@ -243,7 +243,6 @@ export function Testimonials() {
       <div className="ss-test-shell">
         <ScrollReveal className="ss-test-head">
           <div>
-            <span className="ss-test-pill">TESTIMONIALS</span>
             <h2 id="testimonials-heading" className="ss-test-title">
               What Our Clients Say
             </h2>
@@ -255,7 +254,7 @@ export function Testimonials() {
 
         <div
           className={`ss-marquee${inView ? '' : ' is-offscreen'}`}
-          aria-label="Testimonials scrolling rows"
+          aria-hidden="true"
         >
           <div className="ss-rows">
             <div className="ss-row left" aria-hidden>

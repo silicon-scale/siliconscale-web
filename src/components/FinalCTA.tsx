@@ -1,27 +1,21 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react'
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import SectionShell from '@/components/ui/SectionShell'
 import Reveal from '@/components/ui/Reveal'
+import { PageHeroBackdrop } from '@/components/ui/PageHero'
 import { BrandButton } from '@/components/ui/BrandButton'
+import { CountUpNumber } from '@/components/ui/CountUpNumber'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
+import contactIllus from '@/assets/contact-illus.svg'
 import { trackEvent } from '@/utils/analytics'
 import { REVEAL_EASE } from '@/lib/motion'
-import { brandGoldAlpha } from '@/lib/brand'
 import { FOCUS_RING } from '@/lib/focus'
 import { detectPreferReducedEffects } from '@/hooks/usePreferReducedEffects'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
-import {
-  CheckCircle2,
-  Clock,
-  Layers,
-  ShieldCheck,
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
-  Loader2,
-} from 'lucide-react'
+import { ArrowUpRight, CheckCircle2, ChevronDown, Loader2 } from 'lucide-react'
 
 /* ─── Types ─── */
 interface FinalCTAFormData {
@@ -50,17 +44,9 @@ const BUDGETS = ['35000 INR', '50000 INR', '100000 INR', 'Enterprise']
 const PROJECT_TYPES = ['SaaS', 'Web Platform', 'MVP', 'Redesign']
 const TIMELINES = ['< 1 month', '1 – 3 months', '3 – 6 months', '6+ months']
 
-// EmailJS Configuration from environment variables
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || ''
 const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || ''
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''
-
-const TRUST = [
-  { icon: Clock, text: 'We respond within 24 hours' },
-  { icon: Layers, text: "We'll tell you if we're not the right fit" },
-  { icon: Sparkles, text: 'No pressure, no hard sell — just a real conversation' },
-  { icon: ShieldCheck, text: 'Your information stays private' },
-] as const
 
 const STATS = [
   { value: '12+', label: 'Real Projects Delivered' },
@@ -69,9 +55,88 @@ const STATS = [
   { value: '6+', label: 'Businesses Served' },
 ] as const
 
-/** Frosted card fill — static tint over a dark section (no backdrop-filter). */
-const FORM_CARD_SURFACE =
-  'border border-white/[0.08] bg-gradient-to-br from-[#0a0a0c]/95 to-[#141418]/92'
+function FinalCtaStatRow({
+  stat,
+  index,
+}: {
+  stat: (typeof STATS)[number]
+  index: number
+}) {
+  const prefersReducedMotion = useReducedMotion()
+  const { ref, inView } = useInViewOnce<HTMLDivElement>({
+    disabled: !!prefersReducedMotion,
+    variant: 'countUp',
+  })
+
+  return (
+    <div ref={ref} className="flex flex-col gap-2">
+      <div className="flex items-baseline gap-2">
+        <span
+          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-subtle tabular-nums"
+          aria-hidden
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <CountUpNumber
+          value={stat.value}
+          animate={inView}
+          className="font-bagel leading-none tracking-tight text-white"
+          style={{ fontSize: 'clamp(2rem, 4.5vw, 3rem)' }}
+        />
+      </div>
+      <div className="text-base font-medium text-white/90">{stat.label}</div>
+    </div>
+  )
+}
+
+const FORM_CARD_SHELL =
+  'final-cta-form-card relative overflow-hidden rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.55)]'
+
+function FormCardAtmosphere() {
+  return (
+    <>
+      {/* Full-card grid, z-0 (below form) */}
+      <div className="final-cta-form-card-grid" aria-hidden />
+      {/* Fading outer stroke above grid, below form */}
+      <div className="final-cta-form-card-border" aria-hidden />
+    </>
+  )
+}
+
+function validateRequiredFields(form: FinalCTAFormData): string | null {
+  const name = form.name.trim()
+  const email = form.email.trim()
+  const phone = form.phone.trim()
+  const company = form.company.trim()
+  const description = form.description.trim()
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  if (name.length < 2 || name.length > 80) {
+    return 'Please enter your full name.'
+  }
+  // Email is optional — validate format only when provided
+  if (email && (!emailOk || email.length > 120)) {
+    return 'Please enter a valid email address.'
+  }
+  if (phone.length < 7 || phone.length > 20) {
+    return 'Please enter a valid phone number.'
+  }
+  if (company.length < 2 || company.length > 120) {
+    return 'Please enter your company name.'
+  }
+  if (description.length < 10 || description.length > 4000) {
+    return 'Please add a bit more detail about your project.'
+  }
+  return null
+}
+
+function RequiredMark() {
+  return (
+    <span className="ml-0.5 text-brand-gold" aria-hidden>
+      *
+    </span>
+  )
+}
 
 /* ─── Floating Label Input ─── */
 const FloatingInput = ({
@@ -103,7 +168,7 @@ const FloatingInput = ({
         required={required}
         placeholder=" "
         aria-label={label}
-        className="peer w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
+        className="peer w-full rounded-xl border border-transparent bg-[#232326] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
       />
       <label
         htmlFor={id}
@@ -114,6 +179,7 @@ const FloatingInput = ({
         }`}
       >
         {label}
+        {required ? <RequiredMark /> : null}
       </label>
     </div>
   )
@@ -127,6 +193,7 @@ const FloatingSelect = ({
   onChange,
   options,
   name,
+  required = false,
 }: {
   id: string
   label: string
@@ -134,6 +201,7 @@ const FloatingSelect = ({
   onChange: (v: string) => void
   options: string[]
   name?: string
+  required?: boolean
 }) => {
   const hasValue = value.length > 0
   return (
@@ -143,11 +211,11 @@ const FloatingSelect = ({
         name={name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        required
+        required={required}
         aria-label={label}
-        className="peer w-full appearance-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
+        className="peer w-full appearance-none rounded-xl border border-transparent bg-[#232326] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
       >
-        <option value="" disabled />
+        <option value="" />
         {options.map((o) => (
           <option key={o} value={o} className="bg-ink">
             {o}
@@ -163,8 +231,8 @@ const FloatingSelect = ({
         }`}
       >
         {label}
+        {required ? <RequiredMark /> : null}
       </label>
-      {/* Chevron */}
       <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/55">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path
@@ -180,135 +248,51 @@ const FloatingSelect = ({
   )
 }
 
-/* ─── Step Variants ─── */
-const stepVariants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? 60 : -60,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.4, ease: REVEAL_EASE },
-  },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -60 : 60,
-    opacity: 0,
-    transition: { duration: 0.25, ease: REVEAL_EASE },
-  }),
-}
-
-/* ─── Rotating Word ─── */
-const WORDS = ['Actually Works.', 'Saves You Hours.', 'Makes You Money.', 'Lasts.'] as const
-
-const wordGradientClass =
-  'inline-block bg-gradient-to-r from-brand-gold via-brand-cream to-brand-gold bg-clip-text font-extrabold text-transparent'
-
-const RotatingWord = ({ preferReducedEffects }: { preferReducedEffects: boolean }) => {
-  const [index, setIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const prefersReducedMotion = useReducedMotion()
-  const staticWord = preferReducedEffects || prefersReducedMotion
-
-  useEffect(() => {
-    if (staticWord || paused) return
-    const id = window.setInterval(() => {
-      setIndex((i) => (i + 1) % WORDS.length)
-    }, 2500)
-    return () => window.clearInterval(id)
-  }, [paused, staticWord])
-
-  const wordStyle = { textShadow: `0 0 40px ${brandGoldAlpha(0.22)}` }
-
-  if (staticWord) {
-    return (
-      <span className="relative inline-block" style={{ minWidth: '16ch' }}>
-        <span className={wordGradientClass} style={wordStyle}>
-          {WORDS[index]}
-        </span>
-      </span>
-    )
-  }
-
-  return (
-    <span
-      className="relative inline-block"
-      style={{ minWidth: '16ch' }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={WORDS[index]}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.6, ease: REVEAL_EASE }}
-          className={wordGradientClass}
-          style={wordStyle}
-        >
-          {WORDS[index]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  )
-}
-
 /* ─── Main Component ─── */
-const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
+const FinalCTA = ({ headingAs = 'h2' }: { headingAs?: 'h1' | 'h2' }) => {
   const [form, setForm] = useState<FinalCTAFormData>(INITIAL)
-  const [[step, dir], setStep] = useState<[number, number]>([0, 0])
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const honeypotRef = useRef<HTMLInputElement>(null)
+  const imageCardRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const preferReducedEffects = useMemo(
     () => detectPreferReducedEffects(prefersReducedMotion),
     [prefersReducedMotion],
   )
+  const { ref: startTitleRef, inView: startTitleInView } = useInViewOnce<HTMLDivElement>({
+    disabled: !!prefersReducedMotion,
+  })
+
+  // Same scroll-linked parallax technique as PreContactCTA's background layer.
+  const { scrollYProgress: imageScrollProgress } = useScroll({
+    target: imageCardRef,
+    offset: ['start end', 'end start'],
+  })
+  const imageParallaxY = useTransform(imageScrollProgress, [0, 1], ['-10%', '10%'])
 
   useEffect(() => {
     setPerfDebugLoop('finalCtaAmbient', preferReducedEffects ? 'paused' : 'active')
   }, [preferReducedEffects])
 
-  useEffect(() => {
-    const rotatingActive = !preferReducedEffects && !prefersReducedMotion
-    setPerfDebugLoop('finalCtaRotatingWord', rotatingActive ? 'active' : 'paused')
-  }, [preferReducedEffects, prefersReducedMotion])
-
   const set = (key: keyof FinalCTAFormData) => (v: string) =>
     setForm((p) => ({ ...p, [key]: v }))
 
-  const canNext = () => {
-    if (step === 0) return form.name.trim() !== '' && form.email.trim() !== ''
-    if (step === 1) return form.company.trim() !== '' && form.budget !== ''
-    return form.projectType !== '' && form.description.trim() !== ''
-  }
-
-  const next = () => {
-    if (step < 2 && canNext()) setStep([step + 1, 1])
-  }
-  const prev = () => {
-    if (step > 0) setStep([step - 1, -1])
-  }
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!canNext()) return
 
     setSubmitting(true)
     setError(null)
 
     try {
-      // Honeypot (bots will often fill hidden fields)
       if (honeypotRef.current?.value?.trim()) {
         setError('Failed to send message. Please try again.')
         return
       }
 
-      // Simple client-side rate limit (best-effort)
       const key = 'ss_finalcta_last_submit'
       const now = Date.now()
       const last = Number(localStorage.getItem(key) ?? '0')
@@ -317,34 +301,17 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
         return
       }
 
-      // Input validation (no UI changes; just blocks bad payloads)
-      const name = form.name.trim()
-      const email = form.email.trim()
-      const company = form.company.trim()
-      const description = form.description.trim()
-      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      if (name.length < 2 || name.length > 80) {
-        setError('Please enter your full name.')
+      const validationError = validateRequiredFields(form)
+      if (validationError) {
+        setError(validationError)
         return
       }
-      if (!emailOk || email.length > 120) {
-        setError('Please enter a valid email address.')
-        return
-      }
-      if (company.length < 2 || company.length > 120) {
-        setError('Please enter your company name.')
-        return
-      }
-      if (description.length < 10 || description.length > 4000) {
-        setError('Please add a bit more detail about your project.')
-        return
-      }
+
       if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
         setError('Failed to send message. Please try again.')
         return
       }
 
-      // Send data directly from React state using emailjs.send
       await emailjs.send(
         SERVICE_ID,
         TEMPLATE_ID,
@@ -359,12 +326,13 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
           description: form.description,
           time: new Date().toLocaleString(),
         },
-        PUBLIC_KEY
+        PUBLIC_KEY,
       )
       localStorage.setItem(key, String(now))
       trackEvent('contact_form_submit', { form: 'final_cta' })
       setSubmitted(true)
-      setForm(INITIAL) // Reset form on success
+      setForm(INITIAL)
+      setDetailsOpen(false)
     } catch (err) {
       if (import.meta.env.DEV) console.error('EmailJS error:', err)
       setError('Failed to send message. Please try again.')
@@ -378,7 +346,6 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
       id="contact"
       className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36"
     >
-      {/* Ambient gradient — radial-gradient orbs (transform-only drift, no blur) */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
         <div className="final-cta-glow final-cta-glow--center" />
         <div
@@ -387,63 +354,101 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
       </div>
 
       <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
-          {/* ─── Left Column — 45% ─── */}
-          <div className="flex flex-col justify-center lg:w-[45%]">
-            <Reveal>
-              <p className="text-sm font-semibold uppercase tracking-widest text-brand-gold">
-                Start a Project
-              </p>
-              {headingAs === "h1" ? (
-                <h1
-                  className="mt-4 font-bold tracking-tight text-white"
-                  style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
+        {/* ─── Section heading — spans both columns ─── */}
+        <Reveal>
+          <div className="relative mb-12 lg:mb-16">
+            {headingAs === 'h1' ? <PageHeroBackdrop showGlow={false} /> : null}
+            <div className="relative z-10" ref={startTitleRef}>
+              <p className="inline-block">
+                <motion.span
+                  className="inline-block whitespace-nowrap rounded-md bg-brand-gold px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-black"
+                  initial={false}
+                  animate={{
+                    clipPath: startTitleInView ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+                  }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.65, 0, 0.35, 1] }}
                 >
-                  Let&apos;s Build Something{' '}
-                  <br className="hidden sm:inline" />
-                  That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
+                  Let&apos;s Start
+                </motion.span>
+              </p>
+              {headingAs === 'h1' ? (
+                <h1
+                  className="mt-5 font-black leading-[1.05] tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
+                >
+                  <span className="text-white/45">Ready</span> to{' '}
+                  <span className="text-white/45">build</span> something.
                 </h1>
               ) : (
                 <h2
-                  className="mt-4 font-bold tracking-tight text-white"
-                  style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)' }}
+                  className="mt-5 font-black leading-[1.05] tracking-tight text-white"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)' }}
                 >
-                  Let&apos;s Build Something{' '}
-                  <br className="hidden sm:inline" />
-                  That&nbsp;<RotatingWord preferReducedEffects={preferReducedEffects} />
+                  <span className="text-white/45">Ready</span> to{' '}
+                  <span className="text-white/45">build</span> something.
                 </h2>
               )}
-              <p className="mt-5 text-lg leading-relaxed text-white/55">
-                Tell us what you&apos;re building. We&apos;ll tell you honestly whether it&apos;s a
-                fit — and if it is, how we&apos;d approach it.
-              </p>
+            </div>
+          </div>
+        </Reveal>
+
+        <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
+          {/* ─── Left Column — 45% ─── */}
+          <div className="flex flex-col gap-8 lg:w-[45%]">
+            {/* Row 1 — Contact illustration, with title overlay */}
+            <Reveal>
+              <div
+                ref={imageCardRef}
+                className="group relative aspect-[10/7] overflow-hidden rounded-[20px] border border-white/[0.08]"
+              >
+                {/* Oversized + scroll-linked, same parallax technique as PreContactCTA's backdrop */}
+                <motion.div
+                  className="absolute inset-x-0 -top-[10%] h-[120%] will-change-transform"
+                  style={{ y: prefersReducedMotion ? '0%' : imageParallaxY }}
+                >
+                  <img
+                    src={contactIllus}
+                    alt=""
+                    width={1000}
+                    height={700}
+                    className="h-full w-full scale-100 object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                  />
+                </motion.div>
+
+                {/* Scrim — darkens the bottom for text legibility */}
+                <div
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
+                  aria-hidden
+                />
+
+                {/* Arrow button — hidden until hover, rotates once toward up-right */}
+                <div
+                  className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.08] opacity-0 backdrop-blur-md transition-all duration-300 ease-out group-hover:opacity-100"
+                  aria-hidden
+                >
+                  <ArrowUpRight className="h-4 w-4 -rotate-45 text-brand-gold transition-transform duration-300 ease-out group-hover:rotate-0" />
+                </div>
+
+                {/* Title + subtitle — frosted glass panel */}
+                <div className="absolute bottom-5 left-5 max-w-[80%] rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 backdrop-blur-md">
+                  <p className="text-xl font-bold text-white sm:text-2xl">Your Idea. Built Right.</p>
+                  <p className="mt-1 text-sm text-white/60">
+                  From first architecture to production.
+                  </p>
+                </div>
+              </div>
             </Reveal>
 
+            {/* Row 2 — Stats, matching the home page "By the Numbers" treatment, in a 2x2 grid */}
             <Reveal delay={0.1}>
-              <div className="mt-10">
-                <div className="flex flex-col gap-4">
-                  {TRUST.map(({ icon: Icon, text }) => (
-                    <div key={text} className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-gold/10">
-                        <Icon className="h-4 w-4 text-brand-gold" />
-                      </div>
-                      <span className="text-sm text-white/55">{text}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Compact stats — same numbers as Highlights, lighter pre-form strip */}
-                <div
-                  className="mt-6 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-white/6 pt-6 sm:grid-cols-4 sm:gap-y-0"
-                  aria-label="Results at a glance"
-                >
-                  {STATS.map((stat) => (
-                    <div key={stat.label} className="text-left">
-                      <p className="text-xl font-bold text-white sm:text-2xl">{stat.value}</p>
-                      <p className="mt-0.5 text-xs text-white/45">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
+              <div
+                className="grid grid-cols-2 gap-x-8 gap-y-8 border-t border-white/8 pt-8"
+                role="group"
+                aria-label="Results at a glance"
+              >
+                {STATS.map((stat, index) => (
+                  <FinalCtaStatRow key={stat.label} stat={stat} index={index} />
+                ))}
               </div>
             </Reveal>
           </div>
@@ -455,218 +460,180 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
                 {!submitted ? (
                   <motion.div
                     key="form-card"
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.3 }}
-                    className={`relative rounded-[20px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.55)] sm:p-10 ${FORM_CARD_SURFACE}`}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.45, ease: REVEAL_EASE }}
+                    className={`${FORM_CARD_SHELL} p-8 sm:p-10`}
                   >
-                    {/* Progress indicator */}
-                    <div className="mb-8 flex items-center gap-2">
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <div
-                            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-all duration-300 ${
-                              i <= step
-                                ? 'bg-brand-gold text-black'
-                                : 'bg-white/[0.06] text-white/55'
-                            }`}
-                          >
-                            {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
-                          </div>
-                          {i < 2 && (
-                            <div
-                              className={`h-px w-8 transition-colors duration-300 ${
-                                i < step ? 'bg-brand-gold' : 'bg-white/10'
-                              }`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      <span className="ml-auto text-xs text-white/55">
-                        Step {step + 1} of 3
-                      </span>
-                    </div>
+                    <FormCardAtmosphere />
 
+                    <div className="relative z-10">
                     <form ref={formRef} onSubmit={handleSubmit}>
                       <input
                         ref={honeypotRef}
                         tabIndex={-1}
                         autoComplete="off"
-                        aria-hidden="true"
                         className="hidden"
                         type="text"
                         name="website"
                         defaultValue=""
                       />
-                      <div className="relative" style={{ minHeight: 220 }}>
-                        <AnimatePresence initial={false} custom={dir} mode="wait">
-                          {/* Step 1 */}
-                          {step === 0 && (
-                            <motion.div
-                              key="step-0"
-                              custom={dir}
-                              variants={stepVariants}
-                              initial="enter"
-                              animate="center"
-                              exit="exit"
-                              className="flex flex-col gap-5"
-                            >
-                              <h3 className="text-lg font-semibold text-white">About You</h3>
-                              <FloatingInput
-                                id="cta-name"
-                                label="Full Name"
-                                value={form.name}
-                                onChange={set('name')}
-                                name="name"
-                              />
-                              <FloatingInput
-                                id="cta-email"
-                                label="Work Email"
-                                type="email"
-                                value={form.email}
-                                onChange={set('email')}
-                                name="email"
-                              />
-                              <FloatingInput
-                                id="cta-phone"
-                                label="Phone Number"
-                                type="tel"
-                                value={form.phone}
-                                onChange={set('phone')}
-                                name="phone"
-                                required={false}
-                              />
-                            </motion.div>
-                          )}
 
-                          {/* Step 2 */}
-                          {step === 1 && (
-                            <motion.div
-                              key="step-1"
-                              custom={dir}
-                              variants={stepVariants}
-                              initial="enter"
-                              animate="center"
-                              exit="exit"
-                              className="flex flex-col gap-5"
-                            >
-                              <h3 className="text-lg font-semibold text-white">Your Company</h3>
-                              <FloatingInput
-                                id="cta-company"
-                                label="Company / Startup Name"
-                                value={form.company}
-                                onChange={set('company')}
-                                name="company"
-                              />
-                              <FloatingSelect
-                                id="cta-budget"
-                                label="Project Budget"
-                                value={form.budget}
-                                onChange={set('budget')}
-                                options={BUDGETS}
-                                name="budget"
-                              />
-                            </motion.div>
-                          )}
+                      <div className="flex flex-col gap-5">
+                        <FloatingInput
+                          id="cta-name"
+                          label="Full Name"
+                          value={form.name}
+                          onChange={set('name')}
+                          name="name"
+                        />
+                        <FloatingInput
+                          id="cta-email"
+                          label="Work Email"
+                          type="email"
+                          value={form.email}
+                          onChange={set('email')}
+                          name="email"
+                          required={false}
+                        />
+                        <FloatingInput
+                          id="cta-company"
+                          label="Company / Startup Name"
+                          value={form.company}
+                          onChange={set('company')}
+                          name="company"
+                        />
+                        <FloatingInput
+                          id="cta-phone"
+                          label="Phone Number"
+                          type="tel"
+                          value={form.phone}
+                          onChange={set('phone')}
+                          name="phone"
+                          required
+                        />
 
-                          {/* Step 3 */}
-                          {step === 2 && (
-                            <motion.div
-                              key="step-2"
-                              custom={dir}
-                              variants={stepVariants}
-                              initial="enter"
-                              animate="center"
-                              exit="exit"
-                              className="flex flex-col gap-5"
-                            >
-                              <h3 className="text-lg font-semibold text-white">Your Project</h3>
-                              <div className="grid grid-cols-2 gap-4">
-                                <FloatingSelect
-                                  id="cta-type"
-                                  label="Project Type"
-                                  value={form.projectType}
-                                  onChange={set('projectType')}
-                                  options={PROJECT_TYPES}
-                                  name="projectType"
-                                />
-                                <FloatingSelect
-                                  id="cta-timeline"
-                                  label="Timeline"
-                                  value={form.timeline}
-                                  onChange={set('timeline')}
-                                  options={TIMELINES}
-                                  name="timeline"
-                                />
-                              </div>
-                              <div className="group relative">
-                                <textarea
-                                  id="cta-desc"
-                                  name="description"
-                                  value={form.description}
-                                  onChange={(e) => set('description')(e.target.value)}
-                                  required
-                                  rows={4}
-                                  placeholder=" "
-                                  aria-label="Project Description"
-                                  className="peer w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
-                                />
-                                <label
-                                  htmlFor="cta-desc"
-                                  className={`pointer-events-none absolute left-4 transition-all duration-200 ${
-                                    form.description
-                                      ? 'top-2 text-[11px] font-medium text-brand-gold'
-                                      : 'top-4 text-sm text-white/55 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
-                                  }`}
-                                >
-                                  Project Description
-                                </label>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        <div className="group relative">
+                          <textarea
+                            id="cta-desc"
+                            name="description"
+                            value={form.description}
+                            onChange={(e) => set('description')(e.target.value)}
+                            required
+                            rows={4}
+                            placeholder=" "
+                            aria-label="Tell us about your project"
+                            className="peer w-full resize-none rounded-xl border border-transparent bg-[#232326] px-4 pb-3 pt-6 text-sm text-white/90 transition-all duration-200 focus:border-brand-gold/60 focus:outline-none focus:ring-2 focus:ring-brand-gold/25"
+                          />
+                          <label
+                            htmlFor="cta-desc"
+                            className={`pointer-events-none absolute left-4 transition-all duration-200 ${
+                              form.description
+                                ? 'top-2 text-[11px] font-medium text-brand-gold'
+                                : 'top-4 text-sm text-white/55 peer-focus:top-2 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-brand-gold'
+                            }`}
+                          >
+                            Tell us about your project
+                            <RequiredMark />
+                          </label>
+                        </div>
+
+                        {/* Optional project details accordion */}
+                        <div className="rounded-xl border border-white/[0.08]">
+                          <button
+                            type="button"
+                            onClick={() => setDetailsOpen((o) => !o)}
+                            aria-expanded={detailsOpen}
+                            className={`flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm text-white/70 transition-colors hover:text-white ${FOCUS_RING} rounded-xl`}
+                          >
+                            <span>Add project details (optional)</span>
+                            <ChevronDown
+                              className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
+                                detailsOpen ? 'rotate-180' : ''
+                              }`}
+                              aria-hidden
+                            />
+                          </button>
+
+                          <AnimatePresence initial={false}>
+                            {detailsOpen ? (
+                              <motion.div
+                                key="details"
+                                initial={
+                                  prefersReducedMotion
+                                    ? { opacity: 1 }
+                                    : { height: 0, opacity: 0 }
+                                }
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={
+                                  prefersReducedMotion
+                                    ? { opacity: 0 }
+                                    : { height: 0, opacity: 0 }
+                                }
+                                transition={{
+                                  duration: prefersReducedMotion ? 0.15 : 0.35,
+                                  ease: REVEAL_EASE,
+                                }}
+                                className="overflow-hidden"
+                              >
+                                <div className="flex flex-col gap-4 border-t border-white/[0.06] px-4 pb-4 pt-4">
+                                  <FloatingSelect
+                                    id="cta-budget"
+                                    label="Project Budget"
+                                    value={form.budget}
+                                    onChange={set('budget')}
+                                    options={BUDGETS}
+                                    name="budget"
+                                    required={false}
+                                  />
+                                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <FloatingSelect
+                                      id="cta-type"
+                                      label="Project Type"
+                                      value={form.projectType}
+                                      onChange={set('projectType')}
+                                      options={PROJECT_TYPES}
+                                      name="projectType"
+                                      required={false}
+                                    />
+                                    <FloatingSelect
+                                      id="cta-timeline"
+                                      label="Timeline"
+                                      value={form.timeline}
+                                      onChange={set('timeline')}
+                                      options={TIMELINES}
+                                      name="timeline"
+                                      required={false}
+                                    />
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ) : null}
+                          </AnimatePresence>
+                        </div>
                       </div>
 
-                      {/* Error Message */}
-                      {error && (
+                      {error ? (
                         <div className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center">
                           <p className="text-sm text-red-400">{error}</p>
                         </div>
-                      )}
+                      ) : null}
 
-                      {/* Navigation */}
-                      <div className="mt-8 flex items-center justify-between">
-                        {step > 0 ? (
-                          <button
-                            type="button"
-                            onClick={prev}
-                            className={`inline-flex items-center gap-2 text-sm text-white/55 transition-colors hover:text-white ${FOCUS_RING}`}
-                          >
-                            <ArrowLeft className="h-4 w-4" />
-                            Back
-                          </button>
-                        ) : (
-                          <div />
-                        )}
-
-                        {step < 2 ? (
-                          <BrandButton type="button" size="md" onClick={next} disabled={!canNext()}>
-                            Continue
-                            <ArrowRight className="h-4 w-4" />
-                          </BrandButton>
-                        ) : (
-                          <BrandButton type="submit" size="lg" disabled={!canNext() || submitting}>
-                            {submitting ? (
-                              <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Sending...
-                              </>
-                            ) : (
-                              'Send Message'
-                            )}
-                          </BrandButton>
-                        )}
+                      <div className="mt-8 flex justify-end">
+                        <BrandButton type="submit" size="lg" disabled={submitting}>
+                          {submitting ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            'Submit'
+                          )}
+                        </BrandButton>
                       </div>
                     </form>
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -674,8 +641,10 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: REVEAL_EASE }}
-                    className={`flex flex-col items-center gap-5 rounded-[20px] border border-brand-gold/30 p-12 text-center shadow-[0_20px_60px_rgba(0,0,0,0.55)] ${FORM_CARD_SURFACE}`}
+                    className={`${FORM_CARD_SHELL} flex flex-col items-center gap-5 p-12 text-center`}
                   >
+                    <FormCardAtmosphere />
+                    <div className="relative z-10 flex flex-col items-center gap-5">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -683,11 +652,14 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
                     >
                       <CheckCircle2 className="h-14 w-14 text-brand-gold" />
                     </motion.div>
-                    <h3 className="text-2xl font-bold text-white">Message Sent Successfully</h3>
+                    <h3 className="text-2xl font-bold text-white">
+                      Message Sent Successfully
+                    </h3>
                     <p className="max-w-sm text-white/55">
                       Thank you for reaching out. We&apos;ll review your project details and get
                       back to you within 24 hours.
                     </p>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -700,4 +672,3 @@ const FinalCTA = ({ headingAs = "h2" }: { headingAs?: "h1" | "h2" }) => {
 }
 
 export default FinalCTA
-

@@ -8,6 +8,8 @@ import {
   useSpring,
   type MotionValue,
 } from 'framer-motion'
+import { OptimizedImage } from '@/components/OptimizedImage'
+import type { ResponsivePicture } from '@/types/images'
 
 export const HeroParallax = ({
   products,
@@ -17,7 +19,7 @@ export const HeroParallax = ({
   products: {
     title: string
     link: string
-    thumbnail: string
+    thumbnail: string | ResponsivePicture
   }[]
   heading?: string
   subheading?: string
@@ -126,7 +128,7 @@ export const ProductCard = ({
   product: {
     title: string
     link: string
-    thumbnail: string
+    thumbnail: string | ResponsivePicture
   }
   translate: MotionValue<number>
 }) => {
@@ -142,10 +144,13 @@ export const ProductCard = ({
       className="group/product relative h-96 w-[30rem] shrink-0"
     >
       <a href={product.link} className="group-hover/product:shadow-2xl block">
-        <img
+        <OptimizedImage
           src={product.thumbnail}
-          height="600"
-          width="600"
+          height={600}
+          width={600}
+          loading="lazy"
+          decoding="async"
+          sizes="480px"
           className="absolute inset-0 h-full w-full object-cover object-left-top"
           alt={product.title}
         />

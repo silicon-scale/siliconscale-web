@@ -77,6 +77,7 @@ function BrowserMockup({
           height={900}
           className="work-browser-image"
           loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
           decoding="async"
           sizes="(max-width: 767px) 100vw, (max-width: 1280px) 65vw, 720px"
           style={{ aspectRatio: 'unset' }}
@@ -413,10 +414,7 @@ export function WorkProjectCard({
           <BrowserMockup project={project} priority={priority ?? index === 0} />
         </div>
         {project.statOverlay ? (
-          <div
-            className="work-stat-overlay"
-            aria-label={`${project.statOverlay.value} ${project.statOverlay.label}`}
-          >
+          <div className="work-stat-overlay">
             <p className="work-stat-value">{project.statOverlay.value}</p>
             <p className="work-stat-label">{project.statOverlay.label}</p>
           </div>
@@ -452,7 +450,7 @@ export function WorkProjectCard({
           {panel}
         </Link>
       ) : (
-        <div className="work-card-link work-card-link--static" aria-label={project.title}>
+        <div className="work-card-link work-card-link--static">
           {panel}
         </div>
       )}

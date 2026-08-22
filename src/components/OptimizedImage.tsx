@@ -1,10 +1,16 @@
 import { memo, useCallback, useState } from 'react'
+import type { ResponsivePicture } from '@/types/images'
 
 export interface OptimizedImageProps {
-  src: string
+  /**
+   * Plain URL, or a `?responsive` import (ResponsivePicture) which renders a
+   * <picture> with AVIF/WebP srcsets and intrinsic width/height automatically.
+   */
+  src: string | ResponsivePicture
   alt: string
-  width: number
-  height: number
+  /** Optional for ResponsivePicture sources (intrinsic size is used). */
+  width?: number
+  height?: number
   className?: string
   loading?: 'lazy' | 'eager'
   decoding?: 'async' | 'sync' | 'auto'
@@ -39,22 +45,27 @@ function OptimizedImageComponent({
   fallback = DEFAULT_FALLBACK,
   fill = false,
 }: OptimizedImageProps) {
-  const [imgSrc, setImgSrc] = useState(src)
-  const handleError = useCallback(() => {
-    setImgSrc((prev) => (prev === src ? fallback : prev))
-  }, [src, fallback])
+  const picture = typeof src === 'object' ? src : null
+  const baseSrc = picture ? picture.img.src : src
+  const [failed, setFailed] = useState(false)
+  const handleError = useCallback(() => setFailed(true), [])
 
-  return (
+  const intrinsicWidth = width ?? picture?.img.w
+  const intrinsicHeight = height ?? picture?.img.h
+  // Without sizes, browsers assume 100vw for srcset selection — make it explicit.
+  const resolvedSizes = picture && !failed ? (sizes ?? '100vw') : sizes
+
+  const img = (
     <img
-      src={imgSrc}
+      src={failed ? fallback : (baseSrc as string)}
       alt={alt}
-      width={fill ? undefined : width}
-      height={fill ? undefined : height}
+      width={fill ? undefined : intrinsicWidth}
+      height={fill ? undefined : intrinsicHeight}
       loading={loading}
       decoding={decoding}
       fetchPriority={fetchPriority}
-      srcSet={srcSet}
-      sizes={sizes}
+      srcSet={failed ? undefined : srcSet}
+      sizes={resolvedSizes}
       className={className}
       style={
         fill
@@ -68,10 +79,33 @@ function OptimizedImageComponent({
               objectFit: 'cover',
               ...style,
             }
-          : { aspectRatio: `${width} / ${height}`, ...style }
+          : {
+              ...(intrinsicWidth && intrinsicHeight
+                ? { aspectRatio: `${intrinsicWidth} / ${intrinsicHeight}` }
+                : undefined),
+              ...style,
+            }
       }
-      onError={handleError}
+      onError={failed ? undefined : handleError}
     />
+  )
+
+  if (!picture || failed) return img
+
+  return (
+    // display:contents keeps the wrapper out of layout (flex/grid/percent sizing
+    // behaves exactly as it did when the <img> was the direct child).
+    <picture style={{ display: 'contents' }}>
+      {Object.entries(picture.sources).map(([format, formatSrcSet]) => (
+        <source
+          key={format}
+          type={`image/${format}`}
+          srcSet={formatSrcSet}
+          sizes={resolvedSizes}
+        />
+      ))}
+      {img}
+    </picture>
   )
 }
 

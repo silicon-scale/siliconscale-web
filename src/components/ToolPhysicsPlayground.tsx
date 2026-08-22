@@ -95,7 +95,7 @@ export function ToolPhysicsPlayground() {
     const { Engine, Bodies, Body, Composite, Runner, Constraint, Query, Events } = Matter
 
     const engine = Engine.create({
-      gravity: { x: 0, y: 1.15, scale: 0.001 },
+      gravity: { x: 0, y: 1.4, scale: 0.001 },
     })
     engine.constraintIterations = 4
     engine.positionIterations = 10
@@ -111,23 +111,31 @@ export function ToolPhysicsPlayground() {
     let width = stage.clientWidth
     let height = stage.clientHeight
     const wallT = 80
+    const wallInset = 10
+    // How far above the visible stage blocks are allowed to spawn/fall from.
+    const dropInCeiling = 520
 
-    const makeWalls = (w: number, h: number, withLid: boolean) => {
+    // `lidY`: null while blocks are still falling in from above (no top
+    // boundary yet) — once a number, a lid sits there. We use a HIGH,
+    // invisible ceiling from the very first frame (not `null`) so a block
+    // thrown upward immediately after grabbing can never escape into
+    // unbounded space; it only swaps to the tighter, "closed box" lid once
+    // the intro drop-in animation has settled.
+    const makeWalls = (w: number, h: number, lidY: number | null) => {
       const tall = h + 900
       // Inset so settled / thrown blocks aren't clipped by overflow:hidden
-      const inset = 10
       const list = [
-        Bodies.rectangle(w / 2, h + wallT / 2 - inset, w + wallT * 2, wallT, wallOpts),
-        Bodies.rectangle(-wallT / 2 + inset, h / 2 - 280, wallT, tall, wallOpts),
-        Bodies.rectangle(w + wallT / 2 - inset, h / 2 - 280, wallT, tall, wallOpts),
+        Bodies.rectangle(w / 2, h + wallT / 2 - wallInset, w + wallT * 2, wallT, wallOpts),
+        Bodies.rectangle(-wallT / 2 + wallInset, h / 2 - 280, wallT, tall, wallOpts),
+        Bodies.rectangle(w + wallT / 2 - wallInset, h / 2 - 280, wallT, tall, wallOpts),
       ]
-      if (withLid) {
-        list.push(Bodies.rectangle(w / 2, -wallT / 2 + inset, w + wallT * 2, wallT, wallOpts))
+      if (lidY !== null) {
+        list.push(Bodies.rectangle(w / 2, lidY, w + wallT * 2, wallT, wallOpts))
       }
       return list
     }
 
-    let walls = makeWalls(width, height, false)
+    let walls = makeWalls(width, height, -dropInCeiling)
     Composite.add(engine.world, walls)
 
     const cols = Math.max(4, Math.floor((width - 48) / (BLOCK + 12)))
@@ -150,7 +158,7 @@ export function ToolPhysicsPlayground() {
 
     const lidTimer = window.setTimeout(() => {
       Composite.remove(engine.world, walls)
-      walls = makeWalls(width, height, true)
+      walls = makeWalls(width, height, -wallT / 2 + wallInset)
       Composite.add(engine.world, walls)
     }, 2200)
 
@@ -164,6 +172,10 @@ export function ToolPhysicsPlayground() {
     let dragPointerId: number | null = null
     let docReleaseAttached = false
     let deadManTimer: ReturnType<typeof setInterval> | null = null
+    // The raw pointer position, updated instantly on every pointermove. The
+    // constraint's actual anchor (pointA) is NOT set to this directly — see
+    // the `beforeUpdate` handler below for why.
+    let pointerTarget = { x: 0, y: 0 }
 
     const stopDeadMan = () => {
       if (deadManTimer !== null) {
@@ -230,11 +242,12 @@ export function ToolPhysicsPlayground() {
         clearDrag()
         return
       }
-      // Throw impulse from recent pointer velocity
+      // Throw impulse from recent pointer velocity — capped well below wall
+      // thickness so even a hard flick can't tunnel through a wall in one step.
       const throwScale = 0.012
       Body.setVelocity(dragBody, {
-        x: Math.max(-22, Math.min(22, velocity.x * throwScale)),
-        y: Math.max(-22, Math.min(22, velocity.y * throwScale)),
+        x: Math.max(-16, Math.min(16, velocity.x * throwScale)),
+        y: Math.max(-16, Math.min(16, velocity.y * throwScale)),
       })
       Body.setAngularVelocity(
         dragBody,
@@ -291,6 +304,7 @@ export function ToolPhysicsPlayground() {
         length: 0,
       })
       Composite.add(engine.world, dragConstraint)
+      pointerTarget = { ...point }
 
       const now = performance.now()
       lastSample = { x: point.x, y: point.y, t: now }
@@ -312,8 +326,7 @@ export function ToolPhysicsPlayground() {
       if (dragPointerId !== null && e.pointerId !== dragPointerId) return
       e.preventDefault()
       const point = stagePoint(stage, e.clientX, e.clientY)
-      dragConstraint.pointA.x = point.x
-      dragConstraint.pointA.y = point.y
+      pointerTarget = point
 
       const now = performance.now()
       const dt = Math.max(now - lastSample.t, 1) / 1000
@@ -350,8 +363,70 @@ export function ToolPhysicsPlayground() {
     // second, independent requestAnimationFrame loop — one less loop fighting
     // the main thread every frame.
     const half = BLOCK / 2
+    // Matter has no continuous collision detection, so a hard throw can in
+    // rare cases still tunnel clean through a wall in a single step. This is
+    // the guarantee that a block can never be permanently lost off-stage: if
+    // one ever ends up well outside the play area, snap it back in and kill
+    // its velocity instead of leaving it to fall/fly forever off-screen.
+    const escapeMarginX = 300
+    const escapeMarginTop = dropInCeiling + 200
+    const escapeMarginBottom = 400
+    // The drag constraint is a stiff spring whose anchor (pointA) used to snap
+    // straight to the raw pointer position every pointermove. A fast flick (or
+    // several pointermove events coalescing before one engine tick) could jump
+    // that anchor hundreds of px in a single physics step — the spring then
+    // yanks the held body across that whole gap in ONE integration step, which
+    // can tunnel it clean through an 80px wall before Matter's discrete
+    // collision check ever sees it there. Capping how fast the anchor itself is
+    // allowed to move (not the body) fixes this at the source: the spring never
+    // has more than a small gap to close in a single step, so it can't
+    // accelerate the body past the wall thickness in one tick, no matter how
+    // fast the real pointer moves.
+    const maxAnchorSpeed = 26
+    const moveDragAnchor = () => {
+      if (!dragConstraint) return
+      const dx = pointerTarget.x - dragConstraint.pointA.x
+      const dy = pointerTarget.y - dragConstraint.pointA.y
+      const dist = Math.hypot(dx, dy)
+      if (dist <= maxAnchorSpeed) {
+        dragConstraint.pointA.x = pointerTarget.x
+        dragConstraint.pointA.y = pointerTarget.y
+      } else {
+        dragConstraint.pointA.x += (dx / dist) * maxAnchorSpeed
+        dragConstraint.pointA.y += (dy / dist) * maxAnchorSpeed
+      }
+    }
+    Events.on(engine, 'beforeUpdate', moveDragAnchor)
+
+    // Belt-and-suspenders: even with the anchor cap above, also clamp the
+    // dragged body's own velocity every step so it can never build up enough
+    // speed to punch through a wall on the very rare frame where several
+    // engine steps run back-to-back (e.g. after a tab was backgrounded).
+    const maxDragSpeed = 16
     const sync = () => {
+      if (dragBody) {
+        const vx = dragBody.velocity.x
+        const vy = dragBody.velocity.y
+        const speedSq = vx * vx + vy * vy
+        if (speedSq > maxDragSpeed * maxDragSpeed) {
+          const scale = maxDragSpeed / Math.sqrt(speedSq)
+          Body.setVelocity(dragBody, { x: vx * scale, y: vy * scale })
+        }
+      }
       for (const body of bodies) {
+        if (
+          body.position.x < -escapeMarginX ||
+          body.position.x > width + escapeMarginX ||
+          body.position.y < -escapeMarginTop ||
+          body.position.y > height + escapeMarginBottom
+        ) {
+          Body.setPosition(body, {
+            x: Math.min(Math.max(body.position.x, half + 4), width - half - 4),
+            y: half + 4,
+          })
+          Body.setVelocity(body, { x: 0, y: 0 })
+          Body.setAngularVelocity(body, 0)
+        }
         const el = blockRefs.current.get(body.label)
         if (!el) continue
         el.style.transform = `translate3d(${body.position.x - half}px, ${body.position.y - half}px, 0) rotate(${body.angle}rad)`
@@ -401,7 +476,7 @@ export function ToolPhysicsPlayground() {
       width = w
       height = h
       Composite.remove(engine.world, walls)
-      walls = makeWalls(w, h, true)
+      walls = makeWalls(w, h, -wallT / 2 + wallInset)
       Composite.add(engine.world, walls)
       for (const body of bodies) {
         const x = Math.min(Math.max(body.position.x, half + 4), w - half - 4)
@@ -424,6 +499,7 @@ export function ToolPhysicsPlayground() {
       stage.removeEventListener('pointercancel', onPointerUp)
       stage.removeEventListener('lostpointercapture', onLostPointerCapture)
       clearDrag()
+      Events.off(engine, 'beforeUpdate', moveDragAnchor)
       Events.off(engine, 'afterUpdate', sync)
       stopPhysics()
       Composite.clear(engine.world, false)

@@ -232,11 +232,19 @@ export function SplashHoverButton(props: SplashHoverButtonProps) {
     />
   )
 
+  // Explicit colors (no mix-blend-difference): Lighthouse samples CSS color and
+  // treats white + difference on white as ~1:1. Resting/hover both meet WCAG AA.
   const labelLayer = (
     <span
       className={cn(
-        'relative z-10 inline-flex items-center gap-2 mix-blend-difference',
-        variant === 'outline' ? 'text-white' : 'text-white',
+        'relative z-10 inline-flex items-center gap-2 transition-colors duration-300',
+        variant === 'outline'
+          ? hovered
+            ? 'text-black'
+            : 'text-white'
+          : hovered
+            ? 'text-white'
+            : 'text-black',
       )}
     >
       {children}

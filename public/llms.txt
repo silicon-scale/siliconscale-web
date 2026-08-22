@@ -1,0 +1,32 @@
+# SiliconScale Tech
+
+> SiliconScale Tech is a software development agency specializing in AI solutions, custom web applications, Shopify development, and scalable backend systems for startups and growing businesses.
+
+## Services
+
+- [Custom Software Development](https://siliconscale.dev/services): Internal tools, dashboards, customer platforms, and automation replacing manual workflows.
+- [AI Solutions](https://siliconscale.dev/services): AI agents and automation that handle repetitive business tasks.
+- [Shopify Development](https://siliconscale.dev/services): Headless Shopify storefronts with custom frontends, checkout, and migrations.
+- [API Development](https://siliconscale.dev/services): Backend APIs and integrations connecting business systems and third-party services.
+
+## Portfolio
+
+- [Our Work](https://siliconscale.dev/work): Case studies with measurable outcomes across fashion-tech, e-commerce, and research platforms.
+
+## Blog
+
+- [Engineering Articles](https://siliconscale.dev/blog): Practical notes on systems, Shopify builds, and AI agents.
+
+## Company
+
+- [About](https://siliconscale.dev/about): Mission, principles, and how the remote India-based team works.
+- [Contact](https://siliconscale.dev/contact): Project inquiry form with budget, timeline, and scope details.
+
+## Sitemap
+
+- [XML Sitemap](https://siliconscale.dev/sitemap.xml): Complete machine-readable index of all pages and blog posts.
+
+## Optional
+
+- [Privacy Policy](https://siliconscale.dev/privacy): How user data is collected, used, and protected.
+- [Terms of Service](https://siliconscale.dev/terms): Legal terms governing use of the website and services.

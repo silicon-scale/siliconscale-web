@@ -1,17 +1,23 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { ScrollRevealGroup } from '@/components/ui/ScrollRevealGroup'
 import { useSectionInView } from '@/hooks/useSectionInView'
+import { useInViewOnce } from '@/hooks/useInViewOnce'
 import { setPerfDebugLoop } from '@/utils/perfDebug'
 
 export function Services() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const inView = useSectionInView(sectionRef)
+  const prefersReducedMotion = useReducedMotion()
+  const { ref: titleRef, inView: titleInView } = useInViewOnce<HTMLHeadingElement>({
+    disabled: !!prefersReducedMotion,
+  })
 
   useEffect(() => {
     setPerfDebugLoop('servicesTicker', inView ? 'active' : 'paused')
@@ -280,40 +286,26 @@ export function Services() {
 
           {/* ── HEADER ── */}
           <ScrollReveal style={{ marginBottom: '2.5rem' }}>
-            <p
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                letterSpacing: '0.22em',
-                color: 'rgba(255,255,255,0.3)',
-                textTransform: 'uppercase',
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '24px',
-                  height: '1px',
-                  background: 'rgba(255,255,255,0.3)',
-                }}
-              />
-              What We Do
-            </p>
             <h2
+              ref={titleRef}
               style={{
-                fontSize: 'clamp(2.4rem, 5vw, 4.2rem)',
+                fontSize: 'clamp(2.75rem, 6vw, 5rem)',
                 fontWeight: 900,
-                color: '#ffffff',
                 letterSpacing: '-0.04em',
                 lineHeight: 1.05,
                 margin: 0,
               }}
             >
-              Built for businesses that need it to actually work.
+              <motion.span
+                className="inline-block whitespace-nowrap rounded-md bg-brand-gold px-3 py-1 text-black sm:px-4"
+                initial={false}
+                animate={{
+                  clipPath: titleInView ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+                }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.65, 0, 0.35, 1] }}
+              >
+                What We Do
+              </motion.span>
             </h2>
             <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
               <p

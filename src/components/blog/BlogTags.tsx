@@ -20,7 +20,8 @@ export function BlogTags({ tags, limit, className }: BlogTagsProps) {
   if (!list.length) return null
 
   return (
-    <p className={cn("blog-tags", className)} aria-label={`Tags: ${list.join(", ")}`}>
+    <p className={cn("blog-tags", className)}>
+      <span className="sr-only">Tags: </span>
       {list.map((tag, index) => (
         <Fragment key={`${tag}-${index}`}>
           {index > 0 ? (

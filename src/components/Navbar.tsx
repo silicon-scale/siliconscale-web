@@ -95,7 +95,7 @@ export function Navbar() {
     return () => cancelAnimationFrame(id)
   }, [revealStarted, prefersReducedMotion])
 
-  // Escape, focus trap, restore focus, and body scroll lock while menu is open.
+  // Escape, focus trap, restore focus, body scroll lock, and inert background while menu is open.
   useEffect(() => {
     if (!isMobileMenuOpen) return
 
@@ -140,6 +140,14 @@ export function Navbar() {
       document.body.style.overflow = 'hidden'
     }
 
+    const background = [
+      document.querySelector('header'),
+      document.getElementById('main-content'),
+      document.querySelector('footer'),
+    ].filter((el): el is HTMLElement => !!el)
+
+    for (const el of background) el.setAttribute('inert', '')
+
     const lockRaf = requestAnimationFrame(lockOverflow)
     const focusTimer = window.setTimeout(() => {
       menuPanelRef.current?.querySelector<HTMLElement>('.mobile-menu-close')?.focus({ preventScroll: true })
@@ -152,6 +160,7 @@ export function Navbar() {
       clearTimeout(focusTimer)
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = prevOverflow
+      for (const el of background) el.removeAttribute('inert')
       toggleRef.current?.focus({ preventScroll: true })
     }
   }, [isMobileMenuOpen, closeMobileMenu, prefersReducedMotion])
@@ -219,6 +228,7 @@ export function Navbar() {
 
   return (
     <>
+      <header>
       <nav
         className={navRevealClass}
         aria-label="Primary"
@@ -309,6 +319,7 @@ export function Navbar() {
           </div>
         </div>
       </nav>
+      </header>
 
       <AnimatePresence>
         {isMobileMenuOpen ? (
@@ -393,7 +404,7 @@ export function Navbar() {
                 font-weight: 700;
                 letter-spacing: 0.12em;
                 line-height: 1;
-                color: rgba(255,255,255,0.22);
+                color: var(--text-subtle);
                 font-variant-numeric: tabular-nums;
                 width: 1.35rem;
                 flex-shrink: 0;

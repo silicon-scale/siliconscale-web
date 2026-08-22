@@ -1,7 +1,8 @@
 'use client'
 
-import { useReducedMotion } from 'framer-motion'
-
+import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
+import { SecondaryCta, SECTION_ARROW_ICON_CLASS } from '@/components/ui/SecondaryCta'
 import { CountUpNumber } from '@/components/ui/CountUpNumber'
 import ScrollReveal from '@/components/ui/ScrollReveal'
 import { useInViewOnce } from '@/hooks/useInViewOnce'
@@ -53,7 +54,7 @@ function HighlightStatRow({
     >
       <div className="flex items-baseline gap-3">
         <span
-          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-white/20 tabular-nums"
+          className="shrink-0 text-[11px] font-bold tracking-[0.12em] text-subtle tabular-nums"
           aria-hidden
         >
           {String(index + 1).padStart(2, '0')}
@@ -72,12 +73,58 @@ function HighlightStatRow({
 }
 
 export function Highlights() {
+  const prefersReducedMotion = useReducedMotion()
+  const { ref: titleRef, inView: titleInView } = useInViewOnce<HTMLHeadingElement>({
+    disabled: !!prefersReducedMotion,
+  })
+
   return (
     <section
       aria-labelledby="highlights-heading"
       className="w-full bg-page py-16 sm:py-20 lg:py-24"
     >
+      <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 sm:px-8 lg:px-10">
+        {/* Header — compact link (matches Services textLink pattern) */}
+        <ScrollReveal className="space-y-5">
+          <div className="flex justify-end">
+            <SecondaryCta variant="textLink" to="/about">
+              About
+              <ArrowRight className={SECTION_ARROW_ICON_CLASS} aria-hidden />
+            </SecondaryCta>
+          </div>
+          <h2
+            id="highlights-heading"
+            ref={titleRef}
+            className="font-semibold tracking-tight text-white"
+            style={{ fontSize: 'clamp(2.8rem, 6vw, 4.5rem)' }}
+          >
+            <motion.span
+              className="inline-block whitespace-nowrap rounded-md bg-brand-gold px-3 py-1 text-black sm:px-4"
+              initial={false}
+              animate={{
+                clipPath: titleInView ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+              }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.9, ease: [0.65, 0, 0.35, 1] }}
+            >
+              Numbers
+            </motion.span>{' '}
+            we can back up.
+          </h2>
+        </ScrollReveal>
 
+        {/* Stats grid — full-width top rule + center column divider */}
+        <div className="relative border-t border-white/8 pt-12">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-1/2 top-12 hidden w-px -translate-x-1/2 bg-white/6 sm:block"
+          />
+          <div className="grid gap-10 sm:grid-cols-2 sm:gap-x-0 sm:gap-y-12 lg:gap-y-14">
+            {STATS.map((stat, index) => (
+              <HighlightStatRow key={stat.label} stat={stat} index={index} />
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   )
 }
